@@ -1,0 +1,13 @@
+{
+    "name"         : "Gru_node",
+    "version"      : "0.0.1",
+    "description"  : "A lstm node",
+    "dependencies": {
+    },
+    "keywords": [ "node-red" ],
+    "node-red"     : {
+        "nodes": {
+            "sample": "gruNode/gru.js"
+        }
+    }
+}
