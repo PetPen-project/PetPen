@@ -45,15 +45,6 @@ os.mkdir(trainlog_dir)
 state_file = os.path.join('/home/plash/petpen/','state.json')
 state = Model_state(state_file,model.config)
 
-if args.w:
-    record_files = [f for f in os.listdir(model_dir) if re.match(r'\d{6}_\d{6}',f)]
-    if not record_files:
-        print('no saved weight found.')
-    else:
-        weight_file = os.path.join(max(record_files),'weights.h5')
-    if os.path.exists(weight_file):
-        model.load_weights(weight_file)
-
 history = model.train(callbacks = [b_history,state])
 save_history(os.path.join(trainlog_dir,'train_log'),history,b_history)
 model.save_weights(os.path.join(model_result_path,'weights.h5'))

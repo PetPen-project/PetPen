@@ -1,0 +1,42 @@
+{% extends 'dataset/nav.html' %}
+<!DOCTYPE html>
+
+{% block title %}dataset management{% endblock %}
+
+{% block content %}
+    <!-- Upload form.-->
+    <form action="{% url "index" %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <p>{{ form.non_field_errors }}</p>
+
+      <p>{{ form.csvfile.label_tag }} {{ form.csvfile.help_text }}</p>
+
+      <p>
+        {{ form.csvfile.errors }}
+        {{ form.csvfile }}
+      </p>
+      <p>Dataset title:{{ form.title }}</p>
+
+      <p><input type="submit" value="Upload"/></p>
+      {% if type_error %}
+        <p> Only csv file is supported.</p>
+      {% endif %}
+    </form>
+
+    <!-- List of uploaded data -->
+    {% if documents %}
+      <form method="post" action="{% url "index" %}">
+      {% csrf_token %}
+      <ul>
+        {% for document in documents %}
+        <li>
+          <a href="{{ document.csvfile.url }}" class="btn btn-primary" style="width:200px;">{{ document.csvfile.name }}</a>
+          <button class="btn btn-default" value="{{document.id}}" type="submit" name="delete-dataset">delete</button>
+        </li>
+        {% endfor %}
+      </ul>
+      </form>
+    {% else %}
+      <p>No documents.</p>
+    {% endif %}
+{% endblock %}

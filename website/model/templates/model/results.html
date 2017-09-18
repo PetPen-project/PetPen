@@ -1,0 +1,167 @@
+{% extends 'dataset/nav.html' %}
+{% load static %}
+
+{% block title %}model analysis{% endblock %}
+
+{% block head %}
+  <style>
+  .centered {
+      display : block;
+      margin : 0 auto;
+      text-align: left;
+      width: 800px;
+      }
+  .input {
+    font-family:"FontAwesome";
+  }
+  </style>
+  <!--<link href="{% static "css/bootstrap.min.css" %}" rel="stylesheet" media="screen" />-->
+  <link href="{% static "css/slider.css" %}" rel="stylesheet" type="text/css" />
+  <link href="{% static "css/font-awesome.min.css" %}" rel="stylesheet" type="text/css" />
+  <link
+      href="http://cdn.pydata.org/bokeh/release/bokeh-0.12.6.min.css"
+      rel="stylesheet" type="text/css"/>
+
+  <script src="http://cdn.pydata.org/bokeh/release/bokeh-0.12.6.min.js"></script>
+  <script src="http://code.jquery.com/jquery.js" type="text/javascript"></script>
+  <script src="../../static/js/bootstrap.min.js" type="text/javascript"></script>
+  <script src="{% static "js/slider.js" %}" type="text/javascript"></script>
+  <script src="{% static "js/script.js" %}" type="text/javascript"></script>
+  {% autoescape off %}
+  {% if plot %}
+  {{ plot }}
+  {% endif %}
+  {% endautoescape %}
+{% endblock %}
+
+{% block content %}
+  <div id="mwt_mwt_slider_scroll">
+    <div id="mwt_tab">
+      <span>H</span>
+      <span>i</span>
+      <span>s</span>
+      <span>t</span>
+      <span>o</span>
+      <span>r</span>
+      <span>y</span>
+    </div>
+    <div id="mwt_slider_content">
+      <img src="http://i.imgur.com/PKeOHkX.jpg" style="max-width:100%; max-height:100%;"/>
+    </div>
+  </div>
+  <div class="container-fluid">
+    <div id="run-model" class="py-md-3 text-center">
+      <div class="btn-group">
+      <button id="trainModel" class="btn btn-outline-primary"><i class="fa fa-play"></i> train model</button>
+      <button id="validModel" class="btn btn-outline-primary"><i class="fa fa-play"></i> run validation</button>
+      </div>
+    </div>
+    <div class="col-md-12">
+      <h2 id="textResult" class="text-center">Result</h2>
+    </div>
+    <div class="col-md-12 form-horizontal">
+				<!--status-->
+      <div class="form-group row">
+        <label id="lblStatus" class="col-md-2 control-label">Status</label>
+        <div class="col-md-9">
+          <input id="txfStatus" type="input" class="form-control" readonly="true">
+        </div>
+      </div>
+      <!--time-->
+      <div class="form-group row">
+        <label id="lblTime" class="col-md-2 control-label">Time</label>
+        <div class="col-md-9">
+          <input id="txfTime" type="input" class="form-control" readonly="true">
+        </div>
+      </div>
+    </div><!--end shared-->
+  </div>
+
+  <div id="loadingDiv" class="text-center">
+    <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+    <span class="sr-only">Loading...</span>
+  </div>
+
+		<!-- training -->
+  <div id="trainingDiv">
+    <div class="col-md-12">
+      <h3 class="text-center">Training</h3>
+    </div>
+    <div class="col-md-12 form-horizontal">
+      <!--epoch-->
+      <div class="form-group row">
+        <label class="col-md-2 control-label">Epoch</label>
+        <div class="col-md-9">
+          <div class="form-control">
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped progress-bar-animated bg-success active barEpoch" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" name="training">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--progress-->
+      <div class="form-group row">
+        <label class="col-md-2 control-label">Progress</label>
+        <div class="col-md-9">
+          <div class="form-control">
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped progress-bar-animated active barProgress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" name="training">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--loss-->
+      <div class="form-group row">
+        <label class="col-md-2 control-label">Loss</label>
+        <div class="col-md-9">
+          <input type="input" class="form-control txfLoss" readonly="true" name="training">
+        </div>
+      </div>
+    </div>
+  </div><!--end training-->
+		<!-- testing -->
+  <div id="testingDiv">
+    <div class="col-md-12">
+      <h3 class="text-center">Testing</h3>
+    </div>
+    <div class="col-md-12 form-horizontal">
+      <!--epoch-->
+      <!--<div class="form-group row">-->
+        <!--<label class="col-md-2 control-label">Epoch</label>-->
+        <!--<div class="col-md-9">-->
+          <!--<div class="form-control">-->
+            <!--<div class="progress">-->
+              <!--<div class="progress-bar progress-bar-striped progress-bar-success active barEpoch" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" name="testing">0%</div>-->
+            <!--</div>-->
+          <!--</div>-->
+        <!--</div>-->
+      <!--</div>-->
+      <!--progress-->
+      <div class="form-group row">
+        <label class="col-md-2 control-label">Progress</label>
+        <div class="col-md-9">
+          <div class="form-control">
+            <div class="progress">
+              <div class="progress-bar progress-bar-striped progress-bar-animated active barProgress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" name="testing">0%</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--loss-->
+      <div class="form-group row">
+        <label class="col-md-2 control-label">Loss</label>
+        <div class="col-md-9">
+          <input type="input" class="form-control txfLoss" readonly="true" name="testing">
+        </div>
+      </div>
+    </div>
+  </div><!--end testing-->
+  <div class="row">
+    <div id="div-plot" class="centered"></div>
+  </div>
+  {% if plot %}
+  <div class="centered">
+    {{ plotDiv|safe }}
+  </div>
+  {% endif %}
+{% endblock %}

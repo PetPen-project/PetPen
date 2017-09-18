@@ -91,6 +91,7 @@ class backend_model():
         """
         with open(file_path) as f:
             dataset_config = json.load(f)['dataset']
+            dataset_config['file_path'] = '/media/disk1/datasets/tmp.csv'
         dataset = pd.read_csv(dataset_config['file_path'])
         self.sample_size = dataset.shape[0]
         self.train_sample_size = self.sample_size*(1-validate_rate)
@@ -115,8 +116,6 @@ class backend_model():
                 self.valid_y.append(dataset.loc[self.train_sample_size:,targets].values)
     
     def train(self,**kwargs):
-        print(self.model.inputs[0])
-        print(self.train_x[0].shape)
         if 'callbacks' in kwargs:
             return self.model.fit(self.train_x, self.train_y, batch_size=self.batch_size,
                 epochs=self.epochs,
@@ -125,7 +124,7 @@ class backend_model():
         return self.model.fit(self.train_x, self.train_y,
                 batch_size=self.batch_size,
                 epochs=self.epochs,)
-    def evaluate(self):
+    def evaluate(self,**kwargs):
         return self.model.evaluate(self.valid_x, self.valid_y, batch_size=self.batch_size)
     def predict(self,test_data):
         return self.model.predict(test_data)

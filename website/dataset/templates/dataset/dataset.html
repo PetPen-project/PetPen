@@ -1,0 +1,10 @@
+<html>
+{{ dataset }}
+{{ dataset.csvfile.name }}
+{{ dataset.csvfile.size }}
+
+{{ dataframe.columns.values }}
+{% autoescape off %}
+{{ data_html }}
+{% endautoescape %}
+</html>

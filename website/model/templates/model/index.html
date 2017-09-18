@@ -1,0 +1,26 @@
+{% extends 'dataset/nav.html' %}
+
+{% block title %}model index{% endblock %}
+
+{% block content %}
+
+<!--<script type="text/javascript">-->
+<!--var http = require('http');-->
+<!--var server = http.createServer().listen(4000);-->
+<!--var RED = require ("node-red");-->
+<!--var settings = {-->
+    <!--httpAdminRoot:"/red",-->
+    <!--httpNodeRoot: "/api",-->
+    <!--userDir:"/media/disk1/nodered/",-->
+    <!--functionGlobalContext: { }    // enables global context-->
+<!--};-->
+<!--RED.init(server,settings);-->
+
+<!--RED.start();-->
+<!--</script>-->
+
+<div id="node-red">
+  <iframe src="http://140.109.18.114:1882" frameborder="0" style="border:none; width:100%; height:calc(100% - 50px); position: absolute; top: 50px; bottom:-50px;"></iframe>
+</div>
+
+{% endblock %}
