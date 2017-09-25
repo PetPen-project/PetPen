@@ -1,16 +1,18 @@
 from django.db import models
 from django.dispatch import receiver
+from django.contrib.auth.models import User
 
 import os
 
 def training_dataset_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return '{0}/{1}'.format(instance.title, 'train.csv')
+    # file will be uploaded to MEDIA_ROOT/<user_id>/<dataset_name>/<filename>
+    return '{0}/{1}/{2}'.format(instance.user.id, instance.title, 'train.csv')
 def testing_dataset_path(instance, filename):
-    # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    return '{0}/{1}'.format(instance.title, 'test.csv')
+    # file will be uploaded to MEDIA_ROOT/<user_id>/<dataset_name>/<filename>
+    return '{0}/{1}/{2}'.format(instance.user.id, instance.title, 'test.csv')
 
 class Dataset(models.Model):
+    user = models.ForeignKey(User,null=True) 
     training_csvfile = models.FileField(upload_to=training_dataset_path)
     testing_csvfile = models.FileField(upload_to=testing_dataset_path)
     title = models.CharField(max_length=50)

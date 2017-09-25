@@ -13,7 +13,8 @@ class UploadFileForm(forms.Form):
         label='select a csv file',
         help_text='testing data',
         content_types=['.csv'],
+        required = False
     )
-    is_image = forms.BooleanField()
-    shared_testing = forms.BooleanField()
+    is_image = forms.BooleanField(required=False)
+    shared_testing = forms.BooleanField(required=False, help_text='use the same csv for testing')
     
