@@ -42,7 +42,7 @@ os.mkdir(model_result_path)
 trainlog_dir = os.path.join(model_result_path,'logs')
 os.mkdir(trainlog_dir)
 
-state_file = os.path.join('/home/plash/petpen/','state.json')
+state_file = os.path.join('.','state.json')
 state = Model_state(state_file,model.config)
 
 history = model.train(callbacks = [b_history,state])
