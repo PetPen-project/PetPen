@@ -135,16 +135,17 @@ class backend_model():
                 self.valid_y.append(dataset.loc[self.train_sample_size:,targets].values)
 
     def train(self,**kwargs):
+        callbacks = []
         if 'callbacks' in kwargs:
-            return self.model.fit(self.train_x, self.train_y, batch_size=self.batch_size,
-                epochs=self.epochs,
-                callbacks=kwargs['callbacks'],
-                initial_epoch=0)
-        return self.model.fit(self.train_x, self.train_y,
-                batch_size=self.batch_size,
-                epochs=self.epochs,)
+            callbacks = kwargs['callbacks']
+        return self.model.fit(self.train_x, self.train_y, batch_size=self.batch_size,
+            epochs=self.epochs,
+            callbacks=callbacks,
+            initial_epoch=0)
+
     def evaluate(self,**kwargs):
         return self.model.evaluate(self.valid_x, self.valid_y, batch_size=self.batch_size)
+
     def predict(self,test_data):
         return self.model.predict(test_data)
 
