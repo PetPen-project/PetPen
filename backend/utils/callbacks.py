@@ -14,7 +14,7 @@ def save_history(file_path,history,full_history=None):
 class Model_state(Callback):
     """record model execution state.
     """
-    
+
     def __init__(self,state_file,config=None):
         self.config = config
         self.info = {}
@@ -26,7 +26,7 @@ class Model_state(Callback):
         self.file_path = state_file
         with open(self.file_path,'w') as f:
             json.dump(self.info, f)
-    
+
     def status_logger(func):
         def logging(self,*args,**kwargs):
             func(self,*args,**kwargs)
@@ -44,7 +44,7 @@ class Model_state(Callback):
         self.info['time'] = time.asctime()
         self.info['epoch'] = [0,self.params['epochs']]
         self.info['loss']['type'] = self.config['loss']
- 
+
     @status_logger
     def on_train_end(self, logs=None):
         self.info['status'] = 'finish training'
@@ -89,9 +89,13 @@ class Batch_History(Callback):
     end of each batch. The `History` object
     gets returned by the `fit` method of models.
     """
-    
+
     def __init__(self):
-        super().__init__()
+        try:
+            super().__init__()
+        except TypeError: # Python2 compatible
+            super(Batch_History, self).__init__()
+
         self.batch = []
         self.history = {}
 
