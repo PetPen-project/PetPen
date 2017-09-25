@@ -144,7 +144,9 @@ class backend_model():
             initial_epoch=0)
 
     def evaluate(self,**kwargs):
-        return self.model.evaluate(self.valid_x, self.valid_y, batch_size=self.batch_size)
+        return self.model.evaluate(self.valid_x, self.valid_y,
+                batch_size=self.batch_size,
+                verbose=1)
 
     def predict(self,test_data):
         return self.model.predict(test_data)
