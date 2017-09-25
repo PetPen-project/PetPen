@@ -26,14 +26,32 @@ def build_model(args):
 
 def train_func(args):
     model, model_dir = build_model(args)
-    # callbacks here
-    history = model.train()
 
-def predict_func(args):
+    # Callback_1
+    history_callback = Batch_History()
+    str_start_time = datetime.now().strftime('%y%m%d_%H%M%S')
+    model_result_path = os.path.join(model_dir, str_start_time)
+    os.mkdir(model_result_path)
+    trainlog_dir = os.path.join(model_result_path,'logs')
+    os.mkdir(trainlog_dir)
+
+    # Callback_2
+    state_file = os.path.join('.','state.json')
+    state_callback = Model_state(state_file,model.config)
+    history = model.train(callbacks=[history_callback, state_callback])
+    save_history(os.path.join(trainlog_dir,'train_log'),history,b_history)
+    model.save_weights(os.path.join(model_result_path,'weights.h5'))
+
+def validate_func(args):
     model, model_dir = build_model(args)
     loss = model.evaluate()
     print(loss)
-    #save_history(os.path.join(trainlog_dir,'validate_log'),history,b_history)
+
+def predict_func(args):
+    testdata = None # feed some test data
+    model, model_dir = build_model(args)
+    loss = model.predict(testdata)
+    print loss
 
 
 def load_dataset(file_path,features,target,separate_testing=True,testing_percent=0.3,shuffle_dataset=False,**kwargs):

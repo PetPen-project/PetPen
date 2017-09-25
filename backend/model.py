@@ -138,15 +138,15 @@ class backend_model():
         callbacks = []
         if 'callbacks' in kwargs:
             callbacks = kwargs['callbacks']
-        return self.model.fit(self.train_x, self.train_y, batch_size=self.batch_size,
+        return self.model.fit(self.train_x, self.train_y,
+            batch_size=self.batch_size,
             epochs=self.epochs,
             callbacks=callbacks,
             initial_epoch=0)
 
     def evaluate(self,**kwargs):
         return self.model.evaluate(self.valid_x, self.valid_y,
-                batch_size=self.batch_size,
-                verbose=1)
+                batch_size=self.batch_size)
 
     def predict(self,test_data):
         return self.model.predict(test_data)
