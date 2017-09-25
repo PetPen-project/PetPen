@@ -100,17 +100,32 @@ class backend_model():
         self.train_x,self.train_y = [],[]
         self.valid_x,self.valid_y = [],[]
 
+        # extract feature names
         for _in in self.inputs:
+            # ':' means all columns, ':,a,b,...' means all except a,b,...
             features = dataset_config.get(_in)
+            if features[0] == ':':
+                if len(features) == 1:
+                    features = dataset.columns
+                else:
+                    features = dataset.columns.difference(features[1:])
             self.train_x.append(dataset.loc[:self.train_sample_size,features].values)
             self.valid_x.append(dataset.loc[self.train_sample_size:,features].values)
+        
+        # extract target names
         for _out in self.outputs:
             targets = dataset_config.get(_out)
+            # ':' means all columns, ':,a,b,...' means all except a,b,...
+            if targets[0] == ':':
+                if len(targets) == 1:
+                    targets = dataset.columns
+                else:
+                    targets = dataset.columns.difference(targets[1:])
+                
             if self.loss == 'categorical_crossentropy':
                 from keras.utils.np_utils import to_categorical
                 self.train_y.append(to_categorical(dataset.loc[:self.train_sample_size,targets].values))
                 self.valid_y.append(to_categorical(dataset.loc[self.train_sample_size:,targets].values))
-
             else:
                 self.train_y.append(dataset.loc[:self.train_sample_size,targets].values)
                 self.valid_y.append(dataset.loc[self.train_sample_size:,targets].values)

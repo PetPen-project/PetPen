@@ -1,13 +1,13 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
-
-from .forms import UploadFileForm
 from .models import Dataset
 
 MEDIA_ROOT = '/media/disk1/petpen/datasets'
 
 def index(request):
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect('/login/')
     if request.method == 'POST':
         if 'delete-dataset' in request.POST:
             form = UploadFileForm()
@@ -27,6 +27,7 @@ def index(request):
 
 def dataset_detail(request, dataset_id):
     dataset = get_object_or_404(Dataset, pk=dataset_id)
+    context = dataset
     # dataset_file = dataset.csvfile.open()
     # dataset_name = dataset.csvfile.name
     # import pandas as pd

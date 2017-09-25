@@ -1,0 +1,60 @@
+{% extends 'nav.html' %}
+<!DOCTYPE html>
+
+{% block title %}user login{% endblock %}
+
+{% block content %}
+{% if next %}
+<p>{{next}}</p>
+{% endif %}
+
+{% if form.errors %}
+<p>Your username and password didn't match. Please try again.</p>
+{{form.errors}}
+{% elif next %}
+  {% if user.is_authenticated %}
+  <p>Your account doesn't have access to this page. To proceed,
+  please login with an account that has access.</p>
+  {% else %}
+  <p>Please login to see this page.</p>
+  {% endif %}
+{% endif %}
+<div class="container-fluid" style="padding-top:50px">
+  {% if request.user.is_authenticated %}
+    <p>Welcome, {{request.user}}</p>
+  {% endif %}
+  <div class="row justify-content-center">
+  <div class="col-md-6">
+  <div class="card">
+    <div class="card-header">
+      Enter account information
+    </div>
+    <div class="card-body">
+      <form action="{% url 'login' %}" method="post">
+        {% csrf_token %}
+        <div class="input-group margin-bottom-sm">
+          <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
+          <input class="form-control" name="username" type="text" placeholder="Username">
+        </div>
+        <!--<div class="input-group">-->
+          <!--<span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>-->
+          <!--<input class="form-control" type="text" placeholder="Email address">-->
+        <!--</div>-->
+        <div class="input-group">
+          <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+          <input class="form-control" name="password" type="password" placeholder="Password">
+        </div>
+        <input type="submit" value="login" class="btn btn-info"/>
+        {% if next %}
+        <input type="hidden" name="next" value="{{ next }}" />
+        {% else %}
+        <input type="hidden" name="next" value="/dataset/" />
+        {% endif %}
+      </form>
+      <a href="">create user</a> <a href="">forget password</a>
+    </div>
+  </div>
+  </div>
+  </div>
+</div>
+{% endblock %}

@@ -7,9 +7,7 @@ import os
 
 from model.utils import bokeh_plot
 
-from .forms import UploadFileForm, DatasetForm, FeatureForm
-# from .forms import handle_uploaded_file
-from .models import Document
+# from .forms import UploadFileForm, DatasetForm, FeatureForm
 from dataset.models import Dataset
 from django.conf import settings
 
@@ -23,14 +21,6 @@ def index(request):
 
 def build_model(request):
     return render(request, 'model/model.html', {})
-
-def dataset_detail(request, dataset_id):
-    dataset = get_object_or_404(Document, pk=dataset_id)
-    datafile = dataset.docfile.open()
-    data_name = dataset.docfile.name
-    import pandas as pd
-    dataframe = pd.read_csv('~/Documents/'+data_name)
-    return render(request, 'model/dataset.html', {'dataset': dataset,'dataframe':dataframe,'data_html':dataframe.to_html()})
 
 def results(request):
     context={}
@@ -51,28 +41,28 @@ def results(request):
         context={'plot':script,'plotDiv':div}
     return render(request, 'model/results.html', context)
 
-def configure(request):
-    import pandas as pd
-    context = {}
-    datasets = Dataset.objects.all()
-    datasets_name = [dataset.title for dataset in datasets]
-    context['datasets'] = datasets_name
-    if request.method == 'POST':
-        dataset_form = DatasetForm(request.POST)
-        if dataset_form.is_valid():
-            selected = dataset_form.cleaned_data.get('dataset')
-            dataset = Dataset.objects.get(title=selected)
-            print(os.path.join(settings.MEDIA_ROOT,dataset.csvfile.name))
-            dataset = pd.read_csv(os.path.join(settings.MEDIA_ROOT,dataset.csvfile.name))
-            if request.method == 'POST':
-                io_form = FeatureForm(request.POST, features=dataset.columns.values)
-                if io_form.is_valid():
-                    return HttpResponse(io_form.cleaned_data.get(input_features))
-            return HttpResponse(selected)
-    else:
-        dataset_form = DatasetForm()
-    context['form'] = dataset_form
-    return render(request, 'model/configure.html', context)
+# def configure(request):
+    # import pandas as pd
+    # context = {}
+    # datasets = Dataset.objects.all()
+    # datasets_name = [dataset.title for dataset in datasets]
+    # context['datasets'] = datasets_name
+    # if request.method == 'POST':
+        # dataset_form = DatasetForm(request.POST)
+        # if dataset_form.is_valid():
+            # selected = dataset_form.cleaned_data.get('dataset')
+            # dataset = Dataset.objects.get(title=selected)
+            # print(os.path.join(settings.MEDIA_ROOT,dataset.csvfile.name))
+            # dataset = pd.read_csv(os.path.join(settings.MEDIA_ROOT,dataset.csvfile.name))
+            # if request.method == 'POST':
+                # io_form = FeatureForm(request.POST, features=dataset.columns.values)
+                # if io_form.is_valid():
+                    # return HttpResponse(io_form.cleaned_data.get(input_features))
+            # return HttpResponse(selected)
+    # else:
+        # dataset_form = DatasetForm()
+    # context['form'] = dataset_form
+    # return render(request, 'model/configure.html', context)
 
 def api(request):
     import json

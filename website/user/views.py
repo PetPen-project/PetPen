@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.contrib.auth import authenticate, login
 
-def index(request):
-    return render(request, 'user/login.html')
+def create_user(request):
+    pass
