@@ -1,15 +1,5 @@
 import argparse
-import time
-from datetime import datetime
-import sys,os,re
-import pandas as pd
-
-from model import get_model,backend_model
-from utils import train_func, predict_func
-from utils import Batch_History,Model_state,load_dataset
-from utils import save_history
-import utils
-# from keras.callbacks import TensorBoard
+from utils import train_func, validate_func, predict_func
 
 parser = argparse.ArgumentParser(prog='petpen')
 subparsers = parser.add_subparsers()

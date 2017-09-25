@@ -2,8 +2,10 @@ import os
 import re
 import json
 
+from datetime import datetime
 from model import backend_model
 from utils import save_history
+from utils import Batch_History, Model_state
 
 def build_model(args):
     model_dir = args.model
@@ -39,7 +41,7 @@ def train_func(args):
     state_file = os.path.join('.','state.json')
     state_callback = Model_state(state_file,model.config)
     history = model.train(callbacks=[history_callback, state_callback])
-    save_history(os.path.join(trainlog_dir,'train_log'),history,b_history)
+    save_history(os.path.join(trainlog_dir,'train_log'), history, history_callback)
     model.save_weights(os.path.join(model_result_path,'weights.h5'))
 
 def validate_func(args):
