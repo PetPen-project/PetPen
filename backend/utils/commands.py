@@ -8,10 +8,12 @@ from utils import save_history
 from utils import Batch_History, Model_state
 
 def build_model(args):
-    model_dir = args.model
-    model_file = 'result.json'
-    model_path = os.path.join(model_dir,model_file)
-    model = backend_model(model_path)
+    model_dir = os.path.dirname(args.model)
+    model_path = args.model
+
+    data_path = args.dataset
+
+    model = backend_model(model_path, data_path)
 
     weights_path = os.path.join(model_dir,'weights.h5')
 
