@@ -53,7 +53,7 @@ def predict_func(args):
     testdata = None # feed some test data
     model, model_dir = build_model(args)
     loss = model.predict(testdata)
-    print loss
+    print(loss)
 
 
 def load_dataset(file_path,features,target,separate_testing=True,testing_percent=0.3,shuffle_dataset=False,**kwargs):
