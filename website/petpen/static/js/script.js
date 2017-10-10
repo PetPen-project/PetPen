@@ -42,6 +42,7 @@ $(function(){
 
   $('#trainModel').click(function(){
     $.ajax({
+      async: false,
       url: "/model/results/",
       method: "GET",
       data:{

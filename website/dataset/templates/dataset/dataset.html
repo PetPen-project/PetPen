@@ -1,10 +1,11 @@
-<html>
-{{ dataset }}
-{{ dataset.csvfile.name }}
-{{ dataset.csvfile.size }}
+{% extends 'nav.html' %}
+
+{% block content %}
+<div class="container-fluid">
+  <h1>{{ dataset.title }}</h1>
+  <h3>features: {{ features }}</h3>
+  {{ dataset.training_csvfile.size }}
 
 {{ dataframe.columns.values }}
-{% autoescape off %}
-{{ data_html }}
-{% endautoescape %}
-</html>
+</div>
+{% endblock %}

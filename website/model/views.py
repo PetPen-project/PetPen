@@ -2,8 +2,10 @@ from django.shortcuts import render,get_object_or_404
 from django.http import HttpResponse,HttpResponseRedirect
 from django.http import JsonResponse
 from django.core.urlresolvers import reverse
-import re
 import os
+import subprocess
+import signal
+import time
 
 from model.utils import bokeh_plot
 
@@ -12,15 +14,15 @@ from dataset.models import Dataset
 from django.conf import settings
 
 def index(request):
-    context = {'model': 1}
-    if request.GET.get('mybtn'):
-        # history = NN_model.model.train(x_train, y_train)
-        history = 100
-        context['history'] = history
+    user_id = request.user.id
+    port = user_id+1880
+    model_path = os.path.join('/media/disk1/petpen/models/{}'.format(user_id))
+    if not os.path.exists(model_path):
+        os.makedirs(model_path)
+    nodered_process = subprocess.Popen(['node-red','-p',str(port),'-u',model_path])
+    context = {'port':port, 'pid':nodered_process.pid}
+    time.sleep(0.3)
     return render(request, 'model/index.html', context)
-
-def build_model(request):
-    return render(request, 'model/model.html', {})
 
 def results(request):
     context={}
@@ -110,3 +112,11 @@ def plot_api(request):
     # return JsonResponse(logs['train'])
     # return HttpResponse(json.dumps(logs['train_full']))
     # return HttpResponse(logs['train'])
+
+def closenodered(request):
+    pid = request.POST.get('pid',False)
+    if pid:
+        print(pid)
+        os.kill(int(pid),signal.SIGINT)
+    return HttpResponse('closed')
+

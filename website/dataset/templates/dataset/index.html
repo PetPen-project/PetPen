@@ -47,10 +47,11 @@ $(document).ready(function(){
     {% if datasets %}
       <form method="post" action="{% url "index" %}">
       {% csrf_token %}
+      <h2>Dataset list:</h2>
       <ul>
         {% for dataset in datasets %}
         <li>
-          <a href="{% url "dataset_detail" 1 %}" class="btn btn-primary" style="width:200px;">{{ dataset.title }}</a>
+          <a href="{% url "dataset_detail" dataset_id=dataset.id %}" class="btn btn-primary" style="width:200px;">{{ dataset.title }}</a>
           <button class="btn btn-default" value="{{dataset.id}}" type="submit" name="delete-dataset">delete</button>
         </li>
         {% endfor %}
