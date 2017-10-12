@@ -1,0 +1,14 @@
+{
+    "name": "File_node",
+    "version": "0.0.1",
+    "description": "A file node",
+    "dependencies": {},
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
+        "nodes": {
+            "sample": "fileNode/file.js"
+        }
+    }
+}
