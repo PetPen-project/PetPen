@@ -23,7 +23,7 @@ var lastUpdateTimestamp = 0;
 $(function(){
 	loadJson();//init
 	
-  loadHTMLPython();
+  //loadHTMLPython();
 
 	timerProgress = setInterval(function () {//timer
 		loadJson();
@@ -41,12 +41,15 @@ $(function(){
 	}, limitMS);
 
   $('#trainModel').click(function(){
+    alert($('#dataSelect').val());
+    val dataset = $('#dataSelect').val();
     $.ajax({
       async: false,
       url: "/model/results/",
       method: "GET",
       data:{
-        type: "train"
+        type: "train",
+        dataset: dataset
       },
       success: function(){}
     });

@@ -8,8 +8,6 @@ import signal
 import time
 
 from model.utils import bokeh_plot
-
-# from .forms import UploadFileForm, DatasetForm, FeatureForm
 from dataset.models import Dataset
 from django.conf import settings
 
@@ -32,15 +30,15 @@ def results(request):
         import json
         with open('/home/plash/petpen/state.json','r+') as f:
             info = json.load(f)
-            print(info)
             info['status']='loading model'
-            print(info)
             f.seek(0)
             json.dump(info,f)
-        os.system('python /home/plash/petpen/git/backend/petpen0.1.py -n mnist -m /home/plash/demo1 -d 1 -w model')
+        subprocess.Popen('python','/home/plash/petpen0.1.py','-m','/media/disk1/petpen/models/{}'.format(request.user),'-d','/media/disk1/petpen/datasets/{}/{}'.format(request.user,request.GET.get('dataset')))
+        # os.system('python /home/plash/petpen/git/backend/petpen0.1.py -n mnist -m /home/plash/demo1 -d 1 -w model')
         file_path='/home/plash/demo1/logs/'
         script, div = bokeh_plot(file_path)
         context={'plot':script,'plotDiv':div}
+    context["datasets"]=Dataset.objects.filter(user_id=request.user)
     return render(request, 'model/results.html', context)
 
 # def configure(request):

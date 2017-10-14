@@ -50,10 +50,21 @@
     </div>
   </div>
   <div class="container-fluid">
+    <div class="row justify-content-center py-md-3">
+      <h2>dataset selection:</h2>
+      {% if datasets %}
+      <select class="custom-select" id="dataSelect">
+        <option disabled="disabled" selected="selected" hidden="true">choose a dataset</option>
+        {% for dataset in datasets %}
+        <option value='{{dataset.title}}'>{{dataset.title}}</option>
+        {% endfor %}
+      </select>
+      {% endif %}
+    </div>
     <div id="run-model" class="py-md-3 text-center">
       <div class="btn-group">
       <button id="trainModel" class="btn btn-outline-primary"><i class="fa fa-play"></i> train model</button>
-      <button id="validModel" class="btn btn-outline-primary"><i class="fa fa-play"></i> run validation</button>
+      <button id="validModel" class="btn btn-outline-primary"><i class="fa fa-play"></i> test model</button>
       </div>
     </div>
     <div class="col-md-12">
