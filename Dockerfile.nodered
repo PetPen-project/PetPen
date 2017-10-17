@@ -4,7 +4,12 @@ RUN npm install -g node-red
 RUN ln -s /usr/bin/nodejs /usr/bin/node
 
 RUN mkdir /nodered
-ADD nodered/ /nodered
 
+ADD nodered/ /nodered
+ADD install-nodered.sh /
+RUN /install-nodered.sh
+
+# Workaround
+RUN rm /usr/local/lib/node_modules/Dense_node
 
 CMD ["node-red"]
