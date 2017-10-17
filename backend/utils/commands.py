@@ -8,12 +8,11 @@ from utils import save_history
 from utils import Batch_History, Model_state
 
 def build_model(args):
-    model_dir = os.path.dirname(args.model)
-    model_path = args.model
-
-    data_path = args.dataset
-
-    model = backend_model(model_path, data_path)
+    model_dir = args.model
+    model_file = 'result.json'
+    model_path = os.path.join(model_dir,model_file)
+    dataset_dir = args.dataset
+    model = backend_model(model_path, dataset_dir)
 
     weights_path = os.path.join(model_dir,'weights.h5')
 
@@ -26,10 +25,13 @@ def build_model(args):
         if os.path.exists(weight_file):
             model.load_weights(weight_file)
 
-    return model, model_dir
+    return model, model_dir, dataset_dir
 
 def train_func(args):
-    model, model_dir = build_model(args)
+    model, model_dir, dataset_dir = build_model(args)
+    model_file = os.path.join(model_dir,'result.json')
+    dataset_file = os.path.join(dataset_dir,'train.csv')
+    model.load_dataset(model_file,dataset_file)
 
     # Callback_1
     history_callback = Batch_History()
@@ -56,7 +58,6 @@ def predict_func(args):
     model, model_dir = build_model(args)
     loss = model.predict(testdata)
     print(loss)
-
 
 def load_dataset(file_path,features,target,separate_testing=True,testing_percent=0.3,shuffle_dataset=False,**kwargs):
     import pandas as pd

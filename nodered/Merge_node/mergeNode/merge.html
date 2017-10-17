@@ -1,0 +1,44 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Merge',{
+        category: 'Layer',
+        color: '#ffaaaa',
+        defaults: {
+            name: {value:"merge"},
+            type: {value:"Merge"},
+	    method: {value: ""},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "face.png",
+        label: function() {
+            return this.name||"Output";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Merge">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+        <input type="text" id="node-input-type" placeholder="Type">
+    </div>
+    <div class="form-row">
+        <label for="node-input-method"><i class="icon-tag"></i> Method</label>
+        <select id="node-input-method">
+                <option value="add">Add</option>
+                <option value="average">Average</option>
+		<option value="multiply">Multiply</option>
+		<option value="maximum">Maximum</option>
+		<option value="concatenate">Concatenate</option>
+		<option value="dot">Dot</option>
+        </select>
+    </div>
+</script>
+ 
+<script type="text/x-red" data-help-name="Hello World">
+    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+    </p>
+</script>

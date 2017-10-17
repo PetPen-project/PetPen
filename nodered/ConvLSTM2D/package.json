@@ -1,0 +1,14 @@
+{
+    "name": "ConvLSTM2D_node",
+    "version": "0.0.1",
+    "description": "A convlstm2d node",
+    "dependencies": {},
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
+        "nodes": {
+            "sample": "convlstm2dNode/convlstm2d.js"
+        }
+    }
+}
