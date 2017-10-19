@@ -1,11 +1,12 @@
 {
-    "name"         : "MaxPooling2D_node",
-    "version"      : "0.0.1",
-    "description"  : "A dense node",
-    "dependencies": {
-    },
-    "keywords": [ "node-red" ],
-    "node-red"     : {
+    "name": "MaxPooling2D_node",
+    "version": "0.0.1",
+    "description": "A dense node",
+    "dependencies": {},
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
         "nodes": {
             "sample": "maxpoolNode2D/maxpool2d.js"
         }

@@ -1,11 +1,12 @@
 {
-    "name"         : "SimpleRNN_node",
-    "version"      : "0.0.1",
-    "description"  : "A simplernn node",
-    "dependencies": {
-    },
-    "keywords": [ "node-red" ],
-    "node-red"     : {
+    "name": "SimpleRNN_node",
+    "version": "0.0.1",
+    "description": "A simplernn node",
+    "dependencies": {},
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
         "nodes": {
             "sample": "simplernnNode/simplernn.js"
         }
