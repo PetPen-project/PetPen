@@ -21,7 +21,7 @@ var lastUpdateTimestamp = 0;
 
 //main
 $(function(){
-	loadJson();//init
+	initJsonPython();//init
 	
   //loadHTMLPython();
 
@@ -41,18 +41,35 @@ $(function(){
 	}, limitMS);
 
   $('#trainModel').click(function(){
-    alert($('#dataSelect').val());
-    val dataset = $('#dataSelect').val();
-    $.ajax({
-      async: false,
-      url: "/model/results/",
-      method: "GET",
-      data:{
-        type: "train",
-        dataset: dataset
-      },
-      success: function(){}
-    });
+    var dataset = $('#dataSelect').val();
+    if(dataset != null){
+      $.ajax({
+        async: false,
+        url: "/model/results/",
+        method: "GET",
+        data:{
+          type: "train",
+          dataset: dataset
+        },
+        success: function(){}
+      });
+      //$('#testModel').show();
+    }
+  });
+  $('#testModel').click(function(){
+    var dataset = $('#dataSelect').val();
+    if(dataset != null){
+      $.ajax({
+        async: false,
+        url: "/model/results/",
+        method: "GET",
+        data:{
+          type: "test",
+          dataset: dataset
+        },
+        success: function(){}
+      });
+    }
   });
 });
 //==========load json functions==========//
@@ -69,16 +86,35 @@ function loadHTMLPython(){
 		type: 'GET',
 		url: "/model/api/plot/",
 		success: parsePlotCode,
-		error: function(data){alert(data);}
+		error: alert('plot error'); 
 	});
 };
-
+function emptyPlotCode(){
+  if($.trim($('#div-plot').html())){
+    $('#div-plot').empty();
+    $(document.body).children().last().remove();
+  }
+}
 function parsePlotCode(data){
   //alert(JSON.stringify(data));
+  if($.trim($('#div-plot').html())){
+    $('#div-plot').empty();
+    $(document.body).children().last().remove();
+  }
   $('#div-plot').append($(data['div']));
   $(data['script']).appendTo(document.body);
 };
-
+function initJsonPython(){
+	$.ajax({
+		async: false,
+		dataType: "json",
+		type: 'GET',
+		url: "/model/api/parse/",
+    data: {type: "init"},
+		success: printJSON,
+		error: errorJSON
+	});
+};
 function loadJsonPython(){
 	$.ajax({
 		async: false,
@@ -113,13 +149,14 @@ function loadJsonFile(path){
 //========== progress ==========//
 //call when success
 function printJSON(data){
-	//alert(JSON.stringify(data));//print json
+  //alert(JSON.stringify(data));//print json
 	
 	//===== switch mode =====//
 	switch(data['status']){
 		case wordToTraining: currentMode = 'training'; break;
 		case wordToTesting: currentMode = 'testing'; break;
-		case wordToLoading: currentMode = 'loading'; break;
+		case wordToLoading: currentMode = 'loading'; emptyPlotCode(); break;
+    case 'finish training': loadHTMLPython(); break;
 	}
 	
 	//update data
@@ -169,10 +206,11 @@ function setProgessBar(barClass, barName, dataArray){
 //call when error
 function errorJSON(data){
 	if(typeof data != 'undefined'){
-		//alert(data['responseText']);
+    alert(data['responseText']);
 		//stopTimer();//stop
 	}
   else{
+  alert('undefined error found');
   alert(data);
   }
 }

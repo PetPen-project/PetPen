@@ -42,14 +42,18 @@ def train_func(args):
     os.mkdir(trainlog_dir)
 
     # Callback_2
-    state_file = os.path.join('.','state.json')
+    # state_file = os.path.join(model_dir, 'state.json')
+    state_file = "/home/plash/petpen/state.json"
     state_callback = Model_state(state_file,model.config)
     history = model.train(callbacks=[history_callback, state_callback])
     save_history(os.path.join(trainlog_dir,'train_log'), history, history_callback)
     model.save_weights(os.path.join(model_result_path,'weights.h5'))
 
 def validate_func(args):
-    model, model_dir = build_model(args)
+    model, model_dir, dataset_dir = build_model(args)
+    model_file = os.path.join(model_dir,'result.json')
+    dataset_file = os.path.join(dataset_dir,'test.csv')
+    model.load_dataset(model_file,dataset_file)
     loss = model.evaluate()
     print(loss)
 

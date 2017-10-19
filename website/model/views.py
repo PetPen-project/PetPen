@@ -33,11 +33,15 @@ def results(request):
             info['status']='loading model'
             f.seek(0)
             json.dump(info,f)
-        subprocess.Popen('python','/home/plash/petpen0.1.py','-m','/media/disk1/petpen/models/{}'.format(request.user),'-d','/media/disk1/petpen/datasets/{}/{}'.format(request.user,request.GET.get('dataset')))
-        # os.system('python /home/plash/petpen/git/backend/petpen0.1.py -n mnist -m /home/plash/demo1 -d 1 -w model')
-        file_path='/home/plash/demo1/logs/'
-        script, div = bokeh_plot(file_path)
-        context={'plot':script,'plotDiv':div}
+            f.truncate()
+        p = subprocess.Popen(['python','/home/plash/petpen/git/backend/petpen0.1.py','-m','/media/disk1/petpen/models/{}/'.format(request.user.id),'-d','/media/disk1/petpen/datasets/{}/{}/'.format(request.user.id,request.GET.get('dataset')),'train'], stderr=subprocess.PIPE)
+        # if p.stderr:
+            # error_message = p.stderr.read().splitlines()[-1]
+            # print(error_message)
+            # context['error'] = error_message
+        # file_path='/home/plash/demo1/logs/'
+        # script, div = bokeh_plot(file_path)
+        # context={'plot':script,'plotDiv':div}
     context["datasets"]=Dataset.objects.filter(user_id=request.user)
     return render(request, 'model/results.html', context)
 
@@ -66,12 +70,15 @@ def results(request):
 
 def api(request):
     import json
-    # url = request.form['url']
-    # title, article = ArticleParser(url)
-    # data = {'title': title, 'article': article}
     file_path="/home/plash/petpen/state.json"
-    # with open(file_path) as f:
-    # with open("/home/saturn/research/petpen/models/state.json") as f:
+    if request.GET.get('type') == 'init':
+        print('back to idle')
+        with open(file_path,'r+') as f:
+            info = json.load(f)
+            info['status'] = 'system idle'
+            f.seek(0)
+            json.dump(info,f)
+            f.truncate()
     try:
         with open(file_path) as f:
             json_response = JsonResponse(json.load(f))
@@ -84,32 +91,21 @@ def api(request):
 
 def plot_api(request):
     import json
-    import pandas as pd
+    import re
     from bokeh.plotting import figure
     from bokeh.embed import components
 
-    file_path='/home/plash/demo1/logs/'
-    script, div = bokeh_plot(file_path)
-    print(script,div)
-
-    logs = {}
-    train_log = pd.read_csv(file_path+'train_log')
-    train_log.index = [str(i) for i in train_log.index]
-    logs['train'] = train_log.to_dict()
-    test_log = pd.read_csv(file_path+'test_log')
-    test_log.index = [str(i) for i in test_log.index]
-    logs['test'] = test_log.to_dict()
-    train_log = pd.read_csv(file_path+'train_logfull')
-    train_log.index = [str(i) for i in train_log.index]
-    logs['train_full'] = train_log.to_dict()
-    test_log = pd.read_csv(file_path+'test_logfull')
-    test_log.index = [str(i) for i in test_log.index]
-    logs['test_full'] = test_log.to_dict()
+    file_path='/media/disk1/petpen/models/2'
+    latest_excution = os.path.join(file_path,max([f for f in os.listdir(file_path) if re.match(r'\d{6}_\d{6}',f)]),'logs')
+    script, div = bokeh_plot(latest_excution)
+    with open('/home/plash/petpen/state.json','r+') as f:
+        info = json.load(f)
+        info['status'] = 'system idle'
+        f.seek(0)
+        json.dump(info,f)
+        f.truncate()
 
     return HttpResponse(json.dumps({"script":script, "div":div}), content_type="application/json")
-    # return JsonResponse(logs['train'])
-    # return HttpResponse(json.dumps(logs['train_full']))
-    # return HttpResponse(logs['train'])
 
 def closenodered(request):
     pid = request.POST.get('pid',False)

@@ -35,12 +35,12 @@ router = routers.DefaultRouter()
 # Wire up our API using automatic URL routing.
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
+    url(r'^$', auth_views.LoginView.as_view(),name='main'),
     url(r'^model/', include('model.urls')),
     url(r'dataset/', include('dataset.urls')),
     url(r'^login/', auth_views.LoginView.as_view(),name='login'),
     url(r'^logout/', auth_views.LogoutView.as_view(), name='logout'),
     url(r'^admin/', admin.site.urls),
-    url(r'^', include(router.urls)),
-    # url(r'login/',user_views.index, name='login'),
+    # url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
