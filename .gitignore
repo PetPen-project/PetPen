@@ -1,0 +1,7 @@
+__pycache__
+*.pyc
+
+/**/migrations/*
+db.sqlite3
+website/node_modules/
+website/datasets/

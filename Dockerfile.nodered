@@ -1,0 +1,5 @@
+FROM ubuntu:17.04
+RUN apt-get update && apt-get install -y nodejs npm
+RUN npm install -g node-red
+RUN ln -s /usr/bin/nodejs /usr/bin/node
+CMD ["node-red"]

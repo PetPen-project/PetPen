@@ -1,0 +1,11 @@
+{% extends 'nav.html' %}
+
+{% block content %}
+<div class="container-fluid">
+  <h1>{{ dataset.title }}</h1>
+  <h3>features: {{ features }}</h3>
+  {{ dataset.training_csvfile.size }}
+
+{{ dataframe.columns.values }}
+</div>
+{% endblock %}

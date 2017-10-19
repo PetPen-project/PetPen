@@ -1,0 +1,64 @@
+{% extends 'nav.html' %}
+<!DOCTYPE html>
+
+{% block head %}
+<script>
+var shared = "#id_shared_testing"
+$(document).ready(function(){
+  $(shared).click(function(){
+    if($(shared).prop("checked")){
+      $("#testing_upload").hide();
+    }else{
+      $("#testing_upload").show();
+    }
+  });
+});
+</script>
+{% endblock %}
+
+{% block title %}dataset management{% endblock %}
+
+{% block content %}
+    <!-- Upload form.-->
+    <div class="container-fluid">
+    <form action="{% url "index" %}" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <p>Dataset title: {{ form.title }}</p>
+
+      <p>{{ form.non_field_errors }}</p>
+      
+      <p>{{ form.shared_testing }} {{form.shared_testing.help_text}}</p>
+      
+      <div id="training_upload">
+        <p>{{ form.training_csvfile.label_tag }} {{ form.training_csvfile.help_text }}</p>
+        <p>{{ form.training_csvfile.errors }}{{ form.training_csvfile }}</p>
+      </div>
+      <div id="testing_upload">
+        <p>{{ form.testing_csvfile.label_tag }} {{ form.testing_csvfile.help_text }}</p>
+        <p>{{ form.testing_csvfile.errors }}{{ form.testing_csvfile }}</p>
+      </div>
+      <p><input type="submit" value="Upload"/></p>
+      {% if type_error %}
+        <p> Only csv file is supported.</p>
+      {% endif %}
+    </form>
+
+    <!-- List of uploaded data -->
+    {% if datasets %}
+      <form method="post" action="{% url "index" %}">
+      {% csrf_token %}
+      <h2>Dataset list:</h2>
+      <ul>
+        {% for dataset in datasets %}
+        <li>
+          <a href="{% url "dataset_detail" dataset_id=dataset.id %}" class="btn btn-primary" style="width:200px;">{{ dataset.title }}</a>
+          <button class="btn btn-default" value="{{dataset.id}}" type="submit" name="delete-dataset">delete</button>
+        </li>
+        {% endfor %}
+      </ul>
+      </form>
+    {% else %}
+      <p>No dataset yet.</p>
+    {% endif %}
+    </div>
+{% endblock %}

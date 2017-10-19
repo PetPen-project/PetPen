@@ -1,0 +1,23 @@
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8">
+    <title>Model Configuration</title>
+    <link href="../../static/css/bootstrap.min.css" rel="stylesheet" media="screen" />
+    <link href="../../static/css/font-awesome.min.css" rel="stylesheet" media="screen" />
+  </head>
+
+  <body>
+    <span><h1>select dataset:</h1></span>
+    <form action="{% url "configure" %}" method="post" name="dataset-form">
+    {% csrf_token %}
+    {{form}}
+    <input type="submit" value="Confirm dataset" />
+    </form>
+    <!--<select id="select_dataset" name="sel_data" onchange="load_dataset();">-->
+      <!--{% for dataset in datasets %}-->
+      <!--<option value="dataset">{{ dataset }}</option>-->
+      <!--{% endfor %}-->
+    <!--</select>-->
+  </body>
+</html>
