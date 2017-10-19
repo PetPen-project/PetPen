@@ -12,7 +12,7 @@ def build_model(args):
     model_file = 'result.json'
     model_path = os.path.join(model_dir,model_file)
     dataset_dir = args.dataset
-    model = backend_model(model_path)
+    model = backend_model(model_path, dataset_dir)
 
     weights_path = os.path.join(model_dir,'weights.h5')
 
