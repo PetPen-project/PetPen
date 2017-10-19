@@ -1,7 +1,7 @@
 {
-    "name": "Dense_node",
+    "name": "MaxPooling1D",
     "version": "0.0.1",
-    "description": "A dense node",
+    "description": "A maxpool node",
     "dependencies": {},
     "keywords": [
         "node-red"
