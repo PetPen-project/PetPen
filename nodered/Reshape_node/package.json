@@ -1,11 +1,12 @@
 {
-    "name"         : "Reshape_node",
-    "version"      : "0.0.1",
-    "description"  : "A reshape node",
-    "dependencies": {
-    },
-    "keywords": [ "node-red" ],
-    "node-red"     : {
+    "name": "Reshape_node",
+    "version": "0.0.1",
+    "description": "A reshape node",
+    "dependencies": {},
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
         "nodes": {
             "sample": "reshapeNode/reshape.js"
         }
