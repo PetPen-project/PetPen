@@ -1,11 +1,12 @@
 {
-    "name"         : "Output_node",
-    "version"      : "0.0.1",
-    "description"  : "A output node",
-    "dependencies": {
-    },
-    "keywords": [ "node-red" ],
-    "node-red"     : {
+    "name": "Output_node",
+    "version": "0.0.1",
+    "description": "A output node",
+    "dependencies": {},
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
         "nodes": {
             "sample": "outputNode/output.js"
         }
