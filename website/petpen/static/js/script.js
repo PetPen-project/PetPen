@@ -75,26 +75,29 @@ $(function(){
 //==========load json functions==========//
 //load json from url
 function loadJson(){
-	loadJsonPython();
-	//loadJsonFile(jsonPath);
+  loadJsonPython();
+  //loadJsonFile(jsonPath);
 };
 //load json from python
 function loadHTMLPython(){
-	$.ajax({
-		async: false,
-		dataType: "json",
-		type: 'GET',
-		url: "/model/api/plot/",
-		success: parsePlotCode,
-		error: alert('plot error'); 
-	});
+  $.ajax({
+    async: false,
+    dataType: "json",
+    type: 'GET',
+    url: "/model/api/plot/",
+    success: parsePlotCode,
+    error: function(request, error){
+      alert(error);
+      alert(arguments);
+    } 
+  });
 };
 function emptyPlotCode(){
   if($.trim($('#div-plot').html())){
     $('#div-plot').empty();
     $(document.body).children().last().remove();
   }
-}
+};
 function parsePlotCode(data){
   //alert(JSON.stringify(data));
   if($.trim($('#div-plot').html())){
@@ -105,44 +108,44 @@ function parsePlotCode(data){
   $(data['script']).appendTo(document.body);
 };
 function initJsonPython(){
-	$.ajax({
-		async: false,
-		dataType: "json",
-		type: 'GET',
-		url: "/model/api/parse/",
+  $.ajax({
+    async: false,
+    dataType: "json",
+    type: 'GET',
+    url: "/model/api/parse/",
     data: {type: "init"},
-		success: printJSON,
-		error: errorJSON
-	});
+    success: printJSON,
+    error: errorJSON
+  });
 };
 function loadJsonPython(){
-	$.ajax({
-		async: false,
-		dataType: "json",
-		type: 'GET',
-		url: "/model/api/parse/",
-		success: printJSON,
-		error: errorJSON
-	});
+  $.ajax({
+    async: false,
+    dataType: "json",
+    type: 'GET',
+    url: "/model/api/parse/",
+    success: printJSON,
+    error: errorJSON
+  });
 };
 //load json from url
 function loadJsonUrl(url){
-	$.ajax({
-		async: false,
-		dataType: "json",
-		type: 'GET',
-		url: url,
-		success: printJSON,
-		error: errorJSON
-	});
+  $.ajax({
+    async: false,
+    dataType: "json",
+    type: 'GET',
+    url: url,
+    success: printJSON,
+    error: errorJSON
+  });
 }
 //load json from file
 function loadJsonFile(path){
-	$.getJSON(path, function(data) {         
-		printJSON(data);
-	}).fail( function(d, textStatus, error) {
+  $.getJSON(path, function(data) {         
+    printJSON(data);
+  }).fail( function(d, textStatus, error) {
         alert("getJSON failed, status: " + textStatus + ", error: "+d.responseText);
-		stopTimer();//stop
+    stopTimer();//stop
     });
 }
 
@@ -150,65 +153,65 @@ function loadJsonFile(path){
 //call when success
 function printJSON(data){
   //alert(JSON.stringify(data));//print json
-	
-	//===== switch mode =====//
-	switch(data['status']){
-		case wordToTraining: currentMode = 'training'; break;
-		case wordToTesting: currentMode = 'testing'; break;
-		case wordToLoading: currentMode = 'loading'; emptyPlotCode(); break;
+  
+  //===== switch mode =====//
+  switch(data['status']){
+    case wordToTraining: currentMode = 'training'; break;
+    case wordToTesting: currentMode = 'testing'; break;
+    case wordToLoading: currentMode = 'loading'; emptyPlotCode(); break;
     case 'finish training': loadHTMLPython(); break;
-	}
-	
-	//update data
-	if(JSON.stringify(savedJSON) != JSON.stringify(data)){
-		savedJSON = data;//update
-		lastUpdateTimestamp = new Date().getTime();//time
-		
-		//===== updated data on screen =====//
-		$('#txfStatus').val(data['status']);//status
-		$('#txfTime').val(data['time']);//time
-		var lossText = data['loss']['type'] + ':' + data['loss']['value'];//loss
-		$('.txfLoss[name="' + currentMode + '"]').val(lossText);
-		setProgessBar('barEpoch', currentMode, data['epoch']);//epoch
-		setProgessBar('barProgress', currentMode, data['progress']);//progress
+  }
+  
+  //update data
+  if(JSON.stringify(savedJSON) != JSON.stringify(data)){
+    savedJSON = data;//update
+    lastUpdateTimestamp = new Date().getTime();//time
+    
+    //===== updated data on screen =====//
+    $('#txfStatus').val(data['status']);//status
+    $('#txfTime').val(data['time']);//time
+    var lossText = data['loss']['type'] + ':' + data['loss']['value'];//loss
+    $('.txfLoss[name="' + currentMode + '"]').val(lossText);
+    setProgessBar('barEpoch', currentMode, data['epoch']);//epoch
+    setProgessBar('barProgress', currentMode, data['progress']);//progress
 
-		//different mode
+    //different mode
     switch(currentMode){
       case 'training':
-			  $('#trainingDiv').show();
-			  $('#testingDiv,#loadingDiv').hide();
+        $('#trainingDiv').show();
+        $('#testingDiv,#loadingDiv').hide();
         break;
       case 'testing':
-			  $('#trainingDiv,#testingDiv').show();
-			  $('#loadingDiv').hide();
+        $('#trainingDiv,#testingDiv').show();
+        $('#loadingDiv').hide();
         break;
       case 'loading':
-			  $('#loadingDiv').show();
-			  $('#trainingDiv,#testingDiv').hide();
+        $('#loadingDiv').show();
+        $('#trainingDiv,#testingDiv').hide();
         break;
       default:
         $('#trainingDiv,#testingDiv,#loadingDiv').hide();
         break;
     }
 
-		//===== finish =====//
-		if(data['status'] == stopKeyword) stopTimer();//stop
-	}
+    //===== finish =====//
+    if(data['status'] == stopKeyword) stopTimer();//stop
+  }
 }
 
 function setProgessBar(barClass, barName, dataArray){
-	var num1 = 0, num2 = 0;
-	if(dataArray.length > 0) num1 = dataArray[0];
-	if(dataArray.length > 1) num2 = dataArray[1];
-	progressBar($('.' + barClass + '[name="' + barName + '"]'), num1, num2, num1 + "/" + num2);
+  var num1 = 0, num2 = 0;
+  if(dataArray.length > 0) num1 = dataArray[0];
+  if(dataArray.length > 1) num2 = dataArray[1];
+  progressBar($('.' + barClass + '[name="' + barName + '"]'), num1, num2, num1 + "/" + num2);
 }
 
 //call when error
 function errorJSON(data){
-	if(typeof data != 'undefined'){
+  if(typeof data != 'undefined'){
     alert(data['responseText']);
-		//stopTimer();//stop
-	}
+    //stopTimer();//stop
+  }
   else{
   alert('undefined error found');
   alert(data);
@@ -217,28 +220,28 @@ function errorJSON(data){
 
 //progress animation bar
 function progressBar($bar, count, total, text) {
-	var percentage = 100;
-	if(total != 0) {
-		percentage = parseInt(parseInt(count) * 100 / total);
-		if (percentage > 100) percentage = 100;
-		$bar.width(parseInt(percentage) + "%");
+  var percentage = 100;
+  if(total != 0) {
+    percentage = parseInt(parseInt(count) * 100 / total);
+    if (percentage > 100) percentage = 100;
+    $bar.width(parseInt(percentage) + "%");
 
-		var barText = percentage + "%";
-		if (text != "") barText = text + " - " + barText;
-		$bar.text(barText);
-	} else {
-		$bar.width(parseInt(percentage) + "%");//width of bar
-		$bar.text("Data Not Load");//text of bar
-	}
-	
-	if (percentage >= 100) $($bar).removeClass('active');
-	else $($bar).addClass('active');	
+    var barText = percentage + "%";
+    if (text != "") barText = text + " - " + barText;
+    $bar.text(barText);
+  } else {
+    $bar.width(parseInt(percentage) + "%");//width of bar
+    $bar.text("Data Not Load");//text of bar
+  }
+  
+  if (percentage >= 100) $($bar).removeClass('active');
+  else $($bar).addClass('active');	
 }
 
 function stopTimer(){
-	//alert('stop');
-	$('.progress-bar').removeClass('active');
-	//stop
-	clearInterval(timerProgress);
-	clearInterval(timerLimit);
+  //alert('stop');
+  $('.progress-bar').removeClass('active');
+  //stop
+  clearInterval(timerProgress);
+  clearInterval(timerLimit);
 }

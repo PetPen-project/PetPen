@@ -29,9 +29,9 @@ def build_model(args):
 
 def train_func(args):
     model, model_dir, dataset_dir = build_model(args)
-    model_file = os.path.join(model_dir,'result.json')
-    dataset_file = os.path.join(dataset_dir,'train.csv')
-    model.load_dataset(model_file,dataset_file)
+    model_path = os.path.join(model_dir,'result.json')
+    dataset_path = os.path.join(dataset_dir,'train.csv')
+    model.load_dataset(model_path,dataset_path)
 
     # Callback_1
     history_callback = Batch_History()
@@ -51,11 +51,20 @@ def train_func(args):
 
 def validate_func(args):
     model, model_dir, dataset_dir = build_model(args)
-    model_file = os.path.join(model_dir,'result.json')
-    dataset_file = os.path.join(dataset_dir,'test.csv')
-    model.load_dataset(model_file,dataset_file)
+    model_path = os.path.join(model_dir,'result.json')
+    dataset_path = os.path.join(dataset_dir,'test.csv')
+    model.load_dataset(model_path,dataset_path)
+
+    # Callback
+    history_callback = Batch_History()
+    str_start_time = datetime.now().strftime('%y%m%d_%H%M%S')
+    model_result_path = os.path.join(model_dir, str_start_time)
+    os.mkdir(model_result_path)
+    validlog_dir = os.path.join(model_result_path,'logs')
+    os.mkdir(validlog_dir)
+
     loss = model.evaluate()
-    print(loss)
+    # save_history(os.path.join(validlog_dir,'valid_log'), history, history_callback)
 
 def predict_func(args):
     testdata = None # feed some test data

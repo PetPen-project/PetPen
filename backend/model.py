@@ -4,76 +4,14 @@ import numpy as np
 import pandas as pd
 import json
 
-def _test_loop(self, f, ins, out_labels=None, batch_size=32, steps=None, verbose=0):
-    from keras.engine.training import _make_batches, _slice_arrays
-    import keras.callbacks as cbks
-    from utils import Model_state
-    if ins and hasattr(ins[0], 'shape'):
-        samples = ins[0].shape[0]
-    else:
-        samples = batch_size
-        verbose = 2
-    # callbacks = cbks.CallbackList(callbacks)
-    out_labels = out_labels or []
-
-    # add callback support to evaluate function
-    # TODO: Ming: path assignment
-    state_file = '/home/plash/petpen/state.json'
-    # ------------------------------
-    config = {'loss':self.loss}
-    callbacks = Model_state(state_file,config)
-    callbacks.set_model(self)
-    callbacks.set_params({
-        'batch_size': batch_size,
-        'samples': samples,
-        'verbose': verbose,
-    })
-    callbacks.on_test_begin()
-    outs = []
-    batches = _make_batches(samples, batch_size)
-    index_array = np.arange(samples)
-    for batch_index, (batch_start, batch_end) in enumerate(batches):
-        batch_ids = index_array[batch_start:batch_end]
-        if isinstance(ins[-1], float):
-            ins_batch = _slice_arrays(ins[:-1], batch_ids) + [ins[-1]]
-        else:
-            ins_batch = _slice_arrays(ins, batch_ids)
-        batch_logs = {}
-        batch_logs['batch'] = batch_index
-        batch_logs['size'] = len(batch_ids)
-        callbacks.on_batch_begin(batch_index, batch_logs)
-        batch_outs = f(ins_batch)
-        if isinstance(batch_outs, list):
-            if batch_index == 0:
-                for batch_out in enumerate(batch_outs):
-                    outs.append(0.)
-            for i, batch_out in enumerate(batch_outs):
-                outs[i] +=batch_out * len(batch_ids)
-        else:
-            if batch_index == 0:
-                outs.append(0.)
-            outs[0] += batch_outs * len(batch_ids)
-    for i in range(len(outs)):
-        outs[i] /= samples
-    callbacks.on_test_end(outs)
-    if len(outs) == 1:
-        return outs[0]
-    return outs
-
-def replaceMethod(self):
-    def func(*args,**kwargs):
-        return _test_loop(self,*args,**kwargs)
-    return func
-
 class backend_model():
-    def __init__(self,file_path):
-        self.model,self.config,self.inputs,self.outputs = get_model(file_path)
+    def __init__(self, model_path):
+        self.model,self.config,self.inputs,self.outputs = get_model(model_path)
         self.loss = self.config.get('loss') or None
         self.optimizer = self.config.get('optimizer') or None
         self.model.compile(loss=self.loss, optimizer=self.optimizer)
         self.batch_size = self.config.get('batch_size') or self.config.get('batchsize')
         self.epochs = self.config.get('epochs') or self.config.get('epoch')
-        # self.model._test_loop = replaceMethod(self.model)
         self.callbacks = []
 
     def load_dataset(self,model_path,dataset_path,validate_path=None,validate_rate=0.3,shuffle=False):
@@ -89,10 +27,14 @@ class backend_model():
                 output_name: ...
             }
         }
+
+
+        TODO: shuffle not implemented
+
         """
+
         with open(model_path) as f:
             dataset_config = json.load(f)['dataset']
-            # TODO: Ming: path assignment
 
         self.train_x,self.train_y = [],[]
         self.valid_x,self.valid_y = [],[]

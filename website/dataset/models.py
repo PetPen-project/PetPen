@@ -19,6 +19,15 @@ class Dataset(models.Model):
     is_image = models.BooleanField(default=False)
     shared_testing = models.BooleanField(default=False)
 
+# class Data(models.Model):
+    # user = models.ForeignKey(User) 
+    # training_input_file = models.FileField(upload_to=training_dataset_path)
+    # testing_input_file = models.FileField(upload_to=testing_dataset_path)
+    # training_output_file = models.FileField(upload_to=training_dataset_path)
+    # testing_output_file = models.FileField(upload_to=testing_dataset_path)
+    # title = models.CharField(max_length=50,unique=True)
+    # is_image = models.BooleanField(default=False)
+
 @receiver(models.signals.post_delete, sender=Dataset)
 def auto_delete_file_on_delete(sender, instance, **kwargs):
     """

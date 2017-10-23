@@ -17,7 +17,9 @@ def bokeh_plot(log_dir,detail=False):
     else:
         validate_log = pd.read_csv(validate_log_name)
     plot = figure(plot_width=800, plot_height=300, title="evaluation result")
-    plot.multi_line([train_log.index.values, train_log.index.values], [train_log['loss'].values, train_log['val_loss'].values], color=['firebrick','navy'])
+    for col in train_log.columns:
+        plot.line(train_log.index.values, train_log[col].values, legend=col)
+    # plot.multi_line([train_log.index.values, train_log.index.values], [train_log['loss'].values, train_log['val_loss'].values], color=['firebrick','navy'])
     if detail:
         plot.xaxis.axis_label = 'batch counts'
     else:
