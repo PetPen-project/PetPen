@@ -19,28 +19,36 @@ $(document).ready(function(){
 {% block title %}dataset management{% endblock %}
 
 {% block content %}
-    <!-- Upload form.-->
-    <div class="container-fluid">
+  <!-- Upload form.-->
+  <div class="container-fluid">
     <form action="{% url "index" %}" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <p>Dataset title: {{ form.title }}</p>
 
       <p>{{ form.non_field_errors }}</p>
       
-      <!--<p>{{ form.shared_testing }} {{form.shared_testing.help_text}}</p>-->
-      
-      <div id="training_upload">
-        <p>{{ form.training_csvfile.label_tag }} {{ form.training_csvfile.help_text }}</p>
-        <p>{{ form.training_csvfile.errors }}{{ form.training_csvfile }}</p>
+      <div id="training_upload" class="row">
+        <div id="training-input" class="col-md-6">
+          <p>{{ form.training_input_file.label_tag }} {{ form.training_input_file.help_text }}</p>
+          <span>{{ form.training_input_file.errors }} {{ form.training_input_file }}</span>
+        </div>
+        <div id="training-output" class="col-md-6">
+          <p>{{ form.training_output_file.label_tag }} {{ form.training_output_file.help_text }}</p>
+          <span>{{ form.training_output_file.errors }} {{ form.training_output_file }}</span>
+        </div>
       </div>
-      <div id="testing_upload">
-        <p>{{ form.testing_csvfile.label_tag }} {{ form.testing_csvfile.help_text }}</p>
-        <p>{{ form.testing_csvfile.errors }}{{ form.testing_csvfile }}</p>
+      <div id="testing_upload" class="row">
+        <div id="testing-input" class="col-md-6">
+          <p>{{ form.testing_input_file.label_tag }} {{ form.testing_input_file.help_text }}</p>
+          <span>{{ form.testing_input_file.errors }} {{ form.testing_input_file }}</span>
+        </div>
+        <div id="testing-output" class="col-md-6">
+          <p>{{ form.testing_output_file.label_tag }} {{ form.testing_output_file.help_text }}</p>
+          <span>{{ form.testing_output_file.errors }} {{ form.testing_output_file }}</span>
+        </div>
       </div>
-      <p><input type="submit" value="Upload"/></p>
-      {% if type_error %}
-        <p> Only csv file is supported.</p>
-      {% endif %}
+      <br>
+      <input type="submit" value="Upload" class="btn btn-outline-primary"/>
     </form>
 
     <!-- List of uploaded data -->
@@ -60,5 +68,5 @@ $(document).ready(function(){
     {% else %}
       <p>No dataset yet.</p>
     {% endif %}
-    </div>
+  </div>
 {% endblock %}

@@ -3,6 +3,7 @@ import keras.layers
 import numpy as np
 import pandas as pd
 import json
+import os
 
 class backend_model():
     def __init__(self, model_path):
@@ -33,6 +34,7 @@ class backend_model():
 
         """
 
+        """
         with open(model_path) as f:
             dataset_config = json.load(f)['dataset']
 
@@ -78,6 +80,12 @@ class backend_model():
             else:
                 self.train_y.append(dataset.loc[:,targets].values)
                 self.valid_y.append(validate_set.loc[:,targets].values)
+        """
+        if os.isdir(dataset_path):
+            self.train_x = pd.read_csv(os.path.join(dataset_path,'training_input.csv')).values
+            self.train_y = pd.read_csv(os.path.join(dataset_path,'training_output.csv')).values
+            self.test_x = pd.read_csv(os.path.join(dataset_path,'testing_input.csv')).values
+            self.test_y = pd.read_csv(os.path.join(dataset_path,'testing_output.csv')).values
 
     def train(self,**kwargs):
         callbacks = []

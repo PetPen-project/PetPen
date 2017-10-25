@@ -31,7 +31,7 @@ def train_func(args):
     model, model_dir, dataset_dir = build_model(args)
     model_path = os.path.join(model_dir,'result.json')
     dataset_path = os.path.join(dataset_dir,'train.csv')
-    model.load_dataset(model_path,dataset_path)
+    model.load_dataset(model_path,dataset_dir)
 
     # Callback_1
     history_callback = Batch_History()
@@ -53,7 +53,7 @@ def validate_func(args):
     model, model_dir, dataset_dir = build_model(args)
     model_path = os.path.join(model_dir,'result.json')
     dataset_path = os.path.join(dataset_dir,'test.csv')
-    model.load_dataset(model_path,dataset_path)
+    model.load_dataset(model_path,dataset_dir)
 
     # Callback
     history_callback = Batch_History()
@@ -85,4 +85,4 @@ def load_dataset(file_path,features,target,separate_testing=True,testing_percent
         train_y = y.iloc[:y.shape[0]*(1-testing_percent)]
         test_y = y.iloc[y.shape[0]*(1-testing_percent):]
         return (train_x,train_y), (test_x,test_y)
-    return x, y
+   return x, y

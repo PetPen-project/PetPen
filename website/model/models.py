@@ -9,6 +9,6 @@ def get_model_path(instance):
 
 class NN_model(models.Model):
     user = models.ForeignKey(User)
-    title = models.CharField(max_length=30)
+    title = models.CharField(max_length=30,unique=True)
     state_file = models.FilePathField(path=get_model_path,match='state.json')
     structure_file = models.FilePathField(path=get_model_path,match='result.json')

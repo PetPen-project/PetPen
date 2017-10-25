@@ -42,7 +42,7 @@ def results(request):
         # file_path='/home/plash/demo1/logs/'
         # script, div = bokeh_plot(file_path)
         # context={'plot':script,'plotDiv':div}
-    context["datasets"]=Dataset.objects.filter(user_id=request.user)
+    # context["datasets"]=Dataset.objects.filter(user_id=request.user)
     return render(request, 'model/results.html', context)
 
 # def configure(request):
