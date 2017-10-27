@@ -55,7 +55,17 @@ module.exports = function(RED) {
 			res.layers[name] = {type: 'Output', params: {loss: obj[ind]['loss'], optimizer: obj[ind]['optimizer'], epoch: parseInt(obj[ind]['epoch']), batchsize: parseInt(obj[ind]['batchsize'])}};
 			res.dataset[name] = features;
 			var fs = require('fs')
-			filename = fs.readFileSync('./file.name')
+			var filename = '';
+			if (fs.existsSync('./file.name')) {
+			  filename = fs.readFileSync('./file.name')
+			} else {
+			  filename = 'tmp.csv'
+			  filepath = 'file.name'
+ 			  fs.writeFile(filepath, filename, (err) => {
+    				if (err) throw err;
+    				console.log("The name file was succesfully saved!");
+			  }); 
+			}
 			res.dataset['output'] = filename;
 			rec[obj[ind]['id']] = name;
             obj[ind]['name'] = name;
@@ -132,7 +142,9 @@ module.exports = function(RED) {
 		//fst.writeFileSync("./data.csv", content, 'utf8');
 		console.log("myfile");
 		console.log(path);
-	}
+	} else if (obj[ind]['type'] == 'Path') {
+                  
+ 	}
          
 
 	}
@@ -158,7 +170,10 @@ module.exports = function(RED) {
 //      fs.writeFileSync('/home/kazami/.node-red/result.json', json, 'utf-8');
         fs.writeFileSync('result.json', json, 'utf-8');
 	var fs = require('fs');
-	var obj = fs.readFileSync('child.json', 'utf-8');
+	var obj = '';
+	if (fs.existsSync('.child.json')) {
+	  obj = fs.readFileSync('child.json', 'utf-8');
+	}
 	/*var kill = function(pid, signal, callback) {
 	  signal = signal || 'SIGKILL';
 	  callback = callback || function() {};
@@ -195,7 +210,7 @@ module.exports = function(RED) {
 		}
 	});
 	console.log(newproc.pid);
-      fs.writeFileSync('pid.json', newproc.pid, 'utf-8');
+        fs.writeFileSync('pid.json', newproc.pid, 'utf-8');
 	}
 	
         node.send(msg);
