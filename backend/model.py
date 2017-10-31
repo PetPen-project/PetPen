@@ -162,7 +162,7 @@ def get_model(model_file):
                 layer_config = layers[conn_out]
 
                 layer_type,layer_params = layers[conn_out]['type'], layers[conn_out]['params']
-                if layer_type == 'Merge':
+                if layer_type.lower() == 'merge':
                     inbound_node_names = merge_nodes[conn_out]
                     if set(inbound_node_names).issubset(created_layers.keys()):
                         layer = deserialize_layer(layer_config, name=conn_out)
@@ -171,7 +171,7 @@ def get_model(model_file):
                         next_layers.append(conn_out)
                     else:
                         next_layers.append(conn_in)
-                elif layer_type == 'Output':
+                elif layer_type.lower() == 'output':
                     model_output.append(created_layers[conn_in])
                     config = layer_params
                     output_names.append(conn_out)
@@ -196,18 +196,18 @@ def deserialize_layer(layer_config, name=None):
     if not hasattr(keras.layers,layer_type):
         pass
     # need to fix the inconsistent parameter name and values in future
-    if layer_type == 'Convolution_2D' or layer_type == 'CONVOLUTION_2D':
+    if layer_type.lower() == 'convolution_2d':
         layer_type = 'Conv2D'
-    elif layer_type == 'LSTM' or layer_type == 'SimpleRNN' or layer_type == 'Lstm':
-        if layer_type == 'Lstm': layer_type = 'LSTM'
+    elif layer_type.lower() == 'lstm' or layer_type.lower() == 'simplernn':
+        if layer_type.lower() == 'Lstm': layer_type = 'LSTM'
         condition = layer_params.pop('return_sequence')
         if condition == 'True':
             layer_params['return_sequences'] = True
         else:
             layer_params['return_sequences'] = False
-    elif layer_type == 'Reshape':
+    elif layer_type.lower() == 'reshape':
         layer_params['target_shape'] = layer_params.pop('shape')
-    elif layer_type == 'Merge':
+    elif layer_type.lower() == 'merge':
         merge_method = layer_params['activation']
         return getattr(keras.layers, merge_method)
     layer = getattr(keras.layers,layer_type)(name = name,**layer_params)
