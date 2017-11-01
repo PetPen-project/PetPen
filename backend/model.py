@@ -1,8 +1,63 @@
 from keras.models import Model
+from keras.utils.np_utils import to_categorical
 import keras.layers
 import numpy as np
 import pandas as pd
 import json
+
+def load_csv(model_path, dataset_path, inputs, outputs, loss, validate_rate):
+    with open(model_path) as f:
+        dataset_config = json.load(f)['dataset']
+        dataset_config['file_path'] = dataset_path
+    dataset = pd.read_csv(dataset_config['file_path'])
+    sample_size = dataset.shape[0]
+    train_sample_size = int(sample_size*(1-validate_rate))
+    validate_sample_size = int(sample_size*validate_rate)
+
+    train_x, train_y = [], []
+    valid_x, valid_y = [], []
+
+    # extract feature names
+    for _in in inputs:
+        # ':' means all columns, ':,a,b,...' means all except a,b,...
+        features = dataset_config.get(_in)
+        if features[0] == ':':
+            if len(features) == 1:
+                features = dataset.columns
+            else:
+                features = dataset.columns.difference(features[1:])
+        train_x.append(dataset.loc[:train_sample_size, features].values)
+        valid_x.append(dataset.loc[train_sample_size:, features].values)
+
+    # extract target names
+    for _out in outputs:
+        targets = dataset_config.get(_out)
+        # ':' means all columns, ':,a,b,...' means all except a,b,...
+        if targets[0] == ':':
+            if len(targets) == 1:
+                targets = dataset.columns
+            else:
+                targets = dataset.columns.difference(targets[1:])
+
+        if loss == 'categorical_crossentropy':
+            train_y.append(to_categorical(dataset.loc[:train_sample_size, targets].values))
+            valid_y.append(to_categorical(dataset.loc[train_sample_size:, targets].values))
+        else:
+            train_y.append(dataset.loc[:train_sample_size,targets].values)
+            valid_y.append(dataset.loc[train_sample_size:,targets].values)
+
+    # Use numpy array shpae
+    # x: (total_number, flatten_data)
+    # y: (tatal_number, one-hot)
+    train_x = np.array(train_x[0])
+    train_y = np.array(train_y[0])
+    valid_x = np.array(valid_x[0])
+    valid_y = np.array(valid_y[0])
+    return train_x, train_y, valid_x, valid_y
+
+def load_pkl(model_path, dataset_path, inputs, outputs, loss, validate_rate):
+    pass
+
 
 class backend_model():
     def __init__(self, model_path, data_path):
@@ -33,46 +88,27 @@ class backend_model():
 
         """
 
-        with open(model_path) as f:
-            dataset_config = json.load(f)['dataset']
-            dataset_config['file_path'] = dataset_path
-        dataset = pd.read_csv(dataset_config['file_path'])
-        self.sample_size = dataset.shape[0]
-        self.train_sample_size = self.sample_size*(1-validate_rate)
-        self.validate_sample_size = self.sample_size*validate_rate
+        if '.csv' in dataset_path:
+            (self.train_x,
+            self.train_y,
+            self.valid_x,
+            self.valid_y) = load_csv(model_path,
+                                    dataset_path,
+                                    self.inputs,
+                                    self.outputs,
+                                    self.loss,
+                                    validate_rate)
+        elif '.pkl' in dataset_path:
+            (self.train_x,
+            self.train_y,
+            self.valid_x,
+            self.valid_y) = load_pkl(model_path,
+                                    dataset_path,
+                                    self.inputs,
+                                    self.outputs,
+                                    self.loss,
+                                    validate_rate)
 
-        self.train_x,self.train_y = [],[]
-        self.valid_x,self.valid_y = [],[]
-
-        # extract feature names
-        for _in in self.inputs:
-            # ':' means all columns, ':,a,b,...' means all except a,b,...
-            features = dataset_config.get(_in)
-            if features[0] == ':':
-                if len(features) == 1:
-                    features = dataset.columns
-                else:
-                    features = dataset.columns.difference(features[1:])
-            self.train_x.append(dataset.loc[:self.train_sample_size,features].values)
-            self.valid_x.append(dataset.loc[self.train_sample_size:,features].values)
-
-        # extract target names
-        for _out in self.outputs:
-            targets = dataset_config.get(_out)
-            # ':' means all columns, ':,a,b,...' means all except a,b,...
-            if targets[0] == ':':
-                if len(targets) == 1:
-                    targets = dataset.columns
-                else:
-                    targets = dataset.columns.difference(targets[1:])
-
-            if self.loss == 'categorical_crossentropy':
-                from keras.utils.np_utils import to_categorical
-                self.train_y.append(to_categorical(dataset.loc[:self.train_sample_size,targets].values))
-                self.valid_y.append(to_categorical(dataset.loc[self.train_sample_size:,targets].values))
-            else:
-                self.train_y.append(dataset.loc[:self.train_sample_size,targets].values)
-                self.valid_y.append(dataset.loc[self.train_sample_size:,targets].values)
 
     def train(self,**kwargs):
         callbacks = []
