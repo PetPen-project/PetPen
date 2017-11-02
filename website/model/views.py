@@ -17,9 +17,10 @@ def index(request):
     model_path = os.path.join('/media/disk1/petpen/models/{}'.format(user_id))
     if not os.path.exists(model_path):
         os.makedirs(model_path)
-    nodered_process = subprocess.Popen(['node-red','-p',str(port),'-u',model_path])
+    nodered_process = subprocess.Popen(['node-red','-p',str(port),'-u',model_path],cwd=model_path)
     context = {'port':port, 'pid':nodered_process.pid}
     time.sleep(0.3)
+    print('opened nodered on pid ',nodered_process.pid)
     return render(request, 'model/index.html', context)
 
 def results(request):
@@ -34,7 +35,8 @@ def results(request):
             f.seek(0)
             json.dump(info,f)
             f.truncate()
-        p = subprocess.Popen(['python','/home/plash/petpen/git/backend/petpen0.1.py','-m','/media/disk1/petpen/models/{}/'.format(request.user.id),'-d','/media/disk1/petpen/datasets/{}/{}/'.format(request.user.id,request.GET.get('dataset')),'train'], stderr=subprocess.PIPE)
+        # p = subprocess.Popen(['python','/home/plash/petpen/git/backend/petpen0.1.py','-m','/media/disk1/petpen/models/{}/'.format(request.user.id),'-d','/media/disk1/petpen/datasets/{}/{}/'.format(request.user.id,request.GET.get('dataset')),'train'], stderr=subprocess.PIPE)
+        p = subprocess.Popen(['sudo','/bin/bash','-c','python /home/plash/petpen/git/backend/petpen0.1.py -m /media/disk1/petpen/models/{}/ -d /media/disk1/petpen/datasets/{}/{}/ train'.format(request.user.id,request.user.id,request.GET.get('dataset'))])
         # if p.stderr:
             # error_message = p.stderr.read().splitlines()[-1]
             # print(error_message)
@@ -42,7 +44,7 @@ def results(request):
         # file_path='/home/plash/demo1/logs/'
         # script, div = bokeh_plot(file_path)
         # context={'plot':script,'plotDiv':div}
-    # context["datasets"]=Dataset.objects.filter(user_id=request.user)
+    context["datasets"]=Dataset.objects.filter(user_id=request.user)
     return render(request, 'model/results.html', context)
 
 # def configure(request):
@@ -110,7 +112,7 @@ def plot_api(request):
 def closenodered(request):
     pid = request.POST.get('pid',False)
     if pid:
-        print(pid)
+        print('close nodered on pid ',pid)
         os.kill(int(pid),signal.SIGINT)
     return HttpResponse('closed')
 

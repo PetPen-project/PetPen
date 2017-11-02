@@ -81,11 +81,11 @@ class backend_model():
                 self.train_y.append(dataset.loc[:,targets].values)
                 self.valid_y.append(validate_set.loc[:,targets].values)
         """
-        if os.isdir(dataset_path):
+        if os.path.isdir(dataset_path):
             self.train_x = pd.read_csv(os.path.join(dataset_path,'training_input.csv')).values
             self.train_y = pd.read_csv(os.path.join(dataset_path,'training_output.csv')).values
-            self.test_x = pd.read_csv(os.path.join(dataset_path,'testing_input.csv')).values
-            self.test_y = pd.read_csv(os.path.join(dataset_path,'testing_output.csv')).values
+            self.valid_x = pd.read_csv(os.path.join(dataset_path,'testing_input.csv')).values
+            self.valid_y = pd.read_csv(os.path.join(dataset_path,'testing_output.csv')).values
 
     def train(self,**kwargs):
         callbacks = []
@@ -212,11 +212,14 @@ def deserialize_layer(layer_config, name=None):
     # need to fix the inconsistent parameter name and values in future
     if layer_type == 'Convolution_2D' or layer_type == 'CONVOLUTION_2D':
         layer_type = 'Conv2D'
-    elif layer_type == 'LSTM' or layer_type == 'SimpleRNN' or layer_type == 'Lstm':
+    if layer_type == 'CONVLSTM_2D':
+        layer_type = 'ConvLSTM2D'
+    if layer_type == 'LSTM' or layer_type == 'SimpleRNN' or layer_type == 'Lstm' or layer_type == 'ConvLSTM2D':
         if layer_type == 'Lstm': layer_type = 'LSTM'
-        condition = layer_params.pop('return_sequence')
-        if condition == 'True':
-            layer_params['return_sequences'] = True
+        if 'return_sequence' in layer_params:
+            condition = layer_params.pop('return_sequence')
+            if condition == 'True':
+                layer_params['return_sequences'] = True
         else:
             layer_params['return_sequences'] = False
     elif layer_type == 'Reshape':
