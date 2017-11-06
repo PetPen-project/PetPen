@@ -42,7 +42,7 @@ class backend_model():
         self.epochs = self.config.get('epochs') or self.config.get('epoch')
         self.callbacks = []
 
-    def load_dataset(self,model_path,dataset_path,validate_path=None,validate_rate=0.3,shuffle=False):
+    def load_dataset(self, train_input, train_output, test_input, test_output):
         if '.csv' in dataset_path:
             (self.train_x,
             self.train_y,
