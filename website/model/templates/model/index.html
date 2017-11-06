@@ -8,6 +8,7 @@ $('document').ready(function(){
   $('body').attr('onunload','terminateNodered()')
   $('#load-model').click(function(){
     $('#nodered-frame').attr('src','http://140.109.18.114:{{port}}');
+    <!--$('#nodered-frame').attr('src','http://140.109.18.114:1881');-->
     $('#nodered').css('display','block');
   });
 });
@@ -40,6 +41,12 @@ function terminateNodered(){
 {% endblock %}
 
 {% block content %}
+  <div class="container-fluid">
+    <form action="{% url "index" %}" method="post">
+      {% csrf_token %}
+
+    </form>
+  </div>
 <button id='load-model'>load model editor</button>
 <div id="nodered" style="display: none;">
   <iframe id="nodered-frame" frameborder="0" style="border:none; width:100%; height:calc(100% - 50px); position: absolute; top: 50px; bottom:-50px;"></iframe>

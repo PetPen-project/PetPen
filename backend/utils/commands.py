@@ -12,7 +12,7 @@ def build_model(args):
     model_file = 'result.json'
     model_path = os.path.join(model_dir,model_file)
     dataset_dir = args.dataset
-    model = backend_model(model_path, dataset_dir)
+    model = backend_model(model_path)
 
     weights_path = os.path.join(model_dir,'weights.h5')
 
@@ -29,9 +29,9 @@ def build_model(args):
 
 def train_func(args):
     model, model_dir, dataset_dir = build_model(args)
-    model_file = os.path.join(model_dir,'result.json')
-    dataset_file = os.path.join(dataset_dir,'train.csv')
-    model.load_dataset(model_file,dataset_file)
+    model_path = os.path.join(model_dir,'result.json')
+    dataset_path = os.path.join(dataset_dir,'train.csv')
+    model.load_dataset(model_path,dataset_dir)
 
     # Callback_1
     history_callback = Batch_History()
@@ -42,16 +42,29 @@ def train_func(args):
     os.mkdir(trainlog_dir)
 
     # Callback_2
-    state_file = os.path.join('.','state.json')
+    # state_file = os.path.join(model_dir, 'state.json')
+    state_file = "/home/plash/petpen/state.json"
     state_callback = Model_state(state_file,model.config)
     history = model.train(callbacks=[history_callback, state_callback])
     save_history(os.path.join(trainlog_dir,'train_log'), history, history_callback)
     model.save_weights(os.path.join(model_result_path,'weights.h5'))
 
 def validate_func(args):
-    model, model_dir = build_model(args)
+    model, model_dir, dataset_dir = build_model(args)
+    model_path = os.path.join(model_dir,'result.json')
+    dataset_path = os.path.join(dataset_dir,'test.csv')
+    model.load_dataset(model_path,dataset_dir)
+
+    # Callback
+    history_callback = Batch_History()
+    str_start_time = datetime.now().strftime('%y%m%d_%H%M%S')
+    model_result_path = os.path.join(model_dir, str_start_time)
+    os.mkdir(model_result_path)
+    validlog_dir = os.path.join(model_result_path,'logs')
+    os.mkdir(validlog_dir)
+
     loss = model.evaluate()
-    print(loss)
+    # save_history(os.path.join(validlog_dir,'valid_log'), history, history_callback)
 
 def predict_func(args):
     testdata = None # feed some test data
