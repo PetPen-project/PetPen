@@ -35,7 +35,7 @@
 {% endblock %}
 
 {% block content %}
-  <div id="mwt_mwt_slider_scroll">
+  <div id="mwt_mwt_slider_scroll" style="display:none">
     <div id="mwt_tab">
       <span>H</span>
       <span>i</span>
@@ -64,7 +64,7 @@
     <div id="run-model" class="py-md-3 text-center">
       <div class="btn-group">
       <button id="trainModel" class="btn btn-outline-primary"><i class="fa fa-play"></i> train model</button>
-      <button id="validModel" class="btn btn-outline-primary"><i class="fa fa-play"></i> test model</button>
+      <button id="testModel" class="btn btn-outline-primary" style="display:none"><i class="fa fa-play"></i> evaluate</button>
       </div>
     </div>
     <div class="col-md-12">
@@ -83,6 +83,12 @@
         <label id="lblTime" class="col-md-2 control-label">Time</label>
         <div class="col-md-9">
           <input id="txfTime" type="input" class="form-control" readonly="true">
+        </div>
+      </div>
+      <div id="errorDiv" style="display:none" class="form-group row">
+        <label id="errorStatus" class="clo-md-2 coontrol-label">Error found</label>
+        <div class="col-md-9">
+          <input id="errorMessage" type="input" class="form-control" readonly="true">
         </div>
       </div>
     </div><!--end shared-->

@@ -34,10 +34,6 @@ class Model_state(Callback):
                 json.dump(self.info, f)
         return logging
 
-    def save_status(self):
-        with open(self.file_path,'w') as f:
-            json.dump(self.info, f)
-
     @status_logger
     def on_train_begin(self, logs=None):
         self.info['status'] = 'start training model'

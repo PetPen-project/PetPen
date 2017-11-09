@@ -12,7 +12,7 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-MEDIA_ROOT = '/media/disk1/petpen/datasets'
+MEDIA_ROOT = '/media/disk1/petpen/'
 MEDIA_URL = '/media/'
 LOGIN_URL = '/login/'
 # Quick-start development settings - unsuitable for production
@@ -24,7 +24,7 @@ SECRET_KEY = '1=@fcir9q@!6vh&8hi=dxao^p@-*qg41!ag3-h+^=60d!j@b8^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['140.109.18.114', 'localhost']
+ALLOWED_HOSTS = ['140.109.18.114', 'localhost', 'www.petpen.org', 'www.petpen.net']
 
 
 # Application definition
