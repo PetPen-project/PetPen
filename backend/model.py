@@ -44,22 +44,9 @@ class backend_model():
 
     def load_dataset(self, train_input, train_output, test_input, test_output):
         if '.csv' in train_input:
-            self.train_x,
-            self.train_y,
-            self.valid_x,
-            self.valid_y = load_csv(train_input,
-                                    train_output,
-                                    test_input,
-                                    test_output)
-
+            self.train_x, self.train_y, self.valid_x, self.valid_y = load_csv(train_input, train_output, test_input, test_output)
         elif '.pkl' in train_input:
-            self.train_x,
-            self.train_y,
-            self.valid_x,
-            self.valid_y = load_pkl(train_input,
-                                    train_output,
-                                    test_input,
-                                    test_output)
+            self.train_x, self.train_y, self.valid_x, self.valid_y = load_pkl(train_input, train_output, test_input, test_output)
 
     def train(self,**kwargs):
         callbacks = []
@@ -192,6 +179,12 @@ def deserialize_layer(layer_config, name=None):
         layer_type = 'Conv2D'
     if layer_type.lower() == 'convlstm_2d':
         layer_type = 'ConvLSTM2D'
+        if 'return_sequence' in layer_params:
+            condition = layer_params.pop('return_sequence')
+            if condition == 'True':
+                layer_params['return_sequences'] = True
+            else:
+                layer_params['return_sequences'] = False
     if layer_type.lower() == 'lstm' or layer_type.lower() == 'simplernn':
         if layer_type.lower() == 'Lstm':
             layer_type = 'LSTM'
@@ -199,8 +192,8 @@ def deserialize_layer(layer_config, name=None):
             condition = layer_params.pop('return_sequence')
             if condition == 'True':
                 layer_params['return_sequences'] = True
-        else:
-            layer_params['return_sequences'] = False
+            else:
+                layer_params['return_sequences'] = False
     elif layer_type.lower() == 'reshape':
         layer_params['target_shape'] = layer_params.pop('shape')
     elif layer_type.lower() == 'merge':
