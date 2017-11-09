@@ -18,15 +18,16 @@ def build_model(args):
     testy = args.testy
 
     model = backend_model(model_path)
+    model.summary()
 
-    weights_path = os.path.join(model_dir, 'weights.h5')
+    weight_file = args.weight
 
-    if args.w:
+    if weight_file:
         record_files = [f for f in os.listdir(model_dir) if re.match(r'\d{6}_\d{6}',f)]
         if not record_files:
             print('No weight file found. Skip weight loading step.')
         else:
-            weight_file = os.path.join(max(record_files), 'weights.h5')
+            weight_file = os.path.join(max(record_files), weight_file)
         if os.path.exists(weight_file):
             model.load_weights(weight_file)
 
@@ -45,8 +46,8 @@ def train_func(args):
     os.mkdir(trainlog_dir)
 
     # Callback_2
-    # state_file = os.path.join(model_dir, 'state.json')
-    state_file = "/home/plash/petpen/state.json"
+    state_file = os.path.join(model_dir, 'state.json')
+    #state_file = "/home/plash/petpen/state.json"
     state_callback = Model_state(state_file,model.config)
     history = model.train(callbacks=[history_callback, state_callback])
     save_history(os.path.join(trainlog_dir,'train_log'), history, history_callback)

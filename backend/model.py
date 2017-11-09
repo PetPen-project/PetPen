@@ -43,20 +43,20 @@ class backend_model():
         self.callbacks = []
 
     def load_dataset(self, train_input, train_output, test_input, test_output):
-        if '.csv' in dataset_path:
-            (self.train_x,
+        if '.csv' in train_input:
+            self.train_x,
             self.train_y,
             self.valid_x,
-            self.valid_y) = load_csv(train_input,
+            self.valid_y = load_csv(train_input,
                                     train_output,
                                     test_input,
                                     test_output)
 
-        elif '.pkl' in dataset_path:
-            (self.train_x,
+        elif '.pkl' in train_input:
+            self.train_x,
             self.train_y,
             self.valid_x,
-            self.valid_y) = load_pkl(train_input,
+            self.valid_y = load_pkl(train_input,
                                     train_output,
                                     test_input,
                                     test_output)
@@ -78,6 +78,9 @@ class backend_model():
 
     def predict(self,test_data):
         return self.model.predict(test_data)
+
+    def summary(self):
+        self.model.summary()
 
     def plot_model(self, file_name='model.png'):
         from keras.utils import plot_model
