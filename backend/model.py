@@ -17,8 +17,6 @@ def load_csv(train_input, train_output, test_input, test_output):
     train_y = np.array(train_y)
     valid_x = np.array(valid_x)
     valid_y = np.array(valid_y)
-    print train_x.shape
-
     return train_x, train_y, valid_x, valid_y
 
 def load_pkl(train_input, train_output, test_input, test_output):
