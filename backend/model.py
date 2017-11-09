@@ -8,15 +8,17 @@ import os
 import pickle
 
 def load_csv(train_input, train_output, test_input, test_output):
-    train_x = pd.read_csv(train_input).values
-    train_y = pd.read_csv(train_output).values
-    valid_x = pd.read_csv(test_input).values
-    valid_y = pd.read_csv(test_output).values
+    train_x = pd.read_csv(train_input, header=None).values
+    train_y = pd.read_csv(train_output, header=None).values
+    valid_x = pd.read_csv(test_input, header=None).values
+    valid_y = pd.read_csv(test_output, header=None).values
 
     train_x = np.array(train_x)
     train_y = np.array(train_y)
     valid_x = np.array(valid_x)
     valid_y = np.array(valid_y)
+    print train_x.shape
+
     return train_x, train_y, valid_x, valid_y
 
 def load_pkl(train_input, train_output, test_input, test_output):
