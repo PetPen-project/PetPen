@@ -1,30 +1,35 @@
-{% extends 'nav.html' %}
+{% load static %}
 <!DOCTYPE html>
+<html class="h-100">
+<title>{% block title %}user login{% endblock %}</title>
 
-{% block title %}user login{% endblock %}
+{% block header %}
+      <meta charset='utf-8'>
+      <meta name='viewport' content='width=device-width, initial-scale=1'>
+      <!-- FONTS -->
+      <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
+      <!-- Latest compiled and minified CSS -->
+      <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css'>
+      <!--<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>-->
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="{% static "css/style.css" %}">
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+      <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
+{% endblock %}
 
 {% block content %}
-{% if next %}
-<p>{{next}}</p>
-{% endif %}
+<body class="h-100">
+<div class="container-fluid h-100">
 
-{% if form.errors %}
-<p>Your username and password didn't match. Please try again.</p>
-{{form.errors}}
-{% elif next %}
-  {% if user.is_authenticated %}
-  <p>Your account doesn't have access to this page. To proceed,
-  please login with an account that has access.</p>
-  {% else %}
-  <p>Please login to see this page.</p>
-  {% endif %}
-{% endif %}
-<div class="container-fluid" style="padding-top:50px">
   {% if request.user.is_authenticated %}
+    <div class="h-100">
     <p>Welcome, {{request.user}}</p>
+    <a href="/"><h3>Go back to mainpage<i class="fa fa-arrow-right"></i></h3></a>
+    </div>
   {% else %}
-  <div class="row justify-content-center">
-    <div class="col-md-6">
+  <div class="row justify-content-center h-100">
+    <div class="col-md-6 align-self-center">
       <div class="card">
         <div class="card-header">
           Enter account information
@@ -34,28 +39,45 @@
             {% csrf_token %}
             <div class="input-group margin-bottom-sm">
               <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
-              <input class="form-control" name="username" type="text" value="demo" placeholder="Username">
+              <input class="form-control" name="username" type="text" value="test" placeholder="Username">
             </div>
-            <!--<div class="input-group">-->
-              <!--<span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>-->
-              <!--<input class="form-control" type="text" placeholder="Email address">-->
-            <!--</div>-->
             <div class="input-group">
               <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
-              <input class="form-control" name="password" type="password" value="demoaccount" placeholder="Password">
+              <input class="form-control" name="password" type="password" value="petpen01" placeholder="Password">
             </div>
-            <input type="submit" value="login" class="btn btn-info"/>
+            <input type="submit" value="login" class="btn btn-info my-2"/>
             {% if next %}
             <input type="hidden" name="next" value="{{ next }}" />
             {% else %}
-            <input type="hidden" name="next" value="/model/" />
+            <input type="hidden" name="next" value="/" />
             {% endif %}
           </form>
-          <a href="">create user</a> <a href="">forget password</a>
+          <div class="row my-1">
+          <a class="mx-3" href="">create user</a>
+          <a class="mx-3" href="{% url "password_reset" %}">forget password</a>
+          </div>
         </div>
       </div>
     </div>
   </div>
   {% endif %}
+  <div id="login-alert">
+  {% if form.errors %}
+    <div class="alert alert-danger" role="alert">
+      <p>Your username and password didn't match. Please try again.</p>
+    </div>
+  {% elif next %}
+    <div class="alert alert-warning" role="alert">
+      {% if user.is_authenticated %}
+      <p>Your account doesn't have access to this page. To proceed,
+      please login with an account that has access.</p>
+      {% else %}
+      <p>Please login to see this page.</p>
+    </div>
+    {% endif %}
+  {% endif %}
+  </div>
 </div>
+</body>
 {% endblock %}
+</html>

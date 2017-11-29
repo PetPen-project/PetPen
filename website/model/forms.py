@@ -1,9 +1,13 @@
-from django.forms import ModelForm
+from django.forms import ModelForm, Form
+from django import forms
+from model.models import NN_model
+from petpen.settings import MEDIA_ROOT
 
-from dataset.models import NN_model
+class NN_modelForm(forms.Form):
+    title = forms.CharField(max_length=30,label='Project title')
+    # state_file = forms.FilePathField(path=MEDIA_ROOT,match=r'state.json',recursive=True)
 
 # class NN_modelForm(ModelForm):
-    # class meta:
+    # class Meta:
         # model = NN_model
-        # fields = ['title']
-
+        # fields = ['user','title','modified','training_counts']

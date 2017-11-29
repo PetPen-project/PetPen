@@ -11,12 +11,17 @@
       <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css'>
       <!--<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>-->
       <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+      <link rel="stylesheet" href="{% static "css/style.css" %}">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
       <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script> 
       <script>
-      var array = {'dataset':{'url':'/dataset/','name':'data'},
-      'model':{'url':'/model/','name':'model'},'analysis':{'url':'/model/results/','name':'analysis'}};
+      var array = {
+        'model':{'url':'/model/','name':'project'},
+        'dataset':{'url':'/dataset/','name':'dataset'},
+        <!--'analysis':{'url':'/model/results/','name':'analysis'}-->
+        'document':{'url':'/document/','name':'document'},
+      };
          $(document).ready(function() {
 			var pageUrl = document.URL.match(/\/(\w+\/)+$/);
 			//var pageUrl = document.location.href.match(/[^\/]+$/);
@@ -38,21 +43,32 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
-      <!--<div class="container-fluid">-->
-        <!--homepage-->
-        <a class="navbar-brand" href="{% url 'main' %}">
+      <a class="navbar-brand" href="{% url 'main' %}">
         <img src="{% static "img/logo.png" %}" style="display: inline-block; height: 30px; margin-top: -5px"/>
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <!--links-->
-        <div class="collapse navbar-collapse" id="navbarSupportedContent">
-          <ul id="navList" class="navbar-nav mr-auto">
-            <!--content create by js-->
-          </ul>
-        </div>
-      <!--</div>-->
+        <span>PetPen</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <!--links-->
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul id="navList" class="navbar-nav mr-auto">
+          <!--content create by js-->
+        </ul>
+        <ul class="navbar-nav">
+          {% if user.is_authenticated %}
+          <li class="nav-item dropdown">
+            <a href="" class="nav-item nav-link dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">{{user}}<span class="caret"></span></a>
+            <div id="account" class="dropdown-menu dropdown-menu-right" aria-labelledby="acount-functions">
+              <a href="{% url "password_change" %}" class="dropdown-item">change password</a>
+              <a href="{% url "logout" %}" class="dropdown-item">logout</a>
+            </div>
+          </li>
+          {% else %}
+          <li class="nav-item"><a class="nav-link" href="{% url "login" %}">Login</a></li>
+          {% endif %}
+        </ul>
+      </div>
     </nav>
     {% block content %}
     {% endblock %}

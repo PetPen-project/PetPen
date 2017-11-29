@@ -2,10 +2,51 @@
 
 {% block content %}
 <div class="container-fluid">
-  <h1>{{ dataset.title }}</h1>
-  <h3>features: {{ features }}</h3>
-  {{ dataset.training_csvfile.size }}
+  <!--<h1>{{ dataset.title }}</h1>-->
+  <!--<h3>features: {{ features }}</h3>-->
+  <!--{{ dataset.training_csvfile.size }}-->
 
-{{ dataframe.columns.values }}
+<!--{{ dataframe.columns.values }}-->
+  <div class="row justify-content-center">
+  <div class="col-md-6">
+  <div class="card">
+    <h4 class="card-header">
+      mnist
+      <button class="btn btn-info"><i class="fa fa-pencil"></i></button>
+      <button class="close btn btn-info"><i class="fa fa-trash"></i></button>
+    </h4>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>sample size</th>
+            <th>input file size</th>
+            <th></th>
+            <th>output file size</th>
+            <th></th>
+          </tr>
+          <tr>
+            <th>training</th>
+            <td>80000</td>
+            <td>800MB</td>
+            <td><button>update</button></td>
+            <td>200MB</td>
+            <td><button>update</button></td>
+          </tr>
+          <tr>
+            <th>test</th>
+            <td>10000</td>
+            <td>100MB</td>
+            <td><button>update</button></td>
+            <td>50MB</td>
+            <td><button>update</button></td>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  </div>
+  </div>
+  </div>
 </div>
 {% endblock %}
