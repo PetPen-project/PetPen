@@ -10,28 +10,32 @@ from utils import Batch_History, Model_state
 def build_model(args):
     model_dir = args.model
     model_file = 'result.json'
-    model_path = os.path.join(model_dir,model_file)
-    dataset_dir = args.dataset
+    model_path = os.path.join(model_dir, model_file)
+
+    trainx = args.trainx
+    trainy = args.trainy
+    testx = args.testx
+    testy = args.testy
+
     model = backend_model(model_path)
+    model.summary()
 
-    weights_path = os.path.join(model_dir,'weights.h5')
+    weight_file = args.weight
 
-    if args.w:
+    if weight_file:
         record_files = [f for f in os.listdir(model_dir) if re.match(r'\d{6}_\d{6}',f)]
         if not record_files:
             print('No weight file found. Skip weight loading step.')
         else:
-            weight_file = os.path.join(max(record_files),'weights.h5')
+            weight_file = os.path.join(max(record_files), weight_file)
         if os.path.exists(weight_file):
             model.load_weights(weight_file)
 
-    return model, model_dir, dataset_dir
+    return model, model_dir, (trainx, trainy, testx, testy)
 
 def train_func(args):
-    model, model_dir, dataset_dir = build_model(args)
-    model_path = os.path.join(model_dir,'result.json')
-    dataset_path = os.path.join(dataset_dir,'train.csv')
-    model.load_dataset(model_path,dataset_dir)
+    model, model_dir, (trainx, trainy, testx, testy) = build_model(args)
+    model.load_dataset(trainx, trainy, testx, testy)
 
     # Callback_1
     history_callback = Batch_History()
@@ -42,18 +46,16 @@ def train_func(args):
     os.mkdir(trainlog_dir)
 
     # Callback_2
-    # state_file = os.path.join(model_dir, 'state.json')
-    state_file = "/home/plash/petpen/state.json"
+    state_file = os.path.join(model_dir, 'state.json')
+    #state_file = "/home/plash/petpen/state.json"
     state_callback = Model_state(state_file,model.config)
     history = model.train(callbacks=[history_callback, state_callback])
     save_history(os.path.join(trainlog_dir,'train_log'), history, history_callback)
     model.save_weights(os.path.join(model_result_path,'weights.h5'))
 
 def validate_func(args):
-    model, model_dir, dataset_dir = build_model(args)
-    model_path = os.path.join(model_dir,'result.json')
-    dataset_path = os.path.join(dataset_dir,'test.csv')
-    model.load_dataset(model_path,dataset_dir)
+    model, model_dir, (trainx, trainy, testx, testy) = build_model(args)
+    model.load_dataset(trainx, trainy, testx, testy)
 
     # Callback
     history_callback = Batch_History()
@@ -68,7 +70,7 @@ def validate_func(args):
 
 def predict_func(args):
     testdata = None # feed some test data
-    model, model_dir = build_model(args)
+    model, model_dir, _ = build_model(args)
     loss = model.predict(testdata)
     print(loss)
 
