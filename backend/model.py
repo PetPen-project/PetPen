@@ -1,4 +1,4 @@
-from keras.models import Model
+from keras.models import Model, load_model
 from keras.utils.np_utils import to_categorical
 import keras.layers
 import numpy as np
@@ -77,12 +77,13 @@ class backend_model():
     def set_batch_size(self,batch_size):
         self.batch_size = batch_size
 
-    def save_weights(self,file_path):
-        self.model.save_weights(file_path)
+    def save(self,file_path):
+        self.model.save(file_path)
 
-    def load_weights(self,file_path):
-        self.model.load_weights(file_path,by_name=True)
+    def load(self,file_path):
+        self.model.load_model(file_path)
 
+    # could be deleted
     def save_architecture(self,json_fp):
         json_string = self.model.to_json()
         with open(json_fp,'w') as f:
@@ -93,16 +94,18 @@ def get_model(model_file):
     read model setting from given model json file, then parse to keras model
     """
 
+    # Read JSON
     with open(model_file) as f:
         model_parser = json.load(f)
     connections = model_parser['connections']
     layers = model_parser['layers']
 
+    # Check connections
     if len(connections.keys()) < len(layers.keys())-1:
         raise ValueError('some components are not connected!')
     created_layers = {}
 
-    # gather inputs
+    # Gather inputs
     inputs = list(filter(lambda layer_name: layers[layer_name]['type']=='Input', layers))
 
     input_names = inputs
@@ -157,6 +160,7 @@ def get_model(model_file):
     model_output = model_output or []
     if not model_output:
         raise ValueError('missing output in model')
+
     model = Model(model_inputs, model_output)
     return model, config, input_names, output_names
 
@@ -201,6 +205,6 @@ def compile_model(model,**kw_args):
     model.compile(**kw_args)
 
 if __name__ == '__main__':
-    model = get_model('models/model.json')
+    model = get_model('result.json')
     print(model)
     # compile_model(model,)

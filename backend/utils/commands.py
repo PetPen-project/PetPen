@@ -29,7 +29,7 @@ def build_model(args):
         else:
             weight_file = os.path.join(max(record_files), weight_file)
         if os.path.exists(weight_file):
-            model.load_weights(weight_file)
+            model.load(weight_file)
 
     return model, model_dir, (trainx, trainy, testx, testy)
 
@@ -51,7 +51,7 @@ def train_func(args):
     state_callback = Model_state(state_file,model.config)
     history = model.train(callbacks=[history_callback, state_callback])
     save_history(os.path.join(trainlog_dir,'train_log'), history, history_callback)
-    model.save_weights(os.path.join(model_result_path,'weights.h5'))
+    model.save(os.path.join(model_result_path,'weights.h5'))
 
 def validate_func(args):
     model, model_dir, (trainx, trainy, testx, testy) = build_model(args)
