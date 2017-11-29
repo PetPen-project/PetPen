@@ -3,9 +3,7 @@ from keras.utils.np_utils import to_categorical
 import keras.layers
 import numpy as np
 import pandas as pd
-import json
-import os
-import pickle
+import json, os, pickle, re
 
 def load_csv(train_input, train_output, test_input, test_output):
     train_x = pd.read_csv(train_input, header=None).values
@@ -94,9 +92,6 @@ def get_model(model_file):
     """
     read model setting from given model json file, then parse to keras model
     """
-
-    import json
-    import re
 
     with open(model_file) as f:
         model_parser = json.load(f)
