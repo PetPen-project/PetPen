@@ -1,5 +1,6 @@
 from keras.models import Model, load_model
 from keras.utils.np_utils import to_categorical
+from keras.utils import plot_model
 import keras.layers
 import numpy as np
 import pandas as pd
@@ -68,26 +69,21 @@ class backend_model():
         self.model.summary()
 
     def plot_model(self, file_name='model.png'):
-        from keras.utils import plot_model
         plot_model(self.model, to_file=file_name)
 
-    def set_callbacks(self,callbacks):
+    def set_callbacks(self, callbacks):
         self.callbacks = callbacks
 
-    def set_batch_size(self,batch_size):
+    def set_batch_size(self, batch_size):
         self.batch_size = batch_size
 
-    def save(self,file_path):
+    def save(self, file_path):
         self.model.save(file_path)
 
-    def load(self,file_path):
+    def load(self, file_path):
         self.model.load_model(file_path)
 
-    # could be deleted
-    def save_architecture(self,json_fp):
-        json_string = self.model.to_json()
-        with open(json_fp,'w') as f:
-            f.write(json_string)
+
 
 def get_model(model_file):
     """
@@ -103,21 +99,26 @@ def get_model(model_file):
     # Check connections
     if len(connections.keys()) < len(layers.keys())-1:
         raise ValueError('some components are not connected!')
-    created_layers = {}
 
     # Gather inputs
-    inputs = list(filter(lambda layer_name: layers[layer_name]['type']=='Input', layers))
+    inputs = filter(lambda layer_name: layers[layer_name]['type']=='Input', layers)
 
+    # Prepared for return values
     input_names = inputs
     output_names = []
 
+    # Check if inputs are given
     if len(inputs) == 0:
         raise ValueError('missing input layer in the model')
+
+    # Translate inputs into keras layers
+    created_layers = {}
     for nn_in in inputs:
         input_params = layers[nn_in]['params']
         created_layers[nn_in] = deserialize_layer(layers[nn_in], name=nn_in)
-    model_inputs = list(created_layers.values())
-    # gather merge layers
+    model_inputs = created_layers.values()
+
+    # Gather merge layers (didn't check)
     merges = filter(lambda layer_name: layers[layer_name]['type']=='Merge', layers)
     merge_nodes = {m:[] for m in merges}
     for node in merge_nodes:
@@ -125,8 +126,11 @@ def get_model(model_file):
         if len(inbound_nodes) <= 1:
             raise ValueError('merge layer {} needs more than one inbound nodes'.format(node))
         merge_nodes[node]=inbound_nodes
+    # WARN: Above code-block didn't check
 
-    # iteratively create layer objects
+    print created_layers
+
+    # Iteratively create layer objects
     model_output = []
     while inputs:
         next_layers = []
@@ -134,10 +138,14 @@ def get_model(model_file):
             conn_outs = connections[conn_in]
             for conn_out in conn_outs:
                 if conn_out in created_layers:
+                    # Already translated
                     continue
                 layer_config = layers[conn_out]
 
-                layer_type,layer_params = layers[conn_out]['type'], layers[conn_out]['params']
+                layer_type, layer_params = layers[conn_out]['type'], layers[conn_out]['params']
+
+
+                # Merge layers (didn't check)
                 if layer_type.lower() == 'merge':
                     inbound_node_names = merge_nodes[conn_out]
                     if set(inbound_node_names).issubset(created_layers.keys()):
@@ -147,16 +155,23 @@ def get_model(model_file):
                         next_layers.append(conn_out)
                     else:
                         next_layers.append(conn_in)
+                # WARN: Above code-block didn't check
+
+
                 elif layer_type.lower() == 'output':
                     model_output.append(created_layers[conn_in])
                     config = layer_params
                     output_names.append(conn_out)
+
+
                 else:
                     layer = deserialize_layer(layer_config, name=conn_out)
                     inbound_node = created_layers[conn_in]
                     created_layers[conn_out] = layer(inbound_node)
                     next_layers.append(conn_out)
+
         inputs = next_layers
+
     model_output = model_output or []
     if not model_output:
         raise ValueError('missing output in model')
@@ -205,6 +220,6 @@ def compile_model(model,**kw_args):
     model.compile(**kw_args)
 
 if __name__ == '__main__':
-    model = get_model('result.json')
+    model = get_model('data/3/include_pretrain/result.json')
     print(model)
     # compile_model(model,)
