@@ -44,7 +44,7 @@ class backend_model():
     def load_dataset(self, train_input, train_output, test_input, test_output):
         if '.csv' in train_input:
             self.train_x, self.train_y, self.valid_x, self.valid_y = load_csv(train_input, train_output, test_input, test_output)
-        elif '.pkl' in train_input:
+        elif '.pkl' in train_input or '.pickle' in train_input:
             self.train_x, self.train_y, self.valid_x, self.valid_y = load_pkl(train_input, train_output, test_input, test_output)
 
     def train(self,**kwargs):
