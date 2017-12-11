@@ -1,0 +1,14 @@
+{
+    "name": "Path_node",
+    "version": "0.0.1",
+    "description": "A path node",
+    "dependencies": {},
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
+        "nodes": {
+            "sample": "pathNode/path.js"
+        }
+    }
+}
