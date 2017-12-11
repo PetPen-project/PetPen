@@ -22,39 +22,40 @@
 <div class="container-fluid" style="padding-top:50px">
   {% if request.user.is_authenticated %}
     <p>Welcome, {{request.user}}</p>
-  {% endif %}
+  {% else %}
   <div class="row justify-content-center">
-  <div class="col-md-6">
-  <div class="card">
-    <div class="card-header">
-      Enter account information
-    </div>
-    <div class="card-body">
-      <form action="{% url 'login' %}" method="post">
-        {% csrf_token %}
-        <div class="input-group margin-bottom-sm">
-          <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
-          <input class="form-control" name="username" type="text" placeholder="Username">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header">
+          Enter account information
         </div>
-        <!--<div class="input-group">-->
-          <!--<span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>-->
-          <!--<input class="form-control" type="text" placeholder="Email address">-->
-        <!--</div>-->
-        <div class="input-group">
-          <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
-          <input class="form-control" name="password" type="password" placeholder="Password">
+        <div class="card-body">
+          <form action="{% url 'login' %}" method="post">
+            {% csrf_token %}
+            <div class="input-group margin-bottom-sm">
+              <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
+              <input class="form-control" name="username" type="text" value="demo" placeholder="Username">
+            </div>
+            <!--<div class="input-group">-->
+              <!--<span class="input-group-addon"><i class="fa fa-envelope-o fa-fw"></i></span>-->
+              <!--<input class="form-control" type="text" placeholder="Email address">-->
+            <!--</div>-->
+            <div class="input-group">
+              <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
+              <input class="form-control" name="password" type="password" value="demoaccount" placeholder="Password">
+            </div>
+            <input type="submit" value="login" class="btn btn-info"/>
+            {% if next %}
+            <input type="hidden" name="next" value="{{ next }}" />
+            {% else %}
+            <input type="hidden" name="next" value="/model/" />
+            {% endif %}
+          </form>
+          <a href="">create user</a> <a href="">forget password</a>
         </div>
-        <input type="submit" value="login" class="btn btn-info"/>
-        {% if next %}
-        <input type="hidden" name="next" value="{{ next }}" />
-        {% else %}
-        <input type="hidden" name="next" value="/dataset/" />
-        {% endif %}
-      </form>
-      <a href="">create user</a> <a href="">forget password</a>
+      </div>
     </div>
   </div>
-  </div>
-  </div>
+  {% endif %}
 </div>
 {% endblock %}
