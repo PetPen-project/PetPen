@@ -17,7 +17,7 @@ def build_model(args):
     testx = args.testx
     testy = args.testy
 
-    model = backend_model(model_path)
+    model = backend_model(model_path, trainx, trainy, testx, testy)
     model.summary()
 
     weight_file = args.weight
@@ -35,7 +35,6 @@ def build_model(args):
 
 def train_func(args):
     model, model_dir, (trainx, trainy, testx, testy) = build_model(args)
-    model.load_dataset(trainx, trainy, testx, testy)
 
     # Callback_1
     history_callback = Batch_History()
@@ -55,7 +54,6 @@ def train_func(args):
 
 def validate_func(args):
     model, model_dir, (trainx, trainy, testx, testy) = build_model(args)
-    model.load_dataset(trainx, trainy, testx, testy)
 
     # Callback
     history_callback = Batch_History()
@@ -64,7 +62,6 @@ def validate_func(args):
     os.mkdir(model_result_path)
     validlog_dir = os.path.join(model_result_path,'logs')
     os.mkdir(validlog_dir)
-
     loss = model.evaluate()
     # save_history(os.path.join(validlog_dir,'valid_log'), history, history_callback)
 
@@ -72,19 +69,3 @@ def predict_func(args):
     testdata = None # feed some test data
     model, model_dir, _ = build_model(args)
     loss = model.predict(testdata)
-    print(loss)
-
-def load_dataset(file_path,features,target,separate_testing=True,testing_percent=0.3,shuffle_dataset=False,**kwargs):
-    import pandas as pd
-    dataset = pd.read_csv(file_path)
-    if shuffle_dataset:
-        dataset = dataset.sample(frac=1).reset_index(drop=True)
-    x = dataset[features]
-    y = dataset[target]
-    if separate_testing:
-        train_x = x.iloc[:x.shape[0]*(1-testing_percent)]
-        test_x = x.iloc[x.shape[0]*(1-testing_percent):]
-        train_y = y.iloc[:y.shape[0]*(1-testing_percent)]
-        test_y = y.iloc[y.shape[0]*(1-testing_percent):]
-        return (train_x,train_y), (test_x,test_y)
-    return x, y
