@@ -1,0 +1,165 @@
+{% extends 'nav.html' %}
+{% load static %}
+
+{% block title %}model index{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static "css/sidebar.css" %}">
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<!--<script src="{% static "js/script.js" %}"></script>-->
+<script src="{% static "js/training.js" %}"></script>
+<script>
+  window.CSRF_TOKEN = "{{csrf_token}}";
+  var project_id = {{project_id}};
+</script>
+<script>
+$.ajaxSetup({
+    data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+});
+$(document).ready(function(){
+  $("#history-tab").on('click',function(){
+    $.ajax({
+      type: 'post',
+      url: '/model/history_detail/',
+      data: {
+        'project_id': project_id,
+        'csrfmiddlewaretoken': window.CSRF_TOKEN
+      },
+      success: function(data){
+        $('#history').empty();
+        $('#history').append(data);
+      },
+      error: function(xhr,status,error){
+        alert(error);
+      }
+    });
+  });
+  $('#trainModel').click(function(){
+    $.ajax({
+      async:false,
+      url: "/model/api/backend/",
+      method:"POST",
+      data:{
+        command: "train",
+        name: $('#expName').val(),
+        project:'{{project_id}}'
+      }
+    });
+  });
+});
+
+</script>
+{% endblock %}
+
+{% block content %}
+  <ul class="nav nav-tabs" id="project-tabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="training-tab" data-toggle="tab" href="#training" role="tab" aria-controls="training" aria-selected="true">Training</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">History</a>
+    </li>
+  </ul>
+  <div class="tab-content" id="projectContent">
+    <div class="tab-pane fade show active" id="training" role="tabpanel" aria-labelledby="training-tab">
+      <div class="container">
+        <!--<div class="row justify-content-center py-md-3">-->
+          <!--<h2>dataset selection:</h2>-->
+          <!--<select id="dataSelect" class="custom-select" name="">-->
+            <!--<option disabled="disabled" selected="selected" hidden="true">choose a dataset</option>-->
+            <!--<option value="">mnist</option>-->
+            <!--<option value="">pm2.5</option>-->
+          <!--</select>-->
+        <!--</div>-->
+        <div id="run-model" class="py-md-3 row justify-content-center">
+          <div class="input-group col-md-4">
+            <span class="input-group-addon" id="train-addon1">experiment name</span>
+            <input class="form-control" type="text" placeholder="Default" aria-label="historyName" aria-describedby="train-addon1" id="expName">
+          </div>
+          <div class="btn-group">
+            <button id="trainModel" class="btn btn-outline-primary"><i class="fa fa-play"></i> train model</button>
+            <button id="stopTrainModel" class="btn btn-outline-primary" disabled><i class="fa fa-stop"></i> stop</button>
+            <button id="testModel" class="btn btn-outline-primary" style="display:none"><i class="fa fa-play"></i> evaluate</button>
+          </div>
+        </div>
+      </div>
+      <div id="loadingDiv" class="text-center fade">
+        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+        <span class="sr-only">Loading...</span>
+      </div>
+      <!--training-->
+      <div id="trainingDiv">
+        <div class="col-md-12">
+          <h3 class="text-center">Training</h3>
+        </div>
+        <div class="col-md-12 form-horizontal">
+          <!--status-->
+          <div class="form-group row">
+            <label id="lblStatus" class="col-md-2 control-label">Status</label>
+            <div class="col-md-9">
+              <input id="txfStatus" type="input" class="form-control" readonly="true">
+            </div>
+          </div>
+          <!--epoch-->
+          <div class="form-group row">
+            <label class="col-md-2 control-label">Epoch</label>
+            <div class="col-md-9">
+              <div class="form-control">
+                <div class="progress">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated bg-success barEpoch" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" id="trainingBar">0%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--progress-->
+          <div class="form-group row">
+            <label class="col-md-2 control-label">Progress</label>
+            <div class="col-md-9">
+              <div class="form-control">
+                <div class="progress">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated barProgress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" name="training">0%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--loss-->
+          <div class="form-group row">
+            <label class="col-md-2 control-label">Loss</label>
+            <div class="col-md-9">
+              <input type="input" class="form-control txfLoss" readonly="true" name="trainingLoss">
+            </div>
+          </div>
+          <div class="form-group row">
+            <label class="col-md-2 control-label">Validation Loss</label>
+            <div class="col-md-9">
+              <input type="input" class="form-control txfLoss" readonly="true" name="validateLoss">
+            </div>
+          </div>
+        </div>
+      </div>
+      <!--end training-->
+    </div>
+    <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
+      <div class="container-fluid" style="height:100%;">
+        <div class="row">
+          <div id="sidebar" data-children=".item">
+              {% for history in histories %}
+                <div class="item">
+                  <a href="#{{history.save_path}}" id="loadHistory{{history.name}}" class="d-flex" data-toggle="collapse" data-parent="#sidebar" data-history="{{history.id}}" aria-expanded="false" aria-controls="{{history.save_path}}">{{history.save_path}}</a>
+                  <div class="collapse" id="{{history.save_path}}" aria-labelledby="loadHistory{{history.name}}}">
+                    <div class="btn-group">
+                      <button class="d-flex btn btn-outline-light" value="download">download</button>
+                      <button class="d-flex btn btn-outline-light" value="delete">delete</button>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+          </div>
+          <div id="history-page">
+            <h3>Select an execute history from sidebar to view its detail.</h3>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

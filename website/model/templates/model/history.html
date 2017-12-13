@@ -1,0 +1,23 @@
+{% extends 'nav.html' %}
+
+{% block title %}training history{% endblock %}
+
+{% block head %}{% endblock %}
+
+{% block content %}
+  {% if history %}
+    <p>hi</p>
+  {% endif %}
+  <ul>
+  {% for history in histories %}
+    <li>
+      {{history}}
+      <form action="{% url "attach_weight" %}" method="get">
+        {% csrf_token %}
+        <input type="hidden" name="timestamp" value="{{history}}">
+        <input type="submit">
+      </form>
+    </li>
+  {% endfor %}
+  </ul>
+{% endblock %}
