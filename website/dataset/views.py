@@ -5,14 +5,18 @@ from django.core.urlresolvers import reverse
 from .models import Dataset
 from .forms import UploadFileForm
 from django.contrib.auth.models import User
-import re
+from petpen.settings import MEDIA_ROOT
+
+import re,os,shutil
 
 @login_required
 def index(request):
     if request.method == 'POST':
         if 'delete-dataset' in request.POST:
             form = UploadFileForm()
-            Dataset.objects.get(id=request.POST['delete-dataset']).delete()
+            dataset = Dataset.objects.get(id=request.POST['delete-dataset'])
+            shutil.rmtree(os.pahth.join(MEDIA_ROOT,'datasets/{}/{}'.format(request.user.id,dataset.title)))
+            dataset.delete()
         else:
             form = UploadFileForm(request.POST, request.FILES)
             if form.is_valid():
@@ -31,11 +35,15 @@ def index(request):
 @login_required
 def dataset_detail(request, dataset_id):
     context = {}
-    return render(request,'dataset/dataset.html',context)
     dataset = get_object_or_404(Dataset, pk=dataset_id)
     import pandas as pd
-    training_dataset = pd.read_csv(dataset.training_input_file)
-    context['features'] = list(training_dataset.columns)
-    context['dataset'] = dataset
+    training_dataset = pd.read_csv(os.path.join(MEDIA_ROOT,str(dataset.training_input_file)),header=None)
+    context['train_sample_size'] = training_dataset.shape[0]
+    testing_dataset = pd.read_csv(os.path.join(MEDIA_ROOT,str(dataset.testing_input_file)),header=None)
+    context['test_sample_size'] = testing_dataset.shape[0]
+    context['train_input_size'] = os.stat(os.path.join(MEDIA_ROOT,str(dataset.training_input_file))).st_size
+    context['train_output_size'] = os.stat(os.path.join(MEDIA_ROOT,str(dataset.training_output_file))).st_size
+    context['test_input_size'] = os.stat(os.path.join(MEDIA_ROOT,str(dataset.testing_input_file))).st_size
+    context['test_output_size'] = os.stat(os.path.join(MEDIA_ROOT,str(dataset.testing_output_file))).st_size
     return render(request,'dataset/dataset.html',context)
 

@@ -29,7 +29,7 @@ $(document).ready(function(){
         {% for dataset in datasets %}
         <li>
           <a href="{% url "dataset:dataset_detail" dataset_id=dataset.id %}" class="btn btn-primary" style="width:200px;">{{ dataset.title }}</a>
-          <button class="btn btn-default" value="{{dataset.id}}" type="submit" name="delete-dataset">delete</button>
+          <button class="btn btn-outline-primary" value="{{dataset.id}}" type="submit" name="delete-dataset">delete</button>
         </li>
         {% endfor %}
       </ul>

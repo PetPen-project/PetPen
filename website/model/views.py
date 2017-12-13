@@ -1,20 +1,21 @@
 from django.shortcuts import render,render_to_response,get_object_or_404
 from django.http import HttpResponse,HttpResponseRedirect
-from django.http import JsonResponse
+from django.http import JsonResponse,Http404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-import os
-import subprocess
-import signal
-import time
+import os,json
+import os.path as op 
+import subprocess,signal
+import time,datetime
 import docker
 
 from model.utils import bokeh_plot
 # from dataset.models import Dataset
 from django.conf import settings
 from .models import NN_model, History
+from dataset.models import Dataset
 from model.serializers import NN_modelSerializer
 from .forms import NN_modelForm
 from petpen.settings import MEDIA_ROOT
@@ -76,18 +77,28 @@ def project_detail(request, project_id):
     project_path = os.path.join(MEDIA_ROOT,os.path.dirname(project.structure_file))
     project.status = 'idle'
     project.save()
-    print(project_path)
-    # if not os.path.exists(project_path):
-        # os.makedirs(project_path)
-    # port = user_id+1880
     histories = History.objects.filter(project = project)
-    context = {'histories':histories}
+    context = {
+            'histories':histories,
+            'project_id':project_id
+            }
 
     return render(request,'model/detail.html',context)
 
 def history_detail(request):
+    if request.POST.get('project_id'):
+        print(request.POST.get('project_id'))
+        histories = History.objects.filter(project__id=request.POST.get('project_id'))
+        return render(request,'model/history_detail.html',{'histories':histories})
     history_id = request.POST.get('history')
-    history = History.objects.get(id=history_id)
+    history = History.objects.get(pk=history_id)
+    histories = History.objects.filter(project=history.project)
+    print('action:',request.POST.get('action'))
+    if request.POST.get('action') == 'delete':
+        history.delete()
+        return render(request,'model/history_detail.html',{'histories':histories})
+    if history.status !='success':
+        return render(request,'model/history_detail.html',{'histories':histories,'save_path':history.save_path,'status':history.status,'executed':history.executed})
     history_path = os.path.join(os.path.dirname(history.project.structure_file),history.save_path)
     import pandas as pd
     log_data = pd.read_csv(os.path.join(MEDIA_ROOT,history_path,'logs','train_log'))
@@ -102,6 +113,7 @@ def history_detail(request):
     best_val = log_data['val_loss'][best_epoch]
     context = {
         'history':history,
+        'histories':histories,
         'epochs':log_data.shape[0],
         'best_epoch':best_epoch,
         'best_val':best_val,
@@ -115,20 +127,26 @@ def history_detail(request):
             'jquery_on_ready': False,
         }
     }
-    # return render_to_response('model/history_detail.html',data)
     return render(request,'model/history_detail.html',context)
 
 def api(request):
-    import json
-    file_path=os.path.join(MEDIA_ROOT, "models/2/state.json")
-    if request.GET.get('type') == 'init':
+    print(request.POST.get('project_id'))
+    project = get_object_or_404(NN_model,user=request.user,pk=request.POST['project_id'])
+    file_path=op.join(MEDIA_ROOT, project.state_file)
+    if request.POST.get('type') == 'init':
         print('back to idle')
-        with open(file_path,'r+') as f:
-            info = json.load(f)
-            info['status'] = 'system idle'
-            f.seek(0)
-            json.dump(info,f)
-            f.truncate()
+        try:
+            with open(file_path,'r+') as f:
+                info = json.load(f)
+                info['status'] = 'system idle'
+                f.seek(0)
+                json.dump(info,f)
+                f.truncate()
+        except:
+            with open(file_path,'w') as f:
+                info = {'status':'system idle'}
+                json.dump(info,f)
+        return JsonResponse(info)
     try:
         with open(file_path) as f:
             json_response = JsonResponse(json.load(f))
@@ -161,7 +179,8 @@ def plot_api(request):
 def manage_nodered(request):
     action = request.GET.get('action','')
     client = docker.from_env()
-    user_container = list(filter(lambda container:container.attrs['Config']['Image']=='noderedforpetpen' and container.name==str(request.user), client.containers.list()))[0]
+    user_container = list(filter(lambda container:container.attrs['Config']['Image']=='noderedforpetpen' and container.name==str(request.user), client.containers.list()))
+    if user_container: user_container = user_container[0]
     if action == '':
         if user_container:
             return render(request,'model/editor.html',{'port':request.user.id+1880})
@@ -169,8 +188,7 @@ def manage_nodered(request):
             return HttpResponse('No project opened for editing.')
     #function to open/close nodered container
     if action == 'close':
-        print("close")
-        print(user_container.name)
+        print('close')
         if user_container:
             user_container.stop(timeout=0)
         return HttpResponse('Editor closed.')
@@ -191,7 +209,63 @@ def manage_nodered(request):
 
 def backend_api(request):
     if request.method == "POST":
-        # p = subprocess.Popen(['python','/home/plash/petpen/git/backend/petpen0.1.py','-m','/media/disk1/petpen/models/{}/'.format(request.user.id),'-d','/media/disk1/petpen/datasets/{}/{}/'.format(request.user.id,request.GET.get('dataset')),'train'], stderr=subprocess.PIPE)
-        
-        print("yes!")
+        script_path = op.abspath(op.join(__file__,op.pardir,op.pardir,op.pardir,'backend/petpen0.1.py'))
+        executed = datetime.datetime.now()
+        save_path = executed.strftime('%y%m%d_%H%M%S')
+        history_name = request.POST['name'] or save_path
+        project = NN_model.objects.filter(user=request.user).get(id=request.POST['project'])
+        if not project:
+            return Http404('project not found')
+        print((history_name,save_path,executed))
+        print(request.POST['project'],project.title)
+        structure_file = op.join(MEDIA_ROOT,project.structure_file)
+        project_path = op.dirname(structure_file)
+        with open(structure_file,'r') as f:
+            structure = json.load(f)
+            import pprint
+            pprint.pprint(structure)
+            # inputs = list(filter(lambda name,value: value['type'] == 'Input', structure['layers']))
+            # print(inputs)
+            inputs = [k for (k,v) in structure['layers'].items() if v['type']=='Input']
+            outputs = [k for (k,v) in structure['layers'].items() if v['type']=='Output']
+            dataset_setting = structure['dataset']
+            missing_dataset = []
+            for i in inputs:
+                if i not in dataset_setting:
+                    missing_dataset.append(i)
+                else:
+                    try:
+                        dataset = Dataset.objects.filter(user=request.user).get(title=dataset_setting[i][0])
+                    except:
+                        missing_dataset.append(i)
+                        continue
+                    dataset_setting[i] = {
+                        'train_x':op.join(MEDIA_ROOT,str(dataset.training_input_file)),
+                        'valid_x':op.join(MEDIA_ROOT,str(dataset.testing_input_file))
+                        }
+            for o in outputs:
+                if o not in dataset_setting:
+                    missing_dataset.append(o)
+                else:
+                    try:
+                        dataset = Dataset.objects.filter(user=request.user).get(title=dataset_setting[o][0])
+                    except:
+                        missing_dataset.append(o)
+                        continue
+                    dataset_setting[o] = {
+                        'train_y':op.join(MEDIA_ROOT,str(dataset.training_output_file)),
+                        'valid_y':op.join(MEDIA_ROOT,str(dataset.testing_output_file))
+                        }
+            structure['dataset'] = dataset_setting
+            pprint.pprint(structure)
+            if not op.exists(op.join(project_path,'preprocessed')):
+                os.makedirs(op.join(project_path,'preprocessed'))
+            with open(op.join(project_path,'preprocessed','result.json'),'w') as pre_f:
+                json.dump(structure,pre_f)
+        print(project_path)
+        print(dataset_setting)
+        # p = subprocess.Popen(['python',script_path,'-m',project_path,'-d','/media/disk1/petpen/datasets/{}/{}/'.format(request.user.id,request.GET.get('dataset')),'train'], stderr=subprocess.PIPE)
+        # p = subprocess.Popen(['python',script_path,'-m',project_path,'-trainx',dataset_setting,'train'], stderr=subprocess.PIPE)
+        history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='aborted')
+        history.save()
         return HttpResponse("good")

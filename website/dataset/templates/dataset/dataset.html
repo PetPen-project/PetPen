@@ -6,7 +6,6 @@
   <!--<h3>features: {{ features }}</h3>-->
   <!--{{ dataset.training_csvfile.size }}-->
 
-<!--{{ dataframe.columns.values }}-->
   <div class="row justify-content-center">
   <div class="col-md-6">
   <div class="card">
@@ -28,18 +27,18 @@
           </tr>
           <tr>
             <th>training</th>
-            <td>80000</td>
-            <td>800MB</td>
+            <td>{{train_sample_size}}</td>
+            <td>{{train_input_size}}</td>
             <td><button>update</button></td>
-            <td>200MB</td>
+            <td>{{train_output_size}}</td>
             <td><button>update</button></td>
           </tr>
           <tr>
             <th>test</th>
-            <td>10000</td>
-            <td>100MB</td>
+            <td>{{test_sample_size}}</td>
+            <td>{{test_input_size}}</td>
             <td><button>update</button></td>
-            <td>50MB</td>
+            <td>{{test_output_size}}</td>
             <td><button>update</button></td>
           </tr>
         </thead>

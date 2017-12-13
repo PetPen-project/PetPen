@@ -1,5 +1,3 @@
-var jsonPath = "json/state.json";
-
 //time
 var waitMS = 400;
 var limitMS = 60000;
@@ -76,7 +74,6 @@ $(function(){
 //load json from url
 function loadJson(){
   loadJsonPython();
-  //loadJsonFile(jsonPath);
 };
 //load json from python
 function loadHTMLPython(){
@@ -113,7 +110,9 @@ function initJsonPython(){
     dataType: "json",
     type: 'GET',
     url: "/model/api/parse/",
-    data: {type: "init"},
+    data: {type: "init",
+      project_id: project_id
+    },
     success: printJSON,
     error: errorJSON
   });
@@ -124,6 +123,9 @@ function loadJsonPython(){
     dataType: "json",
     type: 'GET',
     url: "/model/api/parse/",
+    data: {
+      project_id: project_id
+    },
     success: printJSON,
     error: errorJSON
   });
@@ -138,15 +140,6 @@ function loadJsonUrl(url){
     success: printJSON,
     error: errorJSON
   });
-}
-//load json from file
-function loadJsonFile(path){
-  $.getJSON(path, function(data) {         
-    printJSON(data);
-  }).fail( function(d, textStatus, error) {
-        alert("getJSON failed, status: " + textStatus + ", error: "+d.responseText);
-    stopTimer();//stop
-    });
 }
 
 //========== progress ==========//
