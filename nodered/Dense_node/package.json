@@ -1,5 +1,5 @@
 {
-    "name": "Dense",
+    "name": "Dense_node",
     "version": "0.0.1",
     "description": "A dense node",
     "dependencies": {},
@@ -8,7 +8,7 @@
     ],
     "node-red": {
         "nodes": {
-            "sample": "denseNode/dense.js"
+            "dense_sample": "denseNode/dense.js"
         }
     }
 }

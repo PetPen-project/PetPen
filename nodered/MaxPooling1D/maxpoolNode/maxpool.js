@@ -1,5 +1,5 @@
 module.exports = function(RED) {
-    function dense_go(config) {
+    function maxpool_go(config) {
         RED.nodes.createNode(this,config);
 	var node = this;
 	this.on('input', function(msg) {
@@ -7,5 +7,5 @@ module.exports = function(RED) {
         
 	});
     }
-    RED.nodes.registerType("Dense",dense_go);
+    RED.nodes.registerType("MaxPooling1D",maxpool_go);
 };

@@ -202,7 +202,7 @@ def manage_nodered(request):
             os.makedirs(project_path)
         if not user_container:
             port = request.user.id+1880
-            client.containers.run('noderedforpetpen',stdin_open=True,tty=True,name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':port},remove=True,hostname='test',detach=True)
+            client.containers.run('noderedforpetpen',stdin_open=True,tty=True,name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':port},remove=True,hostname='petpen',detach=True)
         elif user_container.attrs['HostConfig']['Binds'][0].split(':')[0]!=project_path:
             return HttpResponse('no')
         return HttpResponse('')
