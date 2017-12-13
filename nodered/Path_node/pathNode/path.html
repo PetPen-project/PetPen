@@ -1,0 +1,92 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Pretrained',{
+        category: 'Layer',
+        color: '#ffaaaa',
+        defaults: {
+            name: {value:"pretrained"},
+            type: {value:"Pretrained"},
+	    source: {value: "d"},
+            pretrainedoutput: {value: "x"},
+	    weightfile: {value: "g"}
+        },
+        inputs:1,
+        outputs:1,
+        icon: "face.png",
+        label: function() {
+            return this.name||"Input";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Pretrained">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+        <input type="text" id="node-input-type" placeholder="Type">
+    </div>
+    <div class="form-row" id="gg">
+        <label for="node-input-source"><i class="icon-tag"></i> Source</label>
+        <input type="text" id="node-input-source" placeholder="Source">
+    </div>
+    <div class="form-row" id="fix">
+        <label for="node-input-pretrainedoutput"><i class="icon-tag"></i> PretrainedOutput</label>
+        <input type="text" class="fix" id="node-input-pretrainedoutput" placeholder="Pretrainedoutput">
+    </div>
+    <div class="form-row" id="fix">
+        <label for="node-input-weightfile"><i class="icon-tag"></i> Weightfile</label>
+        <input type="text" class="fix" id="node-input-weightfile" placeholder="Weightfile">
+    </div>
+</script>
+<script>
+/*  function xxx() {
+  var s = document.getElementById("node-input-pretrained");
+  console.log(s);
+  return s;
+  }
+  var data = "";
+  var input_label = "";
+  var output_label = "";
+  var result = "";
+  var getData = function(url) {
+    var xhr = new XMLHttpRequest();
+    xhr.onreadystatchange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+	data = this.responseText;
+}    
+};
+    xhr.open("get", url, true);
+    xhr.send();
+  }
+  function doparse(go, input, output) {
+    for (var s in go) {
+      newin = go[s][0];
+      if (s == input) {
+        tmp.push(s);
+        delete go[s];
+        if (s == output) {
+         return;
+        }
+      doparse(go, newin, output);
+      }
+    }
+  }
+//  getData("https:");
+//  doparse(data, input_label, output_label);
+console.log("start before");
+function a(){
+  s = xxx();
+  console.log(s);
+ if (!s) {
+   setTimeout(function(){a()},1000)
+   
+  }
+}
+a()*/
+</script> 
+<script type="text/x-red" data-help-name="Hello World">
+    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+    </p>
+</script>

@@ -1,0 +1,14 @@
+{
+    "name": "Flatten",
+    "version": "0.0.1",
+    "description": "A flatten node",
+    "dependencies": {},
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
+        "nodes": {
+            "sample": "flattenNode/flatten.js"
+        }
+    }
+}
