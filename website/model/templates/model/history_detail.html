@@ -50,7 +50,7 @@ $(function(){
     <div id="sidebar" data-children=".item">
       {% for history in histories %}
         <div class="item">
-          <a href="#{{history.save_path}}" id="loadHistory{{history.name}}" class="d-flex" data-toggle="collapse" data-parent="#sidebar" data-history="{{history.id}}" aria-expanded="false" aria-controls="{{history.save_path}}">{{history.save_path}}</a>
+          <a href="#{{history.save_path}}" id="loadHistory{{history.name}}" class="d-flex" data-toggle="collapse" data-parent="#sidebar" data-history="{{history.id}}" aria-expanded="false" aria-controls="{{history.save_path}}">{{history.name}}</a>
           <div class="collapse" id="{{history.save_path}}" aria-labelledby="loadHistory{{history.name}}}">
             <div class="btn-group">
               <button class="d-flex btn btn-outline-light" value="download">download</button>

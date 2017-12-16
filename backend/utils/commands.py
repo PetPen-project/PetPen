@@ -9,7 +9,7 @@ from utils import Batch_History, Model_state
 
 def build_model(args):
     model_dir = args.model
-    model_file = 'result.json'
+    model_file = 'preprocessed/result.json'
     model_path = os.path.join(model_dir, model_file)
 
     trainx = args.trainx
@@ -38,7 +38,7 @@ def train_func(args):
 
     # Callback_1
     history_callback = Batch_History()
-    str_start_time = datetime.now().strftime('%y%m%d_%H%M%S')
+    str_start_time = args.time if args.time else datetime.now().strftime('%y%m%d_%H%M%S')
     model_result_path = os.path.join(model_dir, str_start_time)
     os.mkdir(model_result_path)
     trainlog_dir = os.path.join(model_result_path,'logs')
@@ -57,7 +57,7 @@ def validate_func(args):
 
     # Callback
     history_callback = Batch_History()
-    str_start_time = datetime.now().strftime('%y%m%d_%H%M%S')
+    str_start_time = args.time if args.time else datetime.now().strftime('%y%m%d_%H%M%S')
     model_result_path = os.path.join(model_dir, str_start_time)
     os.mkdir(model_result_path)
     validlog_dir = os.path.join(model_result_path,'logs')

@@ -258,14 +258,14 @@ def backend_api(request):
                         }
             structure['dataset'] = dataset_setting
             pprint.pprint(structure)
-            if not op.exists(op.join(project_path,'preprocessed')):
-                os.makedirs(op.join(project_path,'preprocessed'))
-            with open(op.join(project_path,'preprocessed','result.json'),'w') as pre_f:
+            preprocessed_dir = op.join(project_path,'preprocessed')
+            if not op.exists(preprocessed_dir):
+                os.makedirs(preprocessed_dir)
+            with open(op.join(preprocessed_dir,'result.json'),'w') as pre_f:
                 json.dump(structure,pre_f)
-        print(project_path)
-        print(dataset_setting)
-        # p = subprocess.Popen(['python',script_path,'-m',project_path,'-d','/media/disk1/petpen/datasets/{}/{}/'.format(request.user.id,request.GET.get('dataset')),'train'], stderr=subprocess.PIPE)
-        # p = subprocess.Popen(['python',script_path,'-m',project_path,'-trainx',dataset_setting,'train'], stderr=subprocess.PIPE)
-        history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='aborted')
+        # p = subprocess.Popen(['python',script_path,'-m',preprocessed_dir,'-d','/media/disk1/petpen/datasets/{}/{}/'.format(request.user.id,request.GET.get('dataset')),'train'], stderr=subprocess.PIPE)
+        print(script_path)
+        p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'], stderr=subprocess.PIPE)
+        history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running')
         history.save()
         return HttpResponse("good")

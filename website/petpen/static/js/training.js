@@ -20,9 +20,9 @@ var lastUpdateTimestamp = 0;
 $(function(){
 	initJsonPython();//init
 	
-  //timerProgress = setInterval(function () {//timer
-		//loadJsonPython();
-	//}, waitMS);
+  timerProgress = setInterval(function () {//timer
+    loadJsonPython();
+  }, waitMS);
 });
 
 function initJsonPython(){
@@ -61,34 +61,63 @@ function printJSON(data){
     //===== updated data on screen =====//
     $('#txfStatus').val(data['status']);//status
     $('#txfTime').val(data['time']);//time
-    var lossText = data['loss']['type'] + ':' + data['loss']['value'];//loss
+    if ('loss' in data){
+      var lossText = data['loss']['type'] + ':' + data['loss']['value'];//loss
+    } else{
+      var lossText = '--';
+    }
     $('.txfLoss[name="' + currentMode + '"]').val(lossText);
     setProgessBar('barEpoch', currentMode, data['epoch']);//epoch
     setProgessBar('barProgress', currentMode, data['progress']);//progress
 
     //different mode
-    switch(currentMode){
-      case 'training':
-        $('#trainingDiv').show();
-        $('#testingDiv,#loadingDiv').hide();
-        break;
-      case 'testing':
-        $('#trainingDiv,#testingDiv').show();
-        $('#loadingDiv').hide();
-        break;
-      case 'loading':
-        $('#loadingDiv').show();
-        $('#trainingDiv,#testingDiv').hide();
-        break;
-      default:
-        $('#trainingDiv,#testingDiv,#loadingDiv').hide();
-        break;
-    }
+    //switch(currentMode){
+      //case 'training':
+        //$('#trainingDiv').show();
+        //$('#testingDiv,#loadingDiv').hide();
+        //break;
+      //case 'testing':
+        //$('#trainingDiv,#testingDiv').show();
+        //$('#loadingDiv').hide();
+        //break;
+      //case 'loading':
+        //$('#loadingDiv').show();
+        //$('#trainingDiv,#testingDiv').hide();
+        //break;
+      //default:
+        //$('#trainingDiv,#testingDiv,#loadingDiv').hide();
+        //break;
+    //}
 
     //===== finish =====//
     if(data['status'] == stopKeyword) stopTimer();//stop
   }
 };
+function setProgessBar(barClass, barName, dataArray){
+  var num1 = 0, num2 = 0;
+  if(dataArray.length > 0) num1 = dataArray[0];
+  if(dataArray.length > 1) num2 = dataArray[1];
+  progressBar($('.' + barClass + '[name="' + barName + '"]'), num1, num2, num1 + "/" + num2);
+}
+//progress animation bar
+function progressBar($bar, count, total, text) {
+  var percentage = 100;
+  if(total != 0) {
+    percentage = parseInt(parseInt(count) * 100 / total);
+    if (percentage > 100) percentage = 100;
+    $bar.width(parseInt(percentage) + "%");
+
+    var barText = percentage + "%";
+    if (text != "") barText = text + " - " + barText;
+    $bar.text(barText);
+  } else {
+    $bar.width(parseInt(percentage) + "%");//width of bar
+    $bar.text("Data Not Load");//text of bar
+  }
+  
+  if (percentage >= 100) $($bar).removeClass('active');
+  else $($bar).addClass('active');	
+}
 //call when error
 function errorJSON(data){
   if(typeof data != 'undefined'){
