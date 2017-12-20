@@ -9,5 +9,5 @@ module.exports = function(RED) {
         
         });
     }
-    RED.nodes.registerType("Convulution",helloWorld);
+    RED.nodes.registerType("Convolution",helloWorld);
 };

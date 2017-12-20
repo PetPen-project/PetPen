@@ -19,9 +19,26 @@ $(document).ready(function(){
 {% block title %}dataset management{% endblock %}
 
 {% block content %}
-  <!-- Upload form.-->
   <div class="container-fluid">
-    <form action="{% url "index" %}" method="post" enctype="multipart/form-data">
+    <!-- List of uploaded data -->
+    {% if datasets %}
+      <form method="post" action="{% url "dataset:index" %}">
+      {% csrf_token %}
+      <h2>Dataset list:</h2>
+      <ul>
+        {% for dataset in datasets %}
+        <li>
+          <a href="{% url "dataset:dataset_detail" dataset_id=dataset.id %}" class="btn btn-primary" style="width:200px;">{{ dataset.title }}</a>
+          <button class="btn btn-outline-primary" value="{{dataset.id}}" type="submit" name="delete-dataset">delete</button>
+        </li>
+        {% endfor %}
+      </ul>
+      </form>
+    {% else %}
+      <p>No dataset yet.</p>
+    {% endif %}
+    <!-- Upload form.-->
+    <form action="{% url "dataset:index" %}" method="post" enctype="multipart/form-data">
       {% csrf_token %}
       <p>Dataset title: {{ form.title }}</p>
 
@@ -50,23 +67,9 @@ $(document).ready(function(){
       <br>
       <input type="submit" value="Upload" class="btn btn-outline-primary"/>
     </form>
-
-    <!-- List of uploaded data -->
-    {% if datasets %}
-      <form method="post" action="{% url "index" %}">
-      {% csrf_token %}
-      <h2>Dataset list:</h2>
-      <ul>
-        {% for dataset in datasets %}
-        <li>
-          <a href="{% url "dataset_detail" dataset_id=dataset.id %}" class="btn btn-primary" style="width:200px;">{{ dataset.title }}</a>
-          <button class="btn btn-default" value="{{dataset.id}}" type="submit" name="delete-dataset">delete</button>
-        </li>
-        {% endfor %}
-      </ul>
-      </form>
-    {% else %}
-      <p>No dataset yet.</p>
-    {% endif %}
+    <div class="alert alert-warning" role="alert">
+      <h4 class="alert-heading">Data format limitation</h4>
+      <p>The uploaded dataset contains 4 files, and all files should be in csv or pickle format.(can't mix those two format together!)</p>
+    </div>
   </div>
 {% endblock %}

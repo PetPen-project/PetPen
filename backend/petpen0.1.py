@@ -10,6 +10,7 @@ parser.add_argument('-trainy', '--trainy', required=False, default=None, help='t
 parser.add_argument('-testx', '--testx', required=False, default=None, help='test input')
 parser.add_argument('-testy', '--testy', required=False, default=None, help='test output')
 parser.add_argument('-w', '--weight', required=False, default=None, help='set -w to load weight')
+parser.add_argument('-t', '--time', required=False, default=None, help='set -t to indicate backend start time')
 
 subparser = subparsers.add_parser('train')
 subparser.set_defaults(func=train_func)

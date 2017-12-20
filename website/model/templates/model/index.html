@@ -3,52 +3,148 @@
 {% block title %}model index{% endblock %}
 
 {% block head %}
-<script>
-$('document').ready(function(){
-  $('body').attr('onunload','terminateNodered()')
-  $('#load-model').click(function(){
-    $('#nodered-frame').attr('src','http://140.109.18.114:{{port}}');
-    <!--$('#nodered-frame').attr('src','http://140.109.18.114:1881');-->
-    $('#nodered').css('display','block');
-  });
-});
-function startNodered(){
-  $.ajax({
-    async: false,
-    url: "/model/api/close-nodered/",
-    method: "POST",
-    data: {
-      type: 'start',
-      pid: {{pid}},
-      csrfmiddlewaretoken: "{{ csrf_token }}"
-    },
-    error:function(err){alert(JSON.stringify(err, null, 2));}
-  });
-}
-function terminateNodered(){
-  $.ajax({
-    async: false,
-    url: "/model/api/close-nodered/",
-    method: "POST",
-    data: {
-      pid: {{pid}},
-      csrfmiddlewaretoken: "{{ csrf_token }}"
-    },
-    error:function(err){alert(JSON.stringify(err, null, 2));}
-  });
-}
-</script>
+  <script>
+    function setDeleteId(text){
+      $("#delete-id").val(text);
+    };
+    function openProject(title){
+      $.ajax({
+        url: "{% url "model:manage_editor" %}",
+        method: "GET",
+        data:{
+          action: "open",
+          target: title
+        },
+        success: function(data){
+          window.open('http://www.petpen.org/model/editor');
+        }
+      });
+    };
+    function closeProject(){
+      $.ajax({
+        url: "{% url "model:manage_editor" %}",
+        method: "GET",
+        data:{
+          action: "close"
+        }
+      });
+    };
+    function copyTextValue(bf) {
+      <!--var text1 = bf.checked ? document.getElementById("projectTitle").value : '';-->
+      var text1 = $("#projectTitle").val();
+    };
+    $('document').ready(function(){
+      <!--$('editorOpen').on('click.open', function(e) { e.preventDefault(); window.open('http://www.petpen.org/model/editor') });-->
+    });
+  </script>
 {% endblock %}
 
 {% block content %}
-  <div class="container-fluid">
-    <form action="{% url "index" %}" method="post">
-      {% csrf_token %}
-
-    </form>
+  <div class="container-fluid" style="padding:20px 0;">
+    <div class="mb-3" style="height:100px; width:100%;clear:both;">
+    {% if messages %}
+    <div class="alert alert-danger" role="alert">
+      <h4 class="alert-heading">Create project error</h4>
+      {% for message in messages %}
+      <p>{{message}}</p>
+      {% endfor %}
+    </div>
+    {% endif %}
+    </div>
+    <div class="card">
+      <h4 class="card-header">
+        All projects
+        <span class="card-right">
+        <button class="btn btn-primary btn-sm" type="button" data-toggle="modal" data-target="#newProjectModal"><i class="fa fa-plus"></i><span> new project</span></button>
+        <!--<a class="btn btn-primary btn-sm" href=""><i class="fa fa-upload"></i><span> upload project</span></a>-->
+        </span>
+        <button class="close" type="button" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </h4>
+      <div class="card-body">
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">id</th>
+              <th scope="col">title</th>
+              <th scope="col">status</th>
+              <th scope="col">last modified</th>
+              <th scope="col">training counts</th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+            </tr>
+            {% for project in projects %}
+            <tr>
+              <th scope="row">{{ project.id }}</th>
+              <td>{{ project.title }}</td>
+              <td>{{ project.status }}</td>
+              <td>{{ project.modified }}</td>
+              <td>{{ project.training_counts }}</td>
+              <td>
+                <div class="btn-group">
+                {% if project.status == "idle" %}
+                <!--<a id="editorOpen" target="_blank" href="{% url "model:manage_editor" %}" class="btn btn-sm btn-outline-primary" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-external-link"></i> open editor</a>-->
+                <button id="editorOpen" class="btn btn-sm btn-outline-primary" style="cursor:pointer" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-external-link"></i> open editor</button>
+                {% else %}
+                <button class="btn btn-sm btn-outline-primary" onclick="closeProject()"><i class="fa fa-external-link"></i> close_editor</button>
+                {% endif %}
+                <a href="{% url "model:project_detail" project.id %}" class="btn btn-sm btn-outline-primary"><i class="fa fa-bar-chart"></i> execute model</a>
+                </div>
+              </td>
+              <td>
+                <button type="button" class="btn btn-sm btn-outline-primary" data-toggle="modal" data-target="#confirmDelete" onclick="setDeleteId({{project.id}})"><i class="fa fa-times"></i> delete</button>
+              </td>
+            </tr>
+            {% empty %}
+              <tr class="table-active"><td colspan="7" class="text-center">No projects yet.</td></tr>
+            {% endfor %}
+          </thead>
+        </table>
+      </div>
+      <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteTitle" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <!--<div class="modal-header">-->
+              <!--<div></div>-->
+            <!--</div>-->
+            <div class="modal-body">
+              <form method="post" action="{% url "model:index" %}">
+                {% csrf_token %}
+              <h5>Confirm project deletion:</h5>
+            <!--</div>-->
+            <!--<div class="modal-footer">-->
+              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <input type="hidden" id="delete-id" name="delete-project" value="">
+              <button type="submit" class="btn btn-primary">Yes</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="newProjectModal" tabindex="-1" role="dialog" aria-labelledby="newProject" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>New Project</h3>
+              <button type="button" class="close" data-dismiss="modal">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+              </button>
+            </div>
+            <div class="modal-body">
+              <form action="{% url "model:index" %}" method="post">
+                {% csrf_token %}
+                <div class="form-group">
+                  <label for="projectTitle">Project title:</label>
+                  <input type="text" class="form-control" id="projectTitle" placeholder="Enter title" name="title" onchange="copyTextValue(this);"> 
+                </div>
+                <button type="submit" class="btn btn-primary">create</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-<button id='load-model'>load model editor</button>
-<div id="nodered" style="display: none;">
-  <iframe id="nodered-frame" frameborder="0" style="border:none; width:100%; height:calc(100% - 50px); position: absolute; top: 50px; bottom:-50px;"></iframe>
-</div>
 {% endblock %}

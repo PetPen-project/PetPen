@@ -9,4 +9,6 @@ ADD nodered/ /nodered
 ADD install-nodered.sh /
 RUN /install-nodered.sh
 
-CMD ["node-red"]
+WORKDIR /app
+
+CMD ["node-red", "-p", "1880", "-u", "."]

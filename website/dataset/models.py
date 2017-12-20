@@ -8,9 +8,11 @@ import re
 def training_dataset_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/<user_id>/<dataset_name>/<filename>
     return 'datasets/{0}/{1}/{2}'.format(instance.user.id, instance.title, 'train.csv')
+
 def testing_dataset_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/<user_id>/<dataset_name>/<filename>
     return 'datasets/{0}/{1}/{2}'.format(instance.user.id, instance.title, 'test.csv')
+
 def dataset_path(instance, filename):
     return 'datasets/{0}/{1}/{2}'.format(instance.user.id, instance.title, filename)
 

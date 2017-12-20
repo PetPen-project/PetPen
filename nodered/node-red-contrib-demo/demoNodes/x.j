@@ -25,5 +25,5 @@ fs.writeFileSync('/Users/me/.node-red/result.json', json, 'utf-8');
         
         });
     }
-    RED.nodes.registerType("Convulution",helloWorld);
+    RED.nodes.registerType("Convolution",helloWorld);
 };

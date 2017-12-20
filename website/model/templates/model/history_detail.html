@@ -1,0 +1,84 @@
+{% load nvd3_tags %}
+<script>
+$(function(){
+  $("a[id^='loadHistory']").on('click',function(){
+    var link = $(this);
+    var history_id = link.data('history');
+    $.ajax({
+      type: 'post',
+      url: '/model/history_detail/',
+      data: {
+        'history': history_id,
+        'csrfmiddlewaretoken': window.CSRF_TOKEN
+      },
+      success: function(data){
+        $('#history-detail').html($(data).find('#history-detail').children());
+      },
+      error: function(xhr,status,error){
+        alert(error);
+      }
+    });
+  });
+  $("#sidebar button").click(function(){
+    $.ajax({
+      type: 'post',
+      url: '/model/history_detail/',
+      data: {
+        'history': $(this).closest('div.item').children('a').data('history'),
+        'csrfmiddlewaretoken': window.CSRF_TOKEN,
+        action: $(this).attr('value')
+      },
+      success: function(data){
+        location.reload();
+      },
+      error: function(xhr,status,error){
+        alert(status);
+      }
+    });
+  });
+});
+</script>
+{% if history %}
+  <head>
+    {% include_chart_jscss %}
+    {% load_chart charttype chartdata chartcontainer extra %}
+  </head>
+{% endif %}
+
+<div class="container-fluid" style="height:100%;">
+  <div class="row">
+    <div id="sidebar" data-children=".item">
+      {% for history in histories %}
+        <div class="item">
+          <a href="#{{history.save_path}}" id="loadHistory{{history.name}}" class="d-flex" data-toggle="collapse" data-parent="#sidebar" data-history="{{history.id}}" aria-expanded="false" aria-controls="{{history.save_path}}">{{history.name}}</a>
+          <div class="collapse" id="{{history.save_path}}" aria-labelledby="loadHistory{{history.name}}}">
+            <div class="btn-group">
+              <button class="d-flex btn btn-outline-light" value="download">download</button>
+              <button class="d-flex btn btn-outline-light" value="delete">delete</button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div id="history-detail">
+      {% if history %}
+      <p>evaluation time:  {{history.executed}}</p>
+      <div id="history-plot" class="text-center">
+        <h1>loss</h1>
+        {% include_container chartcontainer 400 '100%' %}
+        <div class="mb-3"></div>
+      </div>
+      <div class="alert alert-dark" role="alert">sample size: 100000</div>
+      <div class="alert alert-dark" role="alert">epochs: {{epochs}}</div>
+      <div class="alert alert-dark" role="alert">best validation loss: {{best_val}} at epoch {{best_epoch}}</div>
+      {% elif status %}
+      <h2>training not complete.</h2>
+      <h4>evaluation time: {{executed}}, {{status}}</h4>
+      {% else %}
+      <h3>Select an execute history from sidebar to view its detail.</h3>
+      {% endif %}
+    </div>
+  </div>
+</div>
+

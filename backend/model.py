@@ -11,7 +11,10 @@ def load_csv(data):
     return np.array(result)
 
 def load_pkl(data):
-    result = pickle.load( open(data, 'rb') )
+    try:
+        result = pickle.load( open(data, 'rb') )
+    except:
+        result = pd.read_pickle(data)
     return np.array(result)
     
 def load_file(f):
@@ -89,13 +92,12 @@ class backend_model():
         connections = model_parser['connections']
         layers = model_parser['layers']
         dataset = model_parser['dataset']
-    
         # Check connections
         if len(connections.keys()) < len(layers.keys())-1:
             raise ValueError('some components are not connected!')
     
         # Gather inputs
-        inputs = filter(lambda layer_name: layers[layer_name]['type']=='Input', layers)
+        inputs = list(filter(lambda layer_name: layers[layer_name]['type']=='Input', layers))
         if self.get_data_from_json:
             for i in inputs:
                 self.train_x.append(load_file(dataset[i]['train_x']))
@@ -106,7 +108,7 @@ class backend_model():
         output_names = []
     
         # Check if inputs are given
-        if len(inputs) == 0:
+        if not inputs:
             raise ValueError('missing input layer in the model')
     
         # Translate inputs into keras layers
