@@ -50,7 +50,7 @@ module.exports = function(RED) {
 	    		for (var i = 0; i < stride_num.length; i++) {
 				stride_num[i] = parseInt(stride_num[i]);
 	    		}
-			res.layers[name] = {type: 'CONVLSTM_2D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: kernels, strides: parseInt(stride_num), activation: obj[ind]['activation'], padding: obj[ind]['padding'], recurrent_activation: obj[ind]['recurrent_activation'], return_sequence: obj[ind]['return_sequence'], dropout: obj[ind]['dropout'], recurrent_dropout: obj[ind]['recurrent_dropout']}};
+			res.layers[name] = {type: 'CONVLSTM_2D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: kernels, strides: parseInt(stride_num), activation: obj[ind]['activation'], padding: obj[ind]['padding'], recurrent_activation: obj[ind]['recurrent_activation'], return_sequence: obj[ind]['return_sequence'], dropout: parseInt(obj[ind]['dropout']), recurrent_dropout: obj[ind]['recurrent_dropout']}};
 			rec[obj[ind]['id']] = name;
             		obj[ind]['name'] = name;
 		} else if (obj[ind]['type'] == 'Output') {
@@ -150,6 +150,7 @@ module.exports = function(RED) {
 		name = obj[ind]['name'] + "_" + ind + "_" + timest;
 		res.layers[name] = {type: 'Pretrained', params: {project_name: obj[ind]['source'], nodes: obj[ind]['pretrainedoutput'], weight_file: obj[ind]['weightfile']}};
 		rec[obj[ind]['id']] =name;
+		obj[ind]['name'] = name;
  	}
          
 
