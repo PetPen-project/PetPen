@@ -1,5 +1,5 @@
 //time
-var waitMS = 400;
+var waitMS = 300;
 var limitMS = 60000;
 
 //timer
@@ -35,10 +35,7 @@ function initJsonPython(){
       project_id: project_id
     },
     success: printJSON,
-    error: function(request, error){
-      alert(error);
-      alert(arguments);
-    }
+    error: errorJSON
   });
 };
 //call when success
@@ -54,14 +51,15 @@ function printJSON(data){
   }
   
   //update data
-  if(JSON.stringify(savedJSON) != JSON.stringify(data)){
+  //if(JSON.stringify(savedJSON) != JSON.stringify(data)){
+  if(JSON.stringify(data)){
     savedJSON = data;//update
     lastUpdateTimestamp = new Date().getTime();//time
     
     //===== updated data on screen =====//
     $('#txfStatus').val(data['status']);//status
     $('#txfTime').val(data['time']);//time
-    if ('loss' in data){
+    if ('loss' in data && data['loss']['value']!='null'){
       var lossText = data['loss']['type'] + ':' + data['loss']['value'];//loss
     } else{
       var lossText = '--';

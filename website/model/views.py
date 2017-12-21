@@ -43,19 +43,20 @@ def index(request):
                 return HttpResponseRedirect(reverse("model:index"))
     elif request.method == 'GET':
         form = NN_modelForm()
-    nn_models = NN_model.objects.filter(user_id = request.user.id)
-    context['projects'] = nn_models
+    projects = NN_model.objects.filter(user_id = request.user.id)
+    for project in projects:
+        if op.exists(op.join(MEDIA_ROOT,project.state_file)):
+            with open(op.join(MEDIA_ROOT,project.state_file)) as f:
+                status = json.load(f)['status']
+        else:
+            status = 'idle'
+        if status=='start training model' or status =='start testing':
+            project.status = 'running'
+        else:
+            project.status = 'idle'
+        project.save()
+    context['projects'] = projects
     context['form'] = form
-    return render(request, 'model/index.html', context)
-
-    user_id = request.user.id
-    port = user_id+1880
-    model_path = os.path.join('/media/disk1/petpen/models/{}'.format(user_id))
-    if not os.path.exists(model_path):
-        os.makedirs(model_path)
-    nodered_process = subprocess.Popen(['node-red','-p',str(port),'-u',model_path])
-    context = {'port':port, 'pid':nodered_process.pid}
-    time.sleep(0.3)
     return render(request, 'model/index.html', context)
 
 @login_required
@@ -75,8 +76,6 @@ def project_detail(request, project_id):
         pass
 
     project_path = os.path.join(MEDIA_ROOT,os.path.dirname(project.structure_file))
-    project.status = 'idle'
-    project.save()
     histories = History.objects.filter(project = project)
     context = {
             'histories':histories,
@@ -94,19 +93,30 @@ def history_detail(request):
     history = History.objects.get(pk=history_id)
     histories = History.objects.filter(project=history.project)
     print('action:',request.POST.get('action'))
+    history_path = op.join(MEDIA_ROOT,op.dirname(history.project.structure_file),history.save_path)
     if request.POST.get('action') == 'delete':
         history.delete()
         return render(request,'model/history_detail.html',{'histories':histories})
+    elif request.POST.get('action') == 'download':
+        pass
+    elif history.status == "running":
+        if not op.exists(history_path):
+            history.status = 'execute log missing'
+            history.save()
+        else:
+            if op.exists(op.join(history_path,'weights.h5')):
+                history.status = 'success'
+                history.save()
     if history.status !='success':
         return render(request,'model/history_detail.html',{'histories':histories,'save_path':history.save_path,'status':history.status,'executed':history.executed})
-    history_path = os.path.join(os.path.dirname(history.project.structure_file),history.save_path)
     import pandas as pd
-    log_data = pd.read_csv(os.path.join(MEDIA_ROOT,history_path,'logs','train_log'))
+    log_data = pd.read_csv(op.join(history_path,'logs','train_log'))
     chartdata = {}
     chartdata['x'] = range(1,log_data.shape[0]+1)
     for index in range(log_data.shape[1]):
         chartdata['name{}'.format(index)] = log_data.columns[index]
         chartdata['y{}'.format(index)] = log_data.iloc[:,index]
+    print(chartdata)
     charttype = "lineChart"
     chartcontainer = 'linechart_container'
     best_epoch = log_data['val_loss'].argmin()
@@ -130,7 +140,6 @@ def history_detail(request):
     return render(request,'model/history_detail.html',context)
 
 def api(request):
-    print(request.POST.get('project_id'))
     project = get_object_or_404(NN_model,user=request.user,pk=request.POST['project_id'])
     file_path=op.join(MEDIA_ROOT, project.state_file)
     if request.POST.get('type') == 'init':
@@ -138,7 +147,8 @@ def api(request):
         try:
             with open(file_path,'r+') as f:
                 info = json.load(f)
-                info['status'] = 'system idle'
+                if info['status'] != 'start training model' and info['status'] != 'start testing':
+                    info['status'] = 'system idle'
                 f.seek(0)
                 json.dump(info,f)
                 f.truncate()
@@ -155,6 +165,7 @@ def api(request):
         time.sleep(0.1)
         with open(file_path) as f:
             json_response = JsonResponse(json.load(f))
+    print((json_response.content))
     return json_response
 
 def plot_api(request):
@@ -220,6 +231,7 @@ def backend_api(request):
         print(request.POST['project'],project.title)
         structure_file = op.join(MEDIA_ROOT,project.structure_file)
         project_path = op.dirname(structure_file)
+        #----- file path transformation -----
         with open(structure_file,'r') as f:
             structure = json.load(f)
             import pprint
@@ -257,15 +269,29 @@ def backend_api(request):
                         'valid_y':op.join(MEDIA_ROOT,str(dataset.testing_output_file))
                         }
             structure['dataset'] = dataset_setting
+            pretrains = [k for (k,v) in structure['layers'].items() if v['type']=='Pretrained']
+            for p in pretrains:
+                pretrain_project_name = structure['layers'][p]['params']['project_name']
+                pretrain_history_name = structure['layers'][p]['params']['weight_file']
+                try:
+                    pretrain_project = NN_model.objects.get(user=request.user,title=pretrain_project_name)
+                    pretrain_history = History.objects.filter(project=pretrain_project,name=pretrain_history_name,status='success').latest('id')
+                except:
+                    missing_dataset.append(p)
+                    continue
+                structure['layers'][p]['params']['weight_file'] = op.join(MEDIA_ROOT,op.dirname(pretrain_project.structure_file),pretrain_history.save_path,'weights.h5')
             pprint.pprint(structure)
             preprocessed_dir = op.join(project_path,'preprocessed')
             if not op.exists(preprocessed_dir):
                 os.makedirs(preprocessed_dir)
             with open(op.join(preprocessed_dir,'result.json'),'w') as pre_f:
                 json.dump(structure,pre_f)
-        # p = subprocess.Popen(['python',script_path,'-m',preprocessed_dir,'-d','/media/disk1/petpen/datasets/{}/{}/'.format(request.user.id,request.GET.get('dataset')),'train'], stderr=subprocess.PIPE)
-        print(script_path)
-        p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'], stderr=subprocess.PIPE)
+        if missing_dataset:
+            print(missing_dataset)
+            return HttpResponse('missing')
+        p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'],)
         history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running')
         history.save()
-        return HttpResponse("good")
+        # project.status='running'
+        # project.save()
+        return HttpResponse("running")
