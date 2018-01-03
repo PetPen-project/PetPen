@@ -191,6 +191,7 @@ def plot_api(request):
 
 @login_required
 def manage_nodered(request):
+    port = request.user.id+1880
     action = request.GET.get('action','')
     client = docker.from_env()
     user_container = list(filter(lambda container:container.attrs['Config']['Image']=='noderedforpetpen' and container.name==str(request.user), client.containers.list()))
@@ -215,11 +216,11 @@ def manage_nodered(request):
         if not os.path.exists(project_path):
             os.makedirs(project_path)
         if not user_container:
-            port = request.user.id+1880
             client.containers.run('noderedforpetpen',stdin_open=True,tty=True,name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':port},remove=True,hostname='petpen',detach=True)
         elif user_container.attrs['HostConfig']['Binds'][0].split(':')[0]!=project_path:
-            return HttpResponse('no')
-        return HttpResponse('')
+            user_container.stop(timeout=0)
+            client.containers.run('noderedforpetpen',stdin_open=True,tty=True,name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':port},remove=True,hostname='petpen',detach=True)
+        return HttpResponse('running')
 
 def backend_api(request):
     if request.method == "POST":
