@@ -5,7 +5,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 
-import os,json
+import os,json,shutil
 import os.path as op 
 import subprocess,signal
 import time,datetime
@@ -26,9 +26,9 @@ def index(request):
     if request.method == 'POST':
         if 'delete-project' in request.POST:
             form = NN_modelForm()
-            print(request.POST['delete-project'])
-            print(NN_model.objects.get(id=request.POST['delete-project']))
-            NN_model.objects.get(id=request.POST['delete-project']).delete()
+            deleted_model = NN_model.objects.get(id=request.POST['delete-project'])
+            shutil.rmtree(op.join(MEDIA_ROOT,op.dirname(deleted_model.structure_file)))
+            deleted_model.delete()
         else:
             form = NN_modelForm(request.POST)
             if form.is_valid():
@@ -38,8 +38,11 @@ def index(request):
                     error_message = 'title "{}" already exists!'
                     context['error_message'] = error_message
                 else:
-                    newModel = NN_model(title=request.POST['title'],user=request.user,state_file="models/{}/{}/state.json".format(request.user.id,request.POST['title']),structure_file="models/{}/{}/result.json".format(request.user.id,request.POST['title']))
+                    model_dir = "models/{}/{}".format(request.user.id,request.POST['title'])
+                    newModel = NN_model(title=request.POST['title'],user=request.user,state_file=model_dir+"/state.json",structure_file=model_dir+"/result.json")
                     newModel.save()
+                    os.makedirs(op.join(MEDIA_ROOT,model_dir))
+                    shutil.copy2(op.abspath(op.join(op.abspath(__file__),'../../../.config.json')),op.join(MEDIA_ROOT,model_dir))
                 return HttpResponseRedirect(reverse("model:index"))
     elif request.method == 'GET':
         form = NN_modelForm()

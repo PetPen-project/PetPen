@@ -1,0 +1,735 @@
+{
+ "nodes": {
+  "node-red": {
+   "name": "node-red",
+   "version": "0.17.5",
+   "local": false,
+   "nodes": {
+    "sentiment": {
+     "name": "sentiment",
+     "types": [
+      "sentiment"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/analysis/72-sentiment.js"
+    },
+    "inject": {
+     "name": "inject",
+     "types": [
+      "inject"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/core/20-inject.js"
+    },
+    "catch": {
+     "name": "catch",
+     "types": [
+      "catch"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/core/25-catch.js"
+    },
+    "status": {
+     "name": "status",
+     "types": [
+      "status"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/core/25-status.js"
+    },
+    "debug": {
+     "name": "debug",
+     "types": [
+      "debug"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/core/58-debug.js"
+    },
+    "link": {
+     "name": "link",
+     "types": [
+      "link in",
+      "link out"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/core/60-link.js"
+    },
+    "exec": {
+     "name": "exec",
+     "types": [
+      "exec"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/core/75-exec.js"
+    },
+    "function": {
+     "name": "function",
+     "types": [
+      "function"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/core/80-function.js"
+    },
+    "template": {
+     "name": "template",
+     "types": [
+      "template"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/core/80-template.js"
+    },
+    "delay": {
+     "name": "delay",
+     "types": [
+      "delay"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/core/89-delay.js"
+    },
+    "trigger": {
+     "name": "trigger",
+     "types": [
+      "trigger"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/core/89-trigger.js"
+    },
+    "comment": {
+     "name": "comment",
+     "types": [
+      "comment"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/core/90-comment.js"
+    },
+    "unknown": {
+     "name": "unknown",
+     "types": [
+      "unknown"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/core/98-unknown.js"
+    },
+    "rpi-gpio": {
+     "name": "rpi-gpio",
+     "types": [
+      "rpi-gpio in",
+      "rpi-gpio out",
+      "rpi-mouse",
+      "rpi-keyboard"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/hardware/36-rpi-gpio.js"
+    },
+    "tls": {
+     "name": "tls",
+     "types": [
+      "tls-config"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/io/05-tls.js"
+    },
+    "mqtt": {
+     "name": "mqtt",
+     "types": [
+      "mqtt in",
+      "mqtt out",
+      "mqtt-broker"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/io/10-mqtt.js"
+    },
+    "httpin": {
+     "name": "httpin",
+     "types": [
+      "http in",
+      "http response"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/io/21-httpin.js"
+    },
+    "httprequest": {
+     "name": "httprequest",
+     "types": [
+      "http request"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/io/21-httprequest.js"
+    },
+    "websocket": {
+     "name": "websocket",
+     "types": [
+      "websocket in",
+      "websocket out",
+      "websocket-listener",
+      "websocket-client"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/io/22-websocket.js"
+    },
+    "watch": {
+     "name": "watch",
+     "types": [
+      "watch"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/io/23-watch.js"
+    },
+    "tcpin": {
+     "name": "tcpin",
+     "types": [
+      "tcp in",
+      "tcp out",
+      "tcp request"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/io/31-tcpin.js"
+    },
+    "udp": {
+     "name": "udp",
+     "types": [
+      "udp in",
+      "udp out"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/io/32-udp.js"
+    },
+    "switch": {
+     "name": "switch",
+     "types": [
+      "switch"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/logic/10-switch.js"
+    },
+    "change": {
+     "name": "change",
+     "types": [
+      "change"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/logic/15-change.js"
+    },
+    "range": {
+     "name": "range",
+     "types": [
+      "range"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/logic/16-range.js"
+    },
+    "split": {
+     "name": "split",
+     "types": [
+      "split",
+      "join"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/logic/17-split.js"
+    },
+    "CSV": {
+     "name": "CSV",
+     "types": [
+      "csv"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/parsers/70-CSV.js"
+    },
+    "HTML": {
+     "name": "HTML",
+     "types": [
+      "html"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/parsers/70-HTML.js"
+    },
+    "JSON": {
+     "name": "JSON",
+     "types": [
+      "json"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/parsers/70-JSON.js"
+    },
+    "XML": {
+     "name": "XML",
+     "types": [
+      "xml"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/parsers/70-XML.js"
+    },
+    "YAML": {
+     "name": "YAML",
+     "types": [
+      "yaml"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/parsers/70-YAML.js"
+    },
+    "tail": {
+     "name": "tail",
+     "types": [
+      "tail"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/storage/28-tail.js"
+    },
+    "file": {
+     "name": "file",
+     "types": [
+      "file",
+      "file in"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/storage/50-file.js"
+    }
+   }
+  },
+  "node-red-node-email": {
+   "name": "node-red-node-email",
+   "version": "0.1.24",
+   "local": false,
+   "nodes": {
+    "email": {
+     "name": "email",
+     "types": [
+      "e-mail",
+      "e-mail in"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red-node-email",
+     "file": "/usr/local/lib/node_modules/node-red/node_modules/node-red-node-email/61-email.js"
+    }
+   }
+  },
+  "node-red-node-feedparser": {
+   "name": "node-red-node-feedparser",
+   "version": "0.1.8",
+   "local": false,
+   "nodes": {
+    "feedparse": {
+     "name": "feedparse",
+     "types": [
+      "feedparse"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red-node-feedparser",
+     "file": "/usr/local/lib/node_modules/node-red/node_modules/node-red-node-feedparser/32-feedparse.js"
+    }
+   }
+  },
+  "node-red-node-rbe": {
+   "name": "node-red-node-rbe",
+   "version": "0.1.13",
+   "local": false,
+   "nodes": {
+    "rbe": {
+     "name": "rbe",
+     "types": [
+      "rbe"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red-node-rbe",
+     "file": "/usr/local/lib/node_modules/node-red/node_modules/node-red-node-rbe/rbe.js"
+    }
+   }
+  },
+  "node-red-node-twitter": {
+   "name": "node-red-node-twitter",
+   "version": "0.1.11",
+   "local": false,
+   "nodes": {
+    "twitter": {
+     "name": "twitter",
+     "types": [
+      "twitter-credentials",
+      "twitter in",
+      "twitter out"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red-node-twitter",
+     "file": "/usr/local/lib/node_modules/node-red/node_modules/node-red-node-twitter/27-twitter.js"
+    }
+   }
+  },
+  "ConvLSTM2D_node": {
+   "name": "ConvLSTM2D_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "ConvolutionLSTM_2D"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "ConvLSTM2D_node",
+     "file": "/usr/local/lib/node_modules/ConvLSTM2D_node/convlstm2dNode/convlstm2d.js"
+    }
+   }
+  },
+  "Conv_2D_node": {
+   "name": "Conv_2D_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Convolution_2D"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "Conv_2D_node",
+     "file": "/usr/local/lib/node_modules/Conv_2D_node/conv2dNode/conv2d.js"
+    }
+   }
+  },
+  "Dense_node": {
+   "name": "Dense_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "dense_sample": {
+     "name": "dense_sample",
+     "types": [
+      "Dense"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "Dense_node",
+     "file": "/usr/local/lib/node_modules/Dense_node/denseNode/dense.js"
+    }
+   }
+  },
+  "Dropout_node": {
+   "name": "Dropout_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Dropout"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "Dropout_node",
+     "file": "/usr/local/lib/node_modules/Dropout_node/dropoutNode/dropout.js"
+    }
+   }
+  },
+  "File_node": {
+   "name": "File_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "File"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "File_node",
+     "file": "/usr/local/lib/node_modules/File_node/fileNode/file.js"
+    }
+   }
+  },
+  "Flatten": {
+   "name": "Flatten",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Flatten"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "Flatten",
+     "file": "/usr/local/lib/node_modules/Flatten/flattenNode/flatten.js"
+    }
+   }
+  },
+  "Gru_node": {
+   "name": "Gru_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Gru"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "Gru_node",
+     "file": "/usr/local/lib/node_modules/Gru_node/gruNode/gru.js"
+    }
+   }
+  },
+  "Input_node": {
+   "name": "Input_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Input"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "Input_node",
+     "file": "/usr/local/lib/node_modules/Input_node/inputNode/input.js"
+    }
+   }
+  },
+  "Lstm_node": {
+   "name": "Lstm_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Lstm"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "Lstm_node",
+     "file": "/usr/local/lib/node_modules/Lstm_node/lstmNode/lstm.js"
+    }
+   }
+  },
+  "MaxPooling1D": {
+   "name": "MaxPooling1D",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Dense",
+      "MaxPooling1D"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "MaxPooling1D",
+     "file": "/usr/local/lib/node_modules/MaxPooling1D/maxpoolNode/maxpool.js"
+    }
+   }
+  },
+  "MaxPooling2D_node": {
+   "name": "MaxPooling2D_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "MaxPooling2D"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "MaxPooling2D_node",
+     "file": "/usr/local/lib/node_modules/MaxPooling2D_node/maxpoolNode2D/maxpool2d.js"
+    }
+   }
+  },
+  "Merge_node": {
+   "name": "Merge_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Merge"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "Merge_node",
+     "file": "/usr/local/lib/node_modules/Merge_node/mergeNode/merge.js"
+    }
+   }
+  },
+  "Output_node": {
+   "name": "Output_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Output"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "Output_node",
+     "file": "/usr/local/lib/node_modules/Output_node/outputNode/output.js"
+    }
+   }
+  },
+  "Path_node": {
+   "name": "Path_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Pretrained"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "Path_node",
+     "file": "/usr/local/lib/node_modules/Path_node/pathNode/path.js"
+    }
+   }
+  },
+  "Reshape_node": {
+   "name": "Reshape_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Reshape"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "Reshape_node",
+     "file": "/usr/local/lib/node_modules/Reshape_node/reshapeNode/reshape.js"
+    }
+   }
+  },
+  "SimpleRNN_node": {
+   "name": "SimpleRNN_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "SimpleRNN"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "SimpleRNN_node",
+     "file": "/usr/local/lib/node_modules/SimpleRNN_node/simplernnNode/simplernn.js"
+    }
+   }
+  },
+  "node-red-contrib-demo": {
+   "name": "node-red-contrib-demo",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Convolution"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "node-red-contrib-demo",
+     "file": "/usr/local/lib/node_modules/node-red-contrib-demo/demoNodes/HelloWorld.js"
+    }
+   }
+  },
+  "node-red-contrib-wago": {
+   "name": "node-red-contrib-wago",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Power Meas."
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red-contrib-wago",
+     "file": "/usr/local/lib/node_modules/node-red-contrib-wago/wago/WAGO_750_49X.js"
+    }
+   }
+  }
+ },
+ "_credentialSecret": "dc0d84bcb4c8755d29489d9d7fc2c6c477661e5c50deb8fe39c4b818a11449b1"
+}

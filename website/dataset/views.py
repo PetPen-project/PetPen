@@ -9,6 +9,7 @@ from petpen.settings import MEDIA_ROOT
 
 import re,os,shutil
 import os.path as op
+import pandas as pd
 
 @login_required
 def index(request):
@@ -33,11 +34,21 @@ def index(request):
     datasets = Dataset.objects.filter(user_id = request.user.id)
     return render(request, 'dataset/index.html', {'datasets':datasets, 'form':form})
 
+# class datasetDetailView(DetailView):
+    # model = Dataset
+    # template_name = 'dataset/dataset.html'
+    # def open_file(self,dataset_name):
+        # dataset_path = op.join(MEDIA_ROOT,dataset_name)
+        # ext = op.splitext(dataset_name)[1]
+        # if ext == '.csv':
+            # dataset = pd.read_csv(dataset_path)
+        # elif ext == '.pickle':
+            # dataset = pd.read_pickle(dataset_path)
+
 @login_required
 def dataset_detail(request, dataset_id):
     context = {}
     dataset = get_object_or_404(Dataset, pk=dataset_id)
-    import pandas as pd
     training_dataset = pd.read_csv(os.path.join(MEDIA_ROOT,str(dataset.training_input_file)),header=None)
     context['train_sample_size'] = training_dataset.shape[0]
     testing_dataset = pd.read_csv(os.path.join(MEDIA_ROOT,str(dataset.testing_input_file)),header=None)
