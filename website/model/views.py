@@ -20,6 +20,15 @@ from model.serializers import NN_modelSerializer
 from .forms import NN_modelForm
 from petpen.settings import MEDIA_ROOT
 
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+hdlr = logging.FileHandler(op.join(op.abspath(op.dirname(op.dirname(__name__))),'website.log'))
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr) 
+logger.setLevel(logging.WARNING)
+
 @login_required
 def index(request):
     context = {}
@@ -48,10 +57,13 @@ def index(request):
         form = NN_modelForm()
     projects = NN_model.objects.filter(user_id = request.user.id)
     for project in projects:
-        if op.exists(op.join(MEDIA_ROOT,project.state_file)):
-            with open(op.join(MEDIA_ROOT,project.state_file)) as f:
+        state_path = op.join(MEDIA_ROOT,project.state_file)
+        if op.exists(state_path):
+            with open(state_path) as f:
                 status = json.load(f)['status']
         else:
+            with open(state_path,'w') as f:
+                json.dump({'status':'system idle'},f)
             status = 'idle'
         if status=='start training model' or status =='start testing':
             project.status = 'running'
@@ -146,11 +158,11 @@ def api(request):
     project = get_object_or_404(NN_model,user=request.user,pk=request.POST['project_id'])
     file_path=op.join(MEDIA_ROOT, project.state_file)
     if request.POST.get('type') == 'init':
-        print('back to idle')
+        logger.info('back to idle')
         try:
             with open(file_path,'r+') as f:
                 info = json.load(f)
-                if info['status'] != 'start training model' and info['status'] != 'start testing':
+                if info['status'] != 'start training model' and info['status'] != 'start testing' and info['status'] != 'loading model':
                     info['status'] = 'system idle'
                 f.seek(0)
                 json.dump(info,f)
@@ -191,14 +203,14 @@ def plot_api(request):
 
 @login_required
 def manage_nodered(request):
-    port = request.user.id+1880
+    port = request.user.id+2880
     action = request.GET.get('action','')
     client = docker.from_env()
     user_container = list(filter(lambda container:container.attrs['Config']['Image']=='noderedforpetpen' and container.name==str(request.user), client.containers.list()))
     if user_container: user_container = user_container[0]
     if action == '':
         if user_container:
-            return render(request,'model/editor.html',{'port':request.user.id+1880})
+            return render(request,'model/editor.html',{'port':port})
         else:
             return HttpResponse('No project opened for editing.')
     #function to open/close nodered container
@@ -234,8 +246,24 @@ def backend_api(request):
         print((history_name,save_path,executed))
         print(request.POST['project'],project.title)
         structure_file = op.join(MEDIA_ROOT,project.structure_file)
+        state_file = op.join(MEDIA_ROOT,project.state_file)
+        with open(state_file,'r+') as f:
+            info = json.load(f)
+            info['status'] = 'loading model'
+            f.seek(0)
+            json.dump(info,f)
+            f.truncate()
         project_path = op.dirname(structure_file)
         #----- file path transformation -----
+        if not op.exists(structure_file):
+            with open(state_file,'r+') as f:
+                info = json.load(f)
+                info['status'] = 'ERROR: missing model structure'
+                f.seek(0)
+                json.dump(info,f)
+                f.truncate()
+            return  HttpResponse('error')
+            
         with open(structure_file,'r') as f:
             structure = json.load(f)
             import pprint
@@ -293,9 +321,14 @@ def backend_api(request):
         if missing_dataset:
             print(missing_dataset)
             return HttpResponse('missing')
-        p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'],)
+        try:
+            p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'],)
+        except Exception as e:
+            logger.error('Failed to run the backend', exc_info=True)
         history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running')
         history.save()
+        project.training_counts += 1
+        project.save()
         # project.status='running'
         # project.save()
         return HttpResponse("running")

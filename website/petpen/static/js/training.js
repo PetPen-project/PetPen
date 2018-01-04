@@ -69,29 +69,35 @@ function printJSON(data){
     setProgessBar('barProgress', currentMode, data['progress']);//progress
 
     //different mode
-    //switch(currentMode){
-      //case 'training':
-        //$('#trainingDiv').show();
-        //$('#testingDiv,#loadingDiv').hide();
-        //break;
+    switch(currentMode){
+      case 'training':
+        $('#trainingDiv').show();
+        $('#loadingDiv','#testingDiv').hide();
+        break;
       //case 'testing':
         //$('#trainingDiv,#testingDiv').show();
         //$('#loadingDiv').hide();
         //break;
-      //case 'loading':
-        //$('#loadingDiv').show();
+      case 'loading':
+        $('#loadingDiv').show();
         //$('#trainingDiv,#testingDiv').hide();
-        //break;
-      //default:
+        break;
+      default:
         //$('#trainingDiv,#testingDiv,#loadingDiv').hide();
-        //break;
-    //}
+        $('#testingDiv,#loadingDiv').hide();
+        break;
+    }
 
     //===== finish =====//
     if(data['status'] == stopKeyword) stopTimer();//stop
   }
 };
+function emptyPlotCode(){
+  ;
+}
 function setProgessBar(barClass, barName, dataArray){
+  if(barName != 'training' && barName != 'testing')
+    return;
   var num1 = 0, num2 = 0;
   if(dataArray.length > 0) num1 = dataArray[0];
   if(dataArray.length > 1) num2 = dataArray[1];
@@ -137,7 +143,8 @@ function loadJsonPython(){
       project_id: project_id
     },
     success: printJSON,
-    error: errorJSON
+    error: function(){;} // pass
+    //error: errorJSON
   });
 };
 

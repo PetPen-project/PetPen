@@ -16,7 +16,7 @@
           target: title
         },
         success: function(data){
-          window.open('http://www.petpen.org/model/editor');
+          window.open("{% url "model:manage_editor" %}");
         }
       });
     };
@@ -34,7 +34,7 @@
       var text1 = $("#projectTitle").val();
     };
     $('document').ready(function(){
-      <!--$('editorOpen').on('click.open', function(e) { e.preventDefault(); window.open('http://www.petpen.org/model/editor') });-->
+      <!--$('editorOpen').on('click.open', function(e) { e.preventDefault(); window.open('{% url "model:manage_editor" %}') });-->
     });
   </script>
 {% endblock %}
