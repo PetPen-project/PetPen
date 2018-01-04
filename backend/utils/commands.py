@@ -33,37 +33,27 @@ def build_model(args):
 
     return model, model_dir, (trainx, trainy, testx, testy)
 
-def train_func(args):
+def train_func(args, log_dir):
     model, model_dir, (trainx, trainy, testx, testy) = build_model(args)
 
     # Callback_1
     history_callback = Batch_History()
-    str_start_time = args.time if args.time else datetime.now().strftime('%y%m%d_%H%M%S')
-    model_result_path = os.path.join(model_dir, str_start_time)
-    os.mkdir(model_result_path)
-    trainlog_dir = os.path.join(model_result_path,'logs')
-    os.mkdir(trainlog_dir)
 
     # Callback_2
     state_file = os.path.join(model_dir, 'state.json')
     #state_file = "/home/plash/petpen/state.json"
-    state_callback = Model_state(state_file,model.config)
+    state_callback = Model_state(state_file, model.config)
     history = model.train(callbacks=[history_callback, state_callback])
-    save_history(os.path.join(trainlog_dir,'train_log'), history, history_callback)
+    save_history(os.path.join(log_dir,'train_log'), history, history_callback)
     model.save(os.path.join(model_result_path,'weights.h5'))
 
-def validate_func(args):
+def validate_func(args, log_dir):
     model, model_dir, (trainx, trainy, testx, testy) = build_model(args)
 
     # Callback
     history_callback = Batch_History()
-    str_start_time = args.time if args.time else datetime.now().strftime('%y%m%d_%H%M%S')
-    model_result_path = os.path.join(model_dir, str_start_time)
-    os.mkdir(model_result_path)
-    validlog_dir = os.path.join(model_result_path,'logs')
-    os.mkdir(validlog_dir)
     loss = model.evaluate()
-    # save_history(os.path.join(validlog_dir,'valid_log'), history, history_callback)
+    # save_history(os.path.join(log_dir, 'valid_log'), history, history_callback)
 
 def predict_func(args):
     testdata = None # feed some test data

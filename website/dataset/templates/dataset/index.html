@@ -67,9 +67,10 @@ $(document).ready(function(){
       <br>
       <input type="submit" value="Upload" class="btn btn-outline-primary"/>
     </form>
-    <div class="alert alert-warning" role="alert">
+    <div class="alert alert-warning mt-2" role="alert">
       <h4 class="alert-heading">Data format limitation</h4>
       <p>The uploaded dataset contains 4 files, and all files should be in csv or pickle format.(can't mix those two format together!)</p>
+      <p>Header column in each dataset file should be removed before uploading.</p>
     </div>
   </div>
 {% endblock %}
