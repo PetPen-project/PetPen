@@ -1,0 +1,62 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Convolution',{
+        category: 'Layer',
+        color: '#ffaaaa',
+        defaults: {
+            name: {value:"conv"},
+            type: {value:"Convolution"},
+	    filters: {value: ""},
+	    kernel: {value: ""},
+	    strides: {value: ""},
+	    activation: {value: ""},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "face.png",
+        label: function() {
+            return this.name||"Convolution";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Convolution">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-activation"><i class="icon-tag"></i> Activation</label>
+    	<select id="node-input-activation">
+  		<option value="softmax">Softmax</option>
+  		<option value="sigmoid">Sigmoid</option>
+  		<option value="tanh">Tanh</option>
+  		<option value="relu">Relu</option>
+  		<option value="softplus">Softplus</option>
+    	</select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+        <input type="text" id="node-input-type" placeholder="Type">
+    </div>
+    <div class="form-row">
+        <label for="node-input-filters"><i class="icon-tag"></i> Filters</label>
+        <input type="text" id="node-input-filters" placeholder="Filters">
+    </div>
+    <div class="form-row">
+        <label for="node-input-kernel"><i class="icon-tag"></i> Kernel_size</label>
+        <input type="text" id="node-input-kernel" placeholder="Kernel_size">
+    </div>
+    <div class="form-row">
+        <label for="node-input-strides"><i class="icon-tag"></i> Strides</label>
+        <input type="text" id="node-input-strides" placeholder="Strides">
+    </div>
+    <div class="form-row">
+        <label for="node-input-topic"><i class="icon-tag"></i> Topic</label>
+        <input type="text" id="node-input-topic" placeholder="Topic">
+    </div>
+</script>
+ 
+<script type="text/x-red" data-help-name="Hello World">
+    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+    </p>
+</script>
