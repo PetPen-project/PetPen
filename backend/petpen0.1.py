@@ -1,5 +1,7 @@
-import argparse
+import argparse, os, sys
 from utils import train_func, validate_func, predict_func
+from datetime import datetime
+import traceback
 
 parser = argparse.ArgumentParser(prog='petpen')
 subparsers = parser.add_subparsers()
@@ -23,5 +25,21 @@ subparser.set_defaults(func=predict_func)
 
 
 args = parser.parse_args()
-args.func(args)
 
+model_dir = args.model
+str_start_time = args.time if args.time else datetime.now().strftime('%y%m%d_%H%M%S')
+model_result_path = os.path.join(model_dir, str_start_time)
+os.mkdir(model_result_path)
+log_dir = os.path.join(model_result_path, 'logs')
+os.mkdir(log_dir)
+
+error_log_file = os.path.join(log_dir, 'error_log')
+
+try:
+    args.func(args, log_dir)
+except:
+    exc_type, exc_value, exc_traceback = sys.exc_info()
+    lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
+    with open(error_log_file, 'w') as error_log:
+        for line in lines:
+            error_log.write(line)
