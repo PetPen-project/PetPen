@@ -22,7 +22,7 @@ module.exports = function(RED) {
 	};
         var rec = {};
 	for (var ind in obj) {
-		if (obj[ind]['type'] == 'Convulution') {
+		if (obj[ind]['type'] == 'Convolution') {
 			name  = obj[ind]['name'] + "_" + ind + "_" +  timest;
 			res.layers[name] = {type: 'Convolution_1D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: parseInt(obj[i]['kernel']), strides: parseInt(obj[ind]['strides']), activation: obj[ind]['methods']}};
 			rec[obj[ind]['id']] = name;
@@ -116,7 +116,7 @@ module.exports = function(RED) {
 
         } else if (obj[ind]['type'] == 'Merge') {
 			name = obj[ind]['name'] + "_" + ind + "_" + timest;
-			res.layers[name] = {type: 'Merge', params: {activation: obj[ind]['method']}}; 
+			res.layers[name] = {type: 'Merge', params: {method: obj[ind]['method']}}; 
 			rec[obj[ind]['id']] = name;
             obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'SimpleRNN') {
