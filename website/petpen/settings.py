@@ -26,7 +26,7 @@ SECRET_KEY = '1=@fcir9q@!6vh&8hi=dxao^p@-*qg41!ag3-h+^=60d!j@b8^'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['140.109.18.114', 'localhost',]
+ALLOWED_HOSTS = ['140.109.18.114', 'localhost', 'www.petpen.org']
 
 
 # Application definition

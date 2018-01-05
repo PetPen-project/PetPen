@@ -11,7 +11,7 @@ import subprocess,signal
 import time,datetime
 import docker
 
-from model.utils import bokeh_plot
+from model.utils import bokeh_plot, update_status
 # from dataset.models import Dataset
 from django.conf import settings
 from .models import NN_model, History
@@ -41,10 +41,10 @@ def index(request):
         else:
             form = NN_modelForm(request.POST)
             if form.is_valid():
-                duplicate = NN_model.objects.filter(user=request.user.id).filter(title=request.POST['title']).count()
+                duplicate = NN_model.objects.filter(user=request.user.id,title=request.POST['title']).count()
                 if duplicate != 0:
                     messages.error(request, 'title "{}" already exists!'.format(request.POST['title']))
-                    error_message = 'title "{}" already exists!'
+                    error_message = 'title "{}" already exists!'.format(request.POST['title'])
                     context['error_message'] = error_message
                 else:
                     model_dir = "models/{}/{}".format(request.user.id,request.POST['title'])
@@ -156,7 +156,7 @@ def history_detail(request):
 
 def api(request):
     project = get_object_or_404(NN_model,user=request.user,pk=request.POST['project_id'])
-    file_path=op.join(MEDIA_ROOT, project.state_file)
+    file_path = op.join(MEDIA_ROOT, project.state_file)
     if request.POST.get('type') == 'init':
         logger.info('back to idle')
         try:
@@ -174,13 +174,15 @@ def api(request):
         return JsonResponse(info)
     try:
         with open(file_path) as f:
-            json_response = JsonResponse(json.load(f))
+            info = json.load(f)
+            json_response = JsonResponse(info)
     except:
+        return HttpResponse('failed parsing status')
         import time
         time.sleep(0.1)
         with open(file_path) as f:
             json_response = JsonResponse(json.load(f))
-    print((json_response.content))
+    print(json_response.content)
     return json_response
 
 def plot_api(request):
@@ -234,6 +236,73 @@ def manage_nodered(request):
             client.containers.run('noderedforpetpen',stdin_open=True,tty=True,name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':port},remove=True,hostname='petpen',detach=True)
         return HttpResponse('running')
 
+def preprocess_structure(file_path):
+    if not op.exists(file_path):
+        with open(op.join(op.dirname(file_path),'state.json'),'r+') as f:
+            info = json.load(f)
+            info['status'] = 'error: missing model structure'
+            f.seek(0)
+            json.dump(info,f)
+            f.truncate()
+        return 'file missing'
+            
+    with open(file_path,'r') as f:
+        structure = json.load(f)
+        import pprint
+        pprint.pprint(structure)
+        inputs = [k for (k,v) in structure['layers'].items() if v['type']=='Input']
+        outputs = [k for (k,v) in structure['layers'].items() if v['type']=='Output']
+        dataset_setting = structure['dataset']
+        missing_dataset = []
+        for i in inputs:
+            if i not in dataset_setting:
+                missing_dataset.append(i)
+            else:
+                try:
+                    dataset = Dataset.objects.filter(user=request.user).get(title=dataset_setting[i][0])
+                except:
+                    missing_dataset.append(i)
+                    continue
+                dataset_setting[i] = {
+                    'train_x':op.join(MEDIA_ROOT,str(dataset.training_input_file)),
+                    'valid_x':op.join(MEDIA_ROOT,str(dataset.testing_input_file))
+                    }
+        for o in outputs:
+            if o not in dataset_setting:
+                missing_dataset.append(o)
+            else:
+                try:
+                    dataset = Dataset.objects.filter(user=request.user).get(title=dataset_setting[o][0])
+                except:
+                    missing_dataset.append(o)
+                    continue
+                dataset_setting[o] = {
+                    'train_y':op.join(MEDIA_ROOT,str(dataset.training_output_file)),
+                    'valid_y':op.join(MEDIA_ROOT,str(dataset.testing_output_file))
+                    }
+        structure['dataset'] = dataset_setting
+        pretrains = [k for (k,v) in structure['layers'].items() if v['type']=='Pretrained']
+        for p in pretrains:
+            pretrain_project_name = structure['layers'][p]['params']['project_name']
+            pretrain_history_name = structure['layers'][p]['params']['weight_file']
+            try:
+                pretrain_project = NN_model.objects.get(user=request.user,title=pretrain_project_name)
+                pretrain_history = History.objects.filter(project=pretrain_project,name=pretrain_history_name,status='success').latest('id')
+            except:
+                missing_dataset.append(p)
+                continue
+            structure['layers'][p]['params']['weight_file'] = op.join(MEDIA_ROOT,op.dirname(pretrain_project.structure_file),pretrain_history.save_path,'weights.h5')
+    pprint.pprint(structure)
+    if missing_dataset:
+        print(missing_dataset)
+        return missing_dataset
+    preprocessed_dir = op.join(project_path,'preprocessed')
+    if not op.exists(preprocessed_dir):
+        os.makedirs(preprocessed_dir)
+    with open(op.join(preprocessed_dir,'result.json'),'w') as pre_f:
+        json.dump(structure,pre_f)
+    return 'successed'
+
 def backend_api(request):
     if request.method == "POST":
         script_path = op.abspath(op.join(__file__,op.pardir,op.pardir,op.pardir,'backend/petpen0.1.py'))
@@ -249,78 +318,20 @@ def backend_api(request):
         state_file = op.join(MEDIA_ROOT,project.state_file)
         with open(state_file,'r+') as f:
             info = json.load(f)
+            if info['status'] != 'system idle':
+                return HttpResponse('waiting back to idle')
             info['status'] = 'loading model'
             f.seek(0)
             json.dump(info,f)
             f.truncate()
         project_path = op.dirname(structure_file)
         #----- file path transformation -----
-        if not op.exists(structure_file):
-            with open(state_file,'r+') as f:
-                info = json.load(f)
-                info['status'] = 'ERROR: missing model structure'
-                f.seek(0)
-                json.dump(info,f)
-                f.truncate()
-            return  HttpResponse('error')
-            
-        with open(structure_file,'r') as f:
-            structure = json.load(f)
-            import pprint
-            pprint.pprint(structure)
-            # inputs = list(filter(lambda name,value: value['type'] == 'Input', structure['layers']))
-            # print(inputs)
-            inputs = [k for (k,v) in structure['layers'].items() if v['type']=='Input']
-            outputs = [k for (k,v) in structure['layers'].items() if v['type']=='Output']
-            dataset_setting = structure['dataset']
-            missing_dataset = []
-            for i in inputs:
-                if i not in dataset_setting:
-                    missing_dataset.append(i)
-                else:
-                    try:
-                        dataset = Dataset.objects.filter(user=request.user).get(title=dataset_setting[i][0])
-                    except:
-                        missing_dataset.append(i)
-                        continue
-                    dataset_setting[i] = {
-                        'train_x':op.join(MEDIA_ROOT,str(dataset.training_input_file)),
-                        'valid_x':op.join(MEDIA_ROOT,str(dataset.testing_input_file))
-                        }
-            for o in outputs:
-                if o not in dataset_setting:
-                    missing_dataset.append(o)
-                else:
-                    try:
-                        dataset = Dataset.objects.filter(user=request.user).get(title=dataset_setting[o][0])
-                    except:
-                        missing_dataset.append(o)
-                        continue
-                    dataset_setting[o] = {
-                        'train_y':op.join(MEDIA_ROOT,str(dataset.training_output_file)),
-                        'valid_y':op.join(MEDIA_ROOT,str(dataset.testing_output_file))
-                        }
-            structure['dataset'] = dataset_setting
-            pretrains = [k for (k,v) in structure['layers'].items() if v['type']=='Pretrained']
-            for p in pretrains:
-                pretrain_project_name = structure['layers'][p]['params']['project_name']
-                pretrain_history_name = structure['layers'][p]['params']['weight_file']
-                try:
-                    pretrain_project = NN_model.objects.get(user=request.user,title=pretrain_project_name)
-                    pretrain_history = History.objects.filter(project=pretrain_project,name=pretrain_history_name,status='success').latest('id')
-                except:
-                    missing_dataset.append(p)
-                    continue
-                structure['layers'][p]['params']['weight_file'] = op.join(MEDIA_ROOT,op.dirname(pretrain_project.structure_file),pretrain_history.save_path,'weights.h5')
-            pprint.pprint(structure)
-            preprocessed_dir = op.join(project_path,'preprocessed')
-            if not op.exists(preprocessed_dir):
-                os.makedirs(preprocessed_dir)
-            with open(op.join(preprocessed_dir,'result.json'),'w') as pre_f:
-                json.dump(structure,pre_f)
-        if missing_dataset:
-            print(missing_dataset)
-            return HttpResponse('missing')
+        prcs = preprocess_structure(file_path)
+        if prcs != 'successed':
+            if prcs != 'file missing':
+                return JsonResponse({'missing':prcs})
+            else:
+                return JsonResponse({'missing':'no structure_file'})
         try:
             p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'],)
         except Exception as e:

@@ -1,7 +1,9 @@
 from bokeh.plotting import figure
 from bokeh.embed import components
 import pandas as pd
-import os
+import os, json
+import os.path as op
+from petpen.settings import MEDIA_ROOT
 
 def bokeh_plot(log_dir,detail=False):
     if detail:
@@ -27,3 +29,23 @@ def bokeh_plot(log_dir,detail=False):
     plot.yaxis.axis_label = 'loss'
     script, div = components(plot)
     return script, div
+
+def update_status(state_path, status=None, media_root=MEDIA_ROOT, **kwargs):
+    if status:
+        if not op.exists(op.join(media_root,state_path)):
+            with open(op.join(media_root,state_path),'w')as state_file:
+                info = {'status':status,**kwargs}
+                json.dump(info)
+        else:
+            with open(op.join(media_root,state_path),'r+') as state_file:
+                info = json.load(state_file)
+                info['status'] = status
+                for k,v in kwargs:
+                    info['k'] = v
+                state_file.seek(0)
+                json.dump(info,state_file)
+                state_file.truncate()
+    else:
+        with open(op.join(media_root,state_path),'r') as state_file:
+            info = json.load(state_file)
+    return info
