@@ -35,12 +35,12 @@ def update_status(state_path, status=None, media_root=MEDIA_ROOT, **kwargs):
         if not op.exists(op.join(media_root,state_path)):
             with open(op.join(media_root,state_path),'w')as state_file:
                 info = {'status':status,**kwargs}
-                json.dump(info)
+                json.dump(info,state_file)
         else:
             with open(op.join(media_root,state_path),'r+') as state_file:
                 info = json.load(state_file)
                 info['status'] = status
-                for k,v in kwargs:
+                for k,v in kwargs.items():
                     info['k'] = v
                 state_file.seek(0)
                 json.dump(info,state_file)

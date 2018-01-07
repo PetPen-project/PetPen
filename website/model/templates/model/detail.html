@@ -63,14 +63,6 @@ $(document).ready(function(){
   <div class="tab-content" id="projectContent">
     <div class="tab-pane fade show active" id="training" role="tabpanel" aria-labelledby="training-tab">
       <div class="container">
-        <!--<div class="row justify-content-center py-md-3">-->
-          <!--<h2>dataset selection:</h2>-->
-          <!--<select id="dataSelect" class="custom-select" name="">-->
-            <!--<option disabled="disabled" selected="selected" hidden="true">choose a dataset</option>-->
-            <!--<option value="">mnist</option>-->
-            <!--<option value="">pm2.5</option>-->
-          <!--</select>-->
-        <!--</div>-->
         <div id="run-model" class="py-md-3 row justify-content-center">
           <div class="input-group col-md-4">
             <span class="input-group-addon" id="train-addon1">experiment name</span>
@@ -82,10 +74,22 @@ $(document).ready(function(){
             <button id="testModel" class="btn btn-outline-primary" style="display:none"><i class="fa fa-play"></i> evaluate</button>
           </div>
         </div>
-      </div>
-      <div id="loadingDiv" class="text-center fade">
-        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
-        <span class="sr-only">Loading...</span>
+        <div class="row justify-content-center">
+          <h2 class="col-md-2">Status</h2>
+          <div class="col-md-5">
+            <input id="txfStatus" type="input" class="form-control" readonly="true">
+          </div>
+        </div>
+        <!--loading-->
+        <div id="loadingDiv" class="text-center fade">
+          <h3>Loading...</h3>
+          <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+          <span class="sr-only">Loading...</span>
+        </div>
+        <!--error message-->
+        <div id="errorDiv">
+          <input id="txfError" type="input" readonly="true" class="col-md-8">
+        </div>
       </div>
       <!--training-->
       <div id="trainingDiv">
@@ -93,13 +97,6 @@ $(document).ready(function(){
           <h3 class="text-center">Training</h3>
         </div>
         <div class="col-md-12 form-horizontal">
-          <!--status-->
-          <div class="form-group row">
-            <label id="lblStatus" class="col-md-2 control-label">Status</label>
-            <div class="col-md-9">
-              <input id="txfStatus" type="input" class="form-control" readonly="true">
-            </div>
-          </div>
           <!--epoch-->
           <div class="form-group row">
             <label class="col-md-2 control-label">Epoch</label>

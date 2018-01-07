@@ -51,21 +51,23 @@ def index(request):
                     newModel = NN_model(title=request.POST['title'],user=request.user,state_file=model_dir+"/state.json",structure_file=model_dir+"/result.json")
                     newModel.save()
                     os.makedirs(op.join(MEDIA_ROOT,model_dir))
+                    update_status(newModel.state_file,'system idle')
                     shutil.copy2(op.abspath(op.join(op.abspath(__file__),'../../../.config.json')),op.join(MEDIA_ROOT,model_dir))
                 return HttpResponseRedirect(reverse("model:index"))
     elif request.method == 'GET':
         form = NN_modelForm()
     projects = NN_model.objects.filter(user_id = request.user.id)
     for project in projects:
-        state_path = op.join(MEDIA_ROOT,project.state_file)
-        if op.exists(state_path):
-            with open(state_path) as f:
-                status = json.load(f)['status']
-        else:
-            with open(state_path,'w') as f:
-                json.dump({'status':'system idle'},f)
-            status = 'idle'
-        if status=='start training model' or status =='start testing':
+        status = update_status(project.state_file)['status']
+        # state_path = op.join(MEDIA_ROOT,project.state_file)
+        # if op.exists(state_path):
+            # with open(state_path) as f:
+                # status = json.load(f)['status']
+        # else:
+            # with open(state_path,'w') as f:
+                # json.dump({'status':'system idle'},f)
+            # status = 'idle'
+        if status == 'start training model' or status == 'start testing':
             project.status = 'running'
         else:
             project.status = 'idle'
@@ -90,7 +92,7 @@ def project_detail(request, project_id):
     except:
         pass
 
-    project_path = os.path.join(MEDIA_ROOT,os.path.dirname(project.structure_file))
+    project_path = op.join(MEDIA_ROOT,os.path.dirname(project.structure_file))
     histories = History.objects.filter(project = project)
     context = {
             'histories':histories,
@@ -156,34 +158,53 @@ def history_detail(request):
 
 def api(request):
     project = get_object_or_404(NN_model,user=request.user,pk=request.POST['project_id'])
-    file_path = op.join(MEDIA_ROOT, project.state_file)
-    if request.POST.get('type') == 'init':
-        logger.info('back to idle')
-        try:
-            with open(file_path,'r+') as f:
-                info = json.load(f)
-                if info['status'] != 'start training model' and info['status'] != 'start testing' and info['status'] != 'loading model':
-                    info['status'] = 'system idle'
-                f.seek(0)
-                json.dump(info,f)
-                f.truncate()
-        except:
-            with open(file_path,'w') as f:
-                info = {'status':'system idle'}
-                json.dump(info,f)
-        return JsonResponse(info)
     try:
-        with open(file_path) as f:
-            info = json.load(f)
-            json_response = JsonResponse(info)
+        info = update_status(project.state_file)
     except:
         return HttpResponse('failed parsing status')
-        import time
-        time.sleep(0.1)
-        with open(file_path) as f:
-            json_response = JsonResponse(json.load(f))
-    print(json_response.content)
-    return json_response
+    if info['status'] in ['error','finish training']:
+        if request.POST.get('type') == 'init':
+            logger.info('back to idle')
+        # if info['status'] not in ['start training model', 'start testing', 'loading model']:
+            info['status'] = 'system idle'
+            update_status(project.state_file,info['status'])
+        elif info['status'] == 'error':
+            if info.get('error_log_file'):
+                with open(info['error_log_file']) as f:
+                    info['detail'] = f.read()
+        project.status = 'idle'
+        project.save()
+    return JsonResponse(info)
+    # else if request.method == 'POST':
+        
+    # file_path = op.join(MEDIA_ROOT, project.state_file)
+    # if request.POST.get('type') == 'init':
+        # logger.info('back to idle')
+        # try:
+            # with open(file_path,'r+') as f:
+                # info = json.load(f)
+                # if info['status'] != 'start training model' and info['status'] != 'start testing' and info['status'] != 'loading model':
+                    # info['status'] = 'system idle'
+                # f.seek(0)
+                # json.dump(info,f)
+                # f.truncate()
+        # except:
+            # with open(file_path,'w') as f:
+                # info = {'status':'system idle'}
+                # json.dump(info,f)
+        # return JsonResponse(info)
+    # try:
+        # with open(file_path) as f:
+            # info = json.load(f)
+            # json_response = JsonResponse(info)
+    # except:
+        # return HttpResponse('failed parsing status')
+        # import time
+        # time.sleep(0.1)
+        # with open(file_path) as f:
+            # json_response = JsonResponse(json.load(f))
+    # print(json_response.content)
+    # return json_response
 
 def plot_api(request):
     import json
@@ -238,13 +259,15 @@ def manage_nodered(request):
 
 def preprocess_structure(file_path):
     if not op.exists(file_path):
-        with open(op.join(op.dirname(file_path),'state.json'),'r+') as f:
-            info = json.load(f)
-            info['status'] = 'error: missing model structure'
-            f.seek(0)
-            json.dump(info,f)
-            f.truncate()
+        update_status(op.join(op.dirname(file_path),'state.json'),'error: missing model structure')
         return 'file missing'
+        # with open(op.join(op.dirname(file_path),'state.json'),'r+') as f:
+            # info = json.load(f)
+            # info['status'] = 'error: missing model structure'
+            # f.seek(0)
+            # json.dump(info,f)
+            # f.truncate()
+        # return 'file missing'
             
     with open(file_path,'r') as f:
         structure = json.load(f)
@@ -312,34 +335,49 @@ def backend_api(request):
         project = NN_model.objects.filter(user=request.user).get(id=request.POST['project'])
         if not project:
             return Http404('project not found')
-        print((history_name,save_path,executed))
-        print(request.POST['project'],project.title)
+        history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running')
+        history.save()
+        project.training_counts += 1
+        project.status = 'running'
+        project.save()
+        logger.debug((history_name,save_path,executed))
+        logger.debug(request.POST['project'],project.title)
         structure_file = op.join(MEDIA_ROOT,project.structure_file)
-        state_file = op.join(MEDIA_ROOT,project.state_file)
-        with open(state_file,'r+') as f:
-            info = json.load(f)
-            if info['status'] != 'system idle':
-                return HttpResponse('waiting back to idle')
-            info['status'] = 'loading model'
-            f.seek(0)
-            json.dump(info,f)
-            f.truncate()
+        info = update_status(project.state_file)
+        if info['status'] != 'system idle':
+            return HttpResponse('waiting back to idle')
+        else:
+            # update_status(project.state_file,'loading model')
+            pass
+        # state_file = op.join(MEDIA_ROOT,project.state_file)
+        # with open(state_file,'r+') as f:
+            # info = json.load(f)
+            # if info['status'] != 'system idle':
+                # return HttpResponse('waiting back to idle')
+            # info['status'] = 'loading model'
+            # f.seek(0)
+            # json.dump(info,f)
+            # f.truncate()
         project_path = op.dirname(structure_file)
+        shutil.copy2(structure_file,op.join(project_path,save_path))
         #----- file path transformation -----
-        prcs = preprocess_structure(file_path)
+        prcs = preprocess_structure(structure_file)
+        print(prcs)
         if prcs != 'successed':
+            history.status = 'aborted'
+            project.status = 'idle'
+            project.save()
+            history.save()
             if prcs != 'file missing':
+                update_status(project.state_file,status='error',detail='structure assignment error found on nodes {}'.format(', '.join(prcs)))
                 return JsonResponse({'missing':prcs})
             else:
-                return JsonResponse({'missing':'no structure_file'})
+                update_status(project.state_file,status='error',detail='please depoly your model structure before running')
+                return JsonResponse({'missing':'no structure file'})
         try:
             p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'],)
         except Exception as e:
             logger.error('Failed to run the backend', exc_info=True)
-        history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running')
-        history.save()
-        project.training_counts += 1
-        project.save()
         # project.status='running'
         # project.save()
         return HttpResponse("running")
