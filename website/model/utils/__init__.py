@@ -41,7 +41,7 @@ def update_status(state_path, status=None, media_root=MEDIA_ROOT, **kwargs):
                 info = json.load(state_file)
                 info['status'] = status
                 for k,v in kwargs.items():
-                    info['k'] = v
+                    info[k] = v
                 state_file.seek(0)
                 json.dump(info,state_file)
                 state_file.truncate()

@@ -18,6 +18,7 @@ var currentMode = "idle";
 var lastUpdateTimestamp = 0;
 
 $(function(){
+  //$('#errorDiv,#loadingDiv,#trainingDiv').hide();
 	initJsonPython();//init
 	
   timerProgress = setInterval(function () {//timer
@@ -44,6 +45,7 @@ function printJSON(data){
   
   //===== switch mode =====//
   switch(data['status']){
+    case 'system idle': currentMode = 'idle'; break;
     case wordToTraining: currentMode = 'training'; break;
     case wordToTesting: currentMode = 'testing'; break;
     case wordToLoading: currentMode = 'loading'; emptyPlotCode(); break;
@@ -74,7 +76,7 @@ function printJSON(data){
     switch(currentMode){
       case 'training':
         $('#trainingDiv').show();
-        $('#loadingDiv','#testingDiv','#errorDiv').hide();
+        $('#loadingDiv,#testingDiv,#errorDiv').hide();
         break;
       //case 'testing':
         //$('#trainingDiv,#testingDiv').show();
@@ -82,15 +84,14 @@ function printJSON(data){
         //break;
       case 'error':
         $('#errorDiv').show();
-        $('#loadingDiv','trainingDiv').hide();
+        $('#loadingDiv,trainingDiv').hide();
         break;
       case 'loading':
         $('#loadingDiv').show();
-        //$('#trainingDiv,#testingDiv').hide();
+        $('#trainingDiv,#errorDiv').hide();
         break;
       default:
-        //$('#trainingDiv,#testingDiv,#loadingDiv').hide();
-        $('#testingDiv,#loadingDiv','#errorDiv').hide();
+        $('#trainingDiv,#loadingDiv,#errorDiv').hide();
         break;
     }
 

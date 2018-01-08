@@ -226,7 +226,7 @@ def plot_api(request):
 
 @login_required
 def manage_nodered(request):
-    port = request.user.id+2880
+    port = request.user.id+1880
     action = request.GET.get('action','')
     client = docker.from_env()
     user_container = list(filter(lambda container:container.attrs['Config']['Image']=='noderedforpetpen' and container.name==str(request.user), client.containers.list()))
@@ -257,7 +257,7 @@ def manage_nodered(request):
             client.containers.run('noderedforpetpen',stdin_open=True,tty=True,name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':port},remove=True,hostname='petpen',detach=True)
         return HttpResponse('running')
 
-def preprocess_structure(file_path):
+def preprocess_structure(file_path,datasets):
     if not op.exists(file_path):
         update_status(op.join(op.dirname(file_path),'state.json'),'error: missing model structure')
         return 'file missing'
@@ -282,8 +282,9 @@ def preprocess_structure(file_path):
                 missing_dataset.append(i)
             else:
                 try:
-                    dataset = Dataset.objects.filter(user=request.user).get(title=dataset_setting[i][0])
+                    dataset = datasets.get(title=dataset_setting[i][0])
                 except:
+                    logger.error('Failed to load dataset', exc_info=True)
                     missing_dataset.append(i)
                     continue
                 dataset_setting[i] = {
@@ -295,8 +296,9 @@ def preprocess_structure(file_path):
                 missing_dataset.append(o)
             else:
                 try:
-                    dataset = Dataset.objects.filter(user=request.user).get(title=dataset_setting[o][0])
+                    dataset = datasets.get(title=dataset_setting[o][0])
                 except:
+                    logger.error('Failed to load dataset', exc_info=True)
                     missing_dataset.append(o)
                     continue
                 dataset_setting[o] = {
@@ -319,7 +321,7 @@ def preprocess_structure(file_path):
     if missing_dataset:
         print(missing_dataset)
         return missing_dataset
-    preprocessed_dir = op.join(project_path,'preprocessed')
+    preprocessed_dir = op.join(op.dirname(file_path),'preprocessed')
     if not op.exists(preprocessed_dir):
         os.makedirs(preprocessed_dir)
     with open(op.join(preprocessed_dir,'result.json'),'w') as pre_f:
@@ -347,8 +349,8 @@ def backend_api(request):
         if info['status'] != 'system idle':
             return HttpResponse('waiting back to idle')
         else:
-            # update_status(project.state_file,'loading model')
-            pass
+            update_status(project.state_file,'loading model')
+            # pass
         # state_file = op.join(MEDIA_ROOT,project.state_file)
         # with open(state_file,'r+') as f:
             # info = json.load(f)
@@ -359,9 +361,10 @@ def backend_api(request):
             # json.dump(info,f)
             # f.truncate()
         project_path = op.dirname(structure_file)
+        os.mkdir(op.join(project_path,save_path))
         shutil.copy2(structure_file,op.join(project_path,save_path))
         #----- file path transformation -----
-        prcs = preprocess_structure(structure_file)
+        prcs = preprocess_structure(structure_file,Dataset.objects.filter(user=request.user))
         print(prcs)
         if prcs != 'successed':
             history.status = 'aborted'
