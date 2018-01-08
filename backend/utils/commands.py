@@ -45,6 +45,7 @@ def train_func(args, log_dir):
     state_callback = Model_state(state_file, model.config)
     history = model.train(callbacks=[history_callback, state_callback])
     save_history(os.path.join(log_dir,'train_log'), history, history_callback)
+    model_result_path = os.path.dirname(log_dir)
     model.save(os.path.join(model_result_path,'weights.h5'))
 
 def validate_func(args, log_dir):
