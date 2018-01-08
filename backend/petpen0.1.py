@@ -1,4 +1,4 @@
-import argparse, os, sys
+import argparse, os, sys, json
 from utils import train_func, validate_func, predict_func
 from datetime import datetime
 import traceback
@@ -29,7 +29,8 @@ args = parser.parse_args()
 model_dir = args.model
 str_start_time = args.time if args.time else datetime.now().strftime('%y%m%d_%H%M%S')
 model_result_path = os.path.join(model_dir, str_start_time)
-os.mkdir(model_result_path)
+if not os.path.exists(model_result_path):
+    os.mkdir(model_result_path)
 log_dir = os.path.join(model_result_path, 'logs')
 os.mkdir(log_dir)
 
@@ -43,3 +44,9 @@ except:
     with open(error_log_file, 'w') as error_log:
         for line in lines:
             error_log.write(line)
+    with open(os.path.join(model_dir,'state.json'),'w') as state_file:
+        info = {
+            'status':'error',
+            'error_log_file':error_log_file
+            }
+        json.dump(info,state_file)

@@ -18,6 +18,7 @@ var currentMode = "idle";
 var lastUpdateTimestamp = 0;
 
 $(function(){
+  //$('#errorDiv,#loadingDiv,#trainingDiv').hide();
 	initJsonPython();//init
 	
   timerProgress = setInterval(function () {//timer
@@ -44,9 +45,11 @@ function printJSON(data){
   
   //===== switch mode =====//
   switch(data['status']){
+    case 'system idle': currentMode = 'idle'; break;
     case wordToTraining: currentMode = 'training'; break;
     case wordToTesting: currentMode = 'testing'; break;
     case wordToLoading: currentMode = 'loading'; emptyPlotCode(); break;
+    case 'error': currentMode = 'error'; break;
     case 'finish training': loadHTMLPython(); break;
   }
   
@@ -59,6 +62,7 @@ function printJSON(data){
     //===== updated data on screen =====//
     $('#txfStatus').val(data['status']);//status
     $('#txfTime').val(data['time']);//time
+    if (data['status']=='error'){$('#txfError').val(data['detail']);}
     if ('loss' in data && data['loss']['value']!='null'){
       var lossText = data['loss']['type'] + ':' + data['loss']['value'];//loss
     } else{
@@ -69,29 +73,38 @@ function printJSON(data){
     setProgessBar('barProgress', currentMode, data['progress']);//progress
 
     //different mode
-    //switch(currentMode){
-      //case 'training':
-        //$('#trainingDiv').show();
-        //$('#testingDiv,#loadingDiv').hide();
-        //break;
+    switch(currentMode){
+      case 'training':
+        $('#trainingDiv').show();
+        $('#loadingDiv,#testingDiv,#errorDiv').hide();
+        break;
       //case 'testing':
         //$('#trainingDiv,#testingDiv').show();
         //$('#loadingDiv').hide();
         //break;
-      //case 'loading':
-        //$('#loadingDiv').show();
-        //$('#trainingDiv,#testingDiv').hide();
-        //break;
-      //default:
-        //$('#trainingDiv,#testingDiv,#loadingDiv').hide();
-        //break;
-    //}
+      case 'error':
+        $('#errorDiv').show();
+        $('#loadingDiv,trainingDiv').hide();
+        break;
+      case 'loading':
+        $('#loadingDiv').show();
+        $('#trainingDiv,#errorDiv').hide();
+        break;
+      default:
+        $('#trainingDiv,#loadingDiv,#errorDiv').hide();
+        break;
+    }
 
     //===== finish =====//
     if(data['status'] == stopKeyword) stopTimer();//stop
   }
 };
+function emptyPlotCode(){
+  ;
+}
 function setProgessBar(barClass, barName, dataArray){
+  if(barName != 'training' && barName != 'testing')
+    return;
   var num1 = 0, num2 = 0;
   if(dataArray.length > 0) num1 = dataArray[0];
   if(dataArray.length > 1) num2 = dataArray[1];
@@ -137,7 +150,8 @@ function loadJsonPython(){
       project_id: project_id
     },
     success: printJSON,
-    error: errorJSON
+    error: function(){;} // pass
+    //error: errorJSON
   });
 };
 
