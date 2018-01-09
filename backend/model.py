@@ -132,6 +132,7 @@ class backend_model():
         # Iteratively create layer objects
         model_output = []
         while inputs:
+            print(inputs)
             next_layers = []
             for conn_in in inputs:
                 conn_outs = connections[conn_in]

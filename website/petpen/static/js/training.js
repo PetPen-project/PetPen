@@ -18,6 +18,7 @@ var currentMode = "idle";
 var lastUpdateTimestamp = 0;
 
 $(function(){
+  //$('#errorDiv,#loadingDiv,#trainingDiv').hide();
 	initJsonPython();//init
 	
   timerProgress = setInterval(function () {//timer
@@ -44,9 +45,11 @@ function printJSON(data){
   
   //===== switch mode =====//
   switch(data['status']){
+    case 'system idle': currentMode = 'idle'; break;
     case wordToTraining: currentMode = 'training'; break;
     case wordToTesting: currentMode = 'testing'; break;
     case wordToLoading: currentMode = 'loading'; emptyPlotCode(); break;
+    case 'error': currentMode = 'error'; break;
     case 'finish training': loadHTMLPython(); break;
   }
   
@@ -59,6 +62,7 @@ function printJSON(data){
     //===== updated data on screen =====//
     $('#txfStatus').val(data['status']);//status
     $('#txfTime').val(data['time']);//time
+    if (data['status']=='error'){$('#txfError').val(data['detail']);}
     if ('loss' in data && data['loss']['value']!='null'){
       var lossText = data['loss']['type'] + ':' + data['loss']['value'];//loss
     } else{
@@ -72,19 +76,22 @@ function printJSON(data){
     switch(currentMode){
       case 'training':
         $('#trainingDiv').show();
-        $('#loadingDiv','#testingDiv').hide();
+        $('#loadingDiv,#testingDiv,#errorDiv').hide();
         break;
       //case 'testing':
         //$('#trainingDiv,#testingDiv').show();
         //$('#loadingDiv').hide();
         //break;
+      case 'error':
+        $('#errorDiv').show();
+        $('#loadingDiv,trainingDiv').hide();
+        break;
       case 'loading':
         $('#loadingDiv').show();
-        //$('#trainingDiv,#testingDiv').hide();
+        $('#trainingDiv,#errorDiv').hide();
         break;
       default:
-        //$('#trainingDiv,#testingDiv,#loadingDiv').hide();
-        $('#testingDiv,#loadingDiv').hide();
+        $('#trainingDiv,#loadingDiv,#errorDiv').hide();
         break;
     }
 
