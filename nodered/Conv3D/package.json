@@ -1,0 +1,14 @@
+{
+    "name": "Conv3D_node",
+    "version": "0.0.1",
+    "description": "A conv3d node",
+    "dependencies": {},
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
+        "nodes": {
+            "sample": "conv3DNode/conv3d.js"
+        }
+    }
+}
