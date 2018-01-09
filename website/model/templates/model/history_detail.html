@@ -19,7 +19,7 @@ $(function(){
       }
     });
   });
-  $("#sidebar button").click(function(){
+  $('#sidebar div.btn-group button').click(function(){
     $.ajax({
       type: 'post',
       url: '/model/history_detail/',
@@ -36,12 +36,30 @@ $(function(){
       }
     });
   });
+  $('#deleteAction').click(function(){
+    $('a[id^="loadHistory"]').prepend('<input type="checkbox" name="checkDelete" value="delete" class="mr-2 my-auto">');
+    $(document).mouseup(function(e){
+      var container = $('#sidebar');
+      if (!container.is(e.target) && container.has(e.target).length === 0)
+      {
+        $('input[name=checkDelete]').remove();
+      }
+    });
+  });
 });
 </script>
 
 <div class="container-fluid" style="height:100%;">
   <div class="row">
     <div id="sidebar" data-children=".item">
+      <div class="dropdown">
+        <button type="button" class="py-2" id="historyAction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ACTION <i class="fa fa-angle-down"></i></button>
+        <button type="button" id="confirmAction" class="py-2 d-none">confirm</button>
+        <div style="width:100%;border-bottom: 1px solid rgba(100,100,100,1);"></div>
+        <div class="dropdown-menu" aria-labelledby="historyAction">
+          <button id="deleteAction" class="dropdown-item">delete</button>
+        </div>
+      </div>
       {% for history in histories %}
         <div class="item">
           <a href="#{{history.save_path}}" id="loadHistory{{history.name}}" class="d-flex" data-toggle="collapse" data-parent="#sidebar" data-history="{{history.id}}" aria-expanded="false" aria-controls="{{history.save_path}}">{{history.name}}</a>

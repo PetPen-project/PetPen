@@ -103,27 +103,26 @@ def project_detail(request, project_id):
 
 def history_detail(request):
     if request.POST.get('project_id'):
-        print(request.POST.get('project_id'))
         histories = History.objects.filter(project__id=request.POST.get('project_id'))
         return render(request,'model/history_detail.html',{'histories':histories})
     history_id = request.POST.get('history')
     history = History.objects.get(pk=history_id)
     histories = History.objects.filter(project=history.project)
-    print('action:',request.POST.get('action'))
     history_path = op.join(MEDIA_ROOT,op.dirname(history.project.structure_file),history.save_path)
     if request.POST.get('action') == 'delete':
         history.delete()
         return render(request,'model/history_detail.html',{'histories':histories})
     elif request.POST.get('action') == 'download':
         pass
-    elif history.status == "running":
+    if history.status == "running":
         if not op.exists(history_path):
             history.status = 'execute log missing'
-            history.save()
         else:
             if op.exists(op.join(history_path,'weights.h5')):
                 history.status = 'success'
-                history.save()
+            elif op.exists(op.join(history_path,'logs/error_log')):
+                history.status = 'error'
+        history.save()
     if history.status !='success':
         return render(request,'model/history_detail.html',{'histories':histories,'save_path':history.save_path,'status':history.status,'executed':history.executed})
     import pandas as pd
@@ -133,7 +132,6 @@ def history_detail(request):
     for index in range(log_data.shape[1]):
         chartdata['name{}'.format(index)] = log_data.columns[index]
         chartdata['y{}'.format(index)] = log_data.iloc[:,index]
-    print(chartdata)
     charttype = "lineChart"
     chartcontainer = 'linechart_container'
     best_epoch = log_data['val_loss'].argmin()
@@ -257,7 +255,7 @@ def manage_nodered(request):
             client.containers.run('noderedforpetpen',stdin_open=True,tty=True,name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':port},remove=True,hostname='petpen',detach=True)
         return HttpResponse('running')
 
-def preprocess_structure(file_path,datasets):
+def preprocess_structure(file_path,projects,datasets):
     if not op.exists(file_path):
         update_status(op.join(op.dirname(file_path),'state.json'),'error: missing model structure')
         return 'file missing'
@@ -311,7 +309,7 @@ def preprocess_structure(file_path,datasets):
             pretrain_project_name = structure['layers'][p]['params']['project_name']
             pretrain_history_name = structure['layers'][p]['params']['weight_file']
             try:
-                pretrain_project = NN_model.objects.get(user=request.user,title=pretrain_project_name)
+                pretrain_project = projects.get(title=pretrain_project_name)
                 pretrain_history = History.objects.filter(project=pretrain_project,name=pretrain_history_name,status='success').latest('id')
             except:
                 missing_dataset.append(p)
@@ -364,7 +362,7 @@ def backend_api(request):
         os.mkdir(op.join(project_path,save_path))
         shutil.copy2(structure_file,op.join(project_path,save_path))
         #----- file path transformation -----
-        prcs = preprocess_structure(structure_file,Dataset.objects.filter(user=request.user))
+        prcs = preprocess_structure(structure_file,NN_model.objects.filter(user=request.user),Dataset.objects.filter(user=request.user))
         print(prcs)
         if prcs != 'successed':
             history.status = 'aborted'
@@ -373,9 +371,13 @@ def backend_api(request):
             history.save()
             if prcs != 'file missing':
                 update_status(project.state_file,status='error',detail='structure assignment error found on nodes {}'.format(', '.join(prcs)))
+                with open(op.join(project_path,save_path,'logs/error_log'),'w') as f:
+                    f.write('Structure assignment error found on nodes {}'.format(', '.join(prcs)))
                 return JsonResponse({'missing':prcs})
             else:
                 update_status(project.state_file,status='error',detail='please depoly your model structure before running')
+                with open(op.join(project_path,save_path,'logs/error_log'),'w') as f:
+                    f.write('No deployed neural network found. Finish your neural network editing before running experiments.')
                 return JsonResponse({'missing':'no structure file'})
         try:
             p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'],)
