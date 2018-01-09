@@ -365,6 +365,7 @@ def backend_api(request):
         prcs = preprocess_structure(structure_file,NN_model.objects.filter(user=request.user),Dataset.objects.filter(user=request.user))
         print(prcs)
         if prcs != 'successed':
+            os.makedirs(op.join(project_path,save_path,'logs/'))
             history.status = 'aborted'
             project.status = 'idle'
             project.save()

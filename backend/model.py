@@ -142,7 +142,7 @@ class backend_model():
                         continue
                     layer_config = layers[conn_out]
     
-                    layer_type, layer_params = layers[conn_out]['type'], layers[conn_out]['params']
+                    layer_type, layer_params = layers[conn_out]['type'], layers[conn_out].get('params',{})
     
     
                     # Merge layers (didn't check)
@@ -207,7 +207,7 @@ def deserialize_layer(layer_config, name=None):
     layer_type = layer_config.get('type')
     if layer_type is None:
         raise ValueError('Undefined layer type')
-    layer_params = layer_config.get('params')
+    layer_params = layer_config.get('params',{})
 
     if not hasattr(keras.layers,layer_type):
         pass
@@ -235,7 +235,7 @@ def deserialize_layer(layer_config, name=None):
     elif layer_type.lower() == 'reshape':
         layer_params['target_shape'] = layer_params.pop('shape')
     elif layer_type.lower() == 'merge':
-        merge_method = layer_params['activation']
+        merge_method = layer_params['method']
         return getattr(keras.layers, merge_method)
     layer = getattr(keras.layers,layer_type)(name = name,**layer_params)
     return layer
