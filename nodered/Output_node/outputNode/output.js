@@ -27,6 +27,19 @@ module.exports = function(RED) {
 			res.layers[name] = {type: 'Convolution_1D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: parseInt(obj[i]['kernel']), strides: parseInt(obj[ind]['strides']), activation: obj[ind]['methods']}};
 			rec[obj[ind]['id']] = name;
 			obj[ind]['name'] = name;
+        	} else if (obj[ind]['type'] == 'Conv3D') {
+			name  = obj[ind]['name'] + "_" + ind + "_" + timest;
+            		kernels = obj[ind]['kernel'].split(",");
+	    		for (var i = 0; i < kernels.length; i++) {
+				kernels[i] = parseInt(kernels[i]);
+	    		}
+            		stride_num = obj[ind]['strides'].split(",");
+	    		for (var i = 0; i < stride_num.length; i++) {
+				stride_num[i] = parseInt(stride_num[i]);
+	    		}
+			res.layers[name] = {type: 'CONVOLUTION_2D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: kernels, strides: stride_num, padding: obj[ind]['padding'], activation: obj[ind]['activation']}};
+			rec[obj[ind]['id']] = name;
+            		obj[ind]['name'] = name;
         	} else if (obj[ind]['type'] == 'Convolution_2D') {
 			name  = obj[ind]['name'] + "_" + ind + "_" + timest;
             		kernels = obj[ind]['kernel'].split(",");
@@ -153,7 +166,7 @@ module.exports = function(RED) {
 		obj[ind]['name'] = name;
  	} else if (obj[ind]['type'] == 'Flatten') {
 	    name = obj[ind]['name'] + "_" + ind + "_" + timest;
-	    res.layers[name] = {type: 'Flatten'};                      
+	    res.layers[name] = {type: 'Flatten', params: {}};                      
 	    rec[obj[ind]['id']] =name;            
 	    obj[ind]['name'] = name; 
 	}
