@@ -6,6 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.core.files import File
 from django.contrib import messages
 
+from job_queue import push
+
 import os,json,shutil
 import os.path as op 
 import subprocess,signal
@@ -359,7 +361,8 @@ def backend_api(request):
                     f.write('No deployed neural network found. Finish your neural network editing before running experiments.')
                 return JsonResponse({'missing':'no structure file'})
         try:
-            p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'],)
+            # p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'],)
+            p = push(['python',script_path,'-m',project_path,'-t',save_path,'train'])
         except Exception as e:
             logger.error('Failed to run the backend', exc_info=True)
         # project.status='running'

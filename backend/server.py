@@ -1,6 +1,6 @@
 import time, os
 import subprocess
-from queue import pop, jobs
+from job_queue import pop, jobs
 
 def initial_gpu():
     ngpu = int(subprocess.check_output('nvidia-smi -L | wc -l', shell=True))
@@ -17,14 +17,15 @@ if __name__ == '__main__':
     jobstatus = {}
     while True:
         print(gpus)
-        print jobstatus
+        print(jobstatus)
         if jobs() > 0 and is_any_idle_gpu(gpus):
             prefer_gpu = get_gpu(gpus)
             command = pop()
+            print(command)
             gpus[prefer_gpu] = 0 # mark busy
             sandbox_env = os.environ.copy()
             sandbox_env['CUDA_VISIBLE_DEVICES'] = str(prefer_gpu)
-            jobstatus[prefer_gpu] = subprocess.Popen(command, env=sandbox_env, stdout=subprocess.PIPE)
+            jobstatus[prefer_gpu] = subprocess.Popen(command, env=sandbox_env)
 
         will_delete = []
         for i in jobstatus:
