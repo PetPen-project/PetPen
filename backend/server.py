@@ -1,4 +1,4 @@
-import time
+import time, os
 import subprocess
 from queue import pop, jobs
 
@@ -22,7 +22,9 @@ if __name__ == '__main__':
             prefer_gpu = get_gpu(gpus)
             command = pop()
             gpus[prefer_gpu] = 0 # mark busy
-            jobstatus[prefer_gpu] = subprocess.Popen(command, stdout=subprocess.PIPE)
+            sandbox_env = os.environ.copy()
+            sandbox_env['CUDA_VISIBLE_DEVICES'] = str(prefer_gpu)
+            jobstatus[prefer_gpu] = subprocess.Popen(command, env=sandbox_env, stdout=subprocess.PIPE)
 
         will_delete = []
         for i in jobstatus:
