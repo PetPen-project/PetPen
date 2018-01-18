@@ -1,19 +1,9 @@
 {% extends 'nav.html' %}
+{% load static %}
 <!DOCTYPE html>
 
 {% block head %}
-<script>
-var shared = "#id_shared_testing"
-$(document).ready(function(){
-  $(shared).click(function(){
-    if($(shared).prop("checked")){
-      $("#testing_upload").hide();
-    }else{
-      $("#testing_upload").show();
-    }
-  });
-});
-</script>
+<link rel="stylesheet" href="{% static "css/dataset.css" %}">
 {% endblock %}
 
 {% block title %}dataset management{% endblock %}
@@ -25,10 +15,12 @@ $(document).ready(function(){
       <form method="post" action="{% url "dataset:index" %}">
       {% csrf_token %}
       <h2>Dataset list:</h2>
+      <button type="button" class="btn btn-info btn-sm ml-5 d-inline" id="open-modal"><i class="fa fa-plus"></i> add dataset</button>
+      <div class="my-3"></div>
       <ul>
         {% for dataset in datasets %}
         <li>
-          <a href="{% url "dataset:dataset_detail" dataset_id=dataset.id %}" class="btn btn-primary" style="width:200px;">{{ dataset.title }}</a>
+          <a href="{% url "dataset:dataset_detail" dataset_id=dataset.id %}" name="data-link" class="btn btn-primary" style="width:200px;">{{ dataset.title }}</a>
           <button class="btn btn-outline-primary" value="{{dataset.id}}" type="submit" name="delete-dataset">delete</button>
         </li>
         {% endfor %}
@@ -38,39 +30,76 @@ $(document).ready(function(){
       <p>No dataset yet.</p>
     {% endif %}
     <!-- Upload form.-->
-    <form action="{% url "dataset:index" %}" method="post" enctype="multipart/form-data">
-      {% csrf_token %}
-      <p>Dataset title: {{ form.title }}</p>
+  </div>
+  <div class="upload-dataset-form" id="dataset-modal">
+    <div class="form-content">
+      <form action="{% url "dataset:index" %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p>Dataset title: {{ form.title }}</p>
 
-      <p>{{ form.non_field_errors }}</p>
-      
-      <div id="training_upload" class="row">
-        <div id="training-input" class="col-md-6">
-          <p>{{ form.training_input_file.label_tag }} {{ form.training_input_file.help_text }}</p>
-          <span>{{ form.training_input_file.errors }} {{ form.training_input_file }}</span>
+        <p>{{ form.non_field_errors }}</p>
+        
+        <div id="training_upload" class="row">
+          <div id="training-input" class="col border border-dark mx-2 my-2">
+            <p>{{ form.training_input_file.label_tag }} {{ form.training_input_file.help_text }}</p>
+            <span>{{ form.training_input_file.errors }} {{ form.training_input_file }}</span>
+          </div>
+          <div id="training-output" class="col border border-dark mx-2 my-2">
+            <p>{{ form.training_output_file.label_tag }} {{ form.training_output_file.help_text }}</p>
+            <span>{{ form.training_output_file.errors }} {{ form.training_output_file }}</span>
+          </div>
         </div>
-        <div id="training-output" class="col-md-6">
-          <p>{{ form.training_output_file.label_tag }} {{ form.training_output_file.help_text }}</p>
-          <span>{{ form.training_output_file.errors }} {{ form.training_output_file }}</span>
+        <div id="testing_upload" class="row">
+          <div id="testing-input" class="col border border-dark mx-2 my-2">
+            <p>{{ form.testing_input_file.label_tag }} {{ form.testing_input_file.help_text }}</p>
+            <span>{{ form.testing_input_file.errors }} {{ form.testing_input_file }}</span>
+          </div>
+          <div id="testing-output" class="col border border-dark mx-2 my-2">
+            <p>{{ form.testing_output_file.label_tag }} {{ form.testing_output_file.help_text }}</p>
+            <span>{{ form.testing_output_file.errors }} {{ form.testing_output_file }}</span>
+          </div>
         </div>
+        <br>
+        <input type="submit" value="Upload" class="btn btn-outline-primary"/>
+        <button type="button" class="btn btn-outline-primary" id="close-modal">Cancel</button>
+      </form>
+      <div class="alert alert-warning mt-2" role="alert">
+        <h4 class="alert-heading">Data format limitation</h4>
+        <p>The uploaded dataset contains 4 files, and all files should be in csv or pickle format.(can't mix those two format together!)</p>
+        <p>Header column in each dataset file should be removed before uploading.</p>
       </div>
-      <div id="testing_upload" class="row">
-        <div id="testing-input" class="col-md-6">
-          <p>{{ form.testing_input_file.label_tag }} {{ form.testing_input_file.help_text }}</p>
-          <span>{{ form.testing_input_file.errors }} {{ form.testing_input_file }}</span>
-        </div>
-        <div id="testing-output" class="col-md-6">
-          <p>{{ form.testing_output_file.label_tag }} {{ form.testing_output_file.help_text }}</p>
-          <span>{{ form.testing_output_file.errors }} {{ form.testing_output_file }}</span>
-        </div>
-      </div>
-      <br>
-      <input type="submit" value="Upload" class="btn btn-outline-primary"/>
-    </form>
-    <div class="alert alert-warning mt-2" role="alert">
-      <h4 class="alert-heading">Data format limitation</h4>
-      <p>The uploaded dataset contains 4 files, and all files should be in csv or pickle format.(can't mix those two format together!)</p>
-      <p>Header column in each dataset file should be removed before uploading.</p>
     </div>
   </div>
+  <div class="dataset-loading">
+    <h2><i class="fa fa-hourglass"></i> Loading dataset...</h2>
+  </div>
+  <script>
+  var shared = "#id_shared_testing";
+  var modal = $("#dataset-modal");
+  $(document).ready(function(){
+    $("#open-modal").click(function(){
+      modal.show();
+      $(document).mouseup(function(e){
+        var container = $(".form-content");
+        if (!container.is(e.target) && container.has(e.target).length === 0){
+          modal.hide();
+        }
+      });
+    });
+    $("#close-modal").click(function(){
+      modal.hide();
+    });
+    $("a[name=dataset-link]").click(function(){
+      alert('hi');
+      $(".dataset-loading").show();
+    });
+    $(shared).click(function(){
+      if($(shared).prop("checked")){
+        $("#testing_upload").hide();
+      }else{
+        $("#testing_upload").show();
+      }
+    });
+  });
+  </script>
 {% endblock %}

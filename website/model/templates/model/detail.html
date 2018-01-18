@@ -70,8 +70,8 @@ $(document).ready(function(){
           <div class="btn-group">
             <button id="trainModel" class="btn btn-outline-primary"><i class="fa fa-play"></i> train model</button>
             <button id="stopTrainModel" class="btn btn-outline-primary" disabled><i class="fa fa-stop"></i> stop</button>
-            <button id="testModel" class="btn btn-outline-primary" style="display:none"><i class="fa fa-play"></i> evaluate</button>
           </div>
+          <button id="testModel" class="btn btn-outline-primary" style="display:none"><i class="fa fa-play"></i> evaluate</button>
         </div>
         <div class="row justify-content-center">
           <h2 class="col-md-2">Status</h2>
@@ -138,26 +138,26 @@ $(document).ready(function(){
       <!--end training-->
     </div>
     <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
-      <div class="container-fluid" style="height:100%;">
-        <div class="row">
-          <div id="sidebar" data-children=".item">
-              {% for history in histories %}
-                <div class="item">
-                  <a href="#{{history.save_path}}" id="loadHistory{{history.name}}" class="d-flex" data-toggle="collapse" data-parent="#sidebar" data-history="{{history.id}}" aria-expanded="false" aria-controls="{{history.save_path}}">{{history.save_path}}</a>
-                  <div class="collapse" id="{{history.save_path}}" aria-labelledby="loadHistory{{history.name}}}">
-                    <div class="btn-group">
-                      <button class="d-flex btn btn-outline-light" value="download">download</button>
-                      <button class="d-flex btn btn-outline-light" value="delete">delete</button>
-                    </div>
-                  </div>
-                </div>
-              {% endfor %}
-          </div>
-          <div id="history-page">
-            <h3>Select an execute history from sidebar to view its detail.</h3>
-          </div>
-        </div>
-      </div>
+      <!--<div class="container-fluid" style="height:100%;">-->
+        <!--<div class="row">-->
+          <!--<div id="sidebar" data-children=".item">-->
+              <!--{% for history in histories %}-->
+                <!--<div class="item">-->
+                  <!--<a href="#{{history.save_path}}" id="loadHistory{{history.name}}" class="d-flex" data-toggle="collapse" data-parent="#sidebar" data-history="{{history.id}}" aria-expanded="false" aria-controls="{{history.save_path}}">{{history.save_path}}</a>-->
+                  <!--<div class="collapse" id="{{history.save_path}}" aria-labelledby="loadHistory{{history.name}}}">-->
+                    <!--<div class="btn-group">-->
+                      <!--<button class="d-flex btn btn-outline-light" value="download">download</button>-->
+                      <!--<button class="d-flex btn btn-outline-light" value="delete">delete</button>-->
+                    <!--</div>-->
+                  <!--</div>-->
+                <!--</div>-->
+              <!--{% endfor %}-->
+          <!--</div>-->
+          <!--<div id="history-page">-->
+            <!--<h3>Select an execute history from sidebar to view its detail.</h3>-->
+          <!--</div>-->
+        <!--</div>-->
+      <!--</div>-->
     </div>
   </div>
 {% endblock %}

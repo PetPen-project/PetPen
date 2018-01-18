@@ -3,6 +3,7 @@ from django.http import HttpResponse,HttpResponseRedirect
 from django.http import JsonResponse,Http404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
+from django.core.files import File
 from django.contrib import messages
 
 import os,json,shutil
@@ -59,14 +60,6 @@ def index(request):
     projects = NN_model.objects.filter(user_id = request.user.id)
     for project in projects:
         status = update_status(project.state_file)['status']
-        # state_path = op.join(MEDIA_ROOT,project.state_file)
-        # if op.exists(state_path):
-            # with open(state_path) as f:
-                # status = json.load(f)['status']
-        # else:
-            # with open(state_path,'w') as f:
-                # json.dump({'status':'system idle'},f)
-            # status = 'idle'
         if status == 'start training model' or status == 'start testing':
             project.status = 'running'
         else:
@@ -102,6 +95,7 @@ def project_detail(request, project_id):
     return render(request,'model/detail.html',context)
 
 def history_detail(request):
+    print(request.POST)
     if request.POST.get('project_id'):
         histories = History.objects.filter(project__id=request.POST.get('project_id'))
         return render(request,'model/history_detail.html',{'histories':histories})
@@ -110,10 +104,22 @@ def history_detail(request):
     histories = History.objects.filter(project=history.project)
     history_path = op.join(MEDIA_ROOT,op.dirname(history.project.structure_file),history.save_path)
     if request.POST.get('action') == 'delete':
+        print(request.POST)
+        histories = histories.exclude(pk=history.id)
         history.delete()
         return render(request,'model/history_detail.html',{'histories':histories})
     elif request.POST.get('action') == 'download':
-        pass
+        if history.status == 'success':
+            import tempfile
+            f = tempfile.TemporaryFile(mode='w+b')
+            with open(op.join(history_path,'weights.h5'),'rb') as h5:
+                shutil.copyfileobj(h5,f)
+            f.seek(0)
+            response = HttpResponse(f,content_type='application/x-binary')
+            response['Content-Disposition'] = 'attachment; filename=model.h5'
+            return response
+        else:
+            return HttpResponse('error: request model on unsuccessful training.')
     if history.status == "running":
         if not op.exists(history_path):
             history.status = 'execute log missing'
@@ -173,36 +179,6 @@ def api(request):
         project.status = 'idle'
         project.save()
     return JsonResponse(info)
-    # else if request.method == 'POST':
-        
-    # file_path = op.join(MEDIA_ROOT, project.state_file)
-    # if request.POST.get('type') == 'init':
-        # logger.info('back to idle')
-        # try:
-            # with open(file_path,'r+') as f:
-                # info = json.load(f)
-                # if info['status'] != 'start training model' and info['status'] != 'start testing' and info['status'] != 'loading model':
-                    # info['status'] = 'system idle'
-                # f.seek(0)
-                # json.dump(info,f)
-                # f.truncate()
-        # except:
-            # with open(file_path,'w') as f:
-                # info = {'status':'system idle'}
-                # json.dump(info,f)
-        # return JsonResponse(info)
-    # try:
-        # with open(file_path) as f:
-            # info = json.load(f)
-            # json_response = JsonResponse(info)
-    # except:
-        # return HttpResponse('failed parsing status')
-        # import time
-        # time.sleep(0.1)
-        # with open(file_path) as f:
-            # json_response = JsonResponse(json.load(f))
-    # print(json_response.content)
-    # return json_response
 
 def plot_api(request):
     import json
@@ -235,8 +211,8 @@ def manage_nodered(request):
         else:
             return HttpResponse('No project opened for editing.')
     #function to open/close nodered container
+    logger.info('action for nodered:{}'.format(action))
     if action == 'close':
-        print('close')
         if user_container:
             user_container.stop(timeout=0)
         return HttpResponse('Editor closed.')
@@ -245,6 +221,8 @@ def manage_nodered(request):
             project = NN_model.objects.filter(user=request.user).get(title=request.GET['target'])
         except:
             return HttpResponse('No available project found for editing.')
+        project.modified = datetime.datetime.now()
+        project.save()
         project_path = os.path.join(MEDIA_ROOT,os.path.dirname(project.structure_file))
         if not os.path.exists(project_path):
             os.makedirs(project_path)

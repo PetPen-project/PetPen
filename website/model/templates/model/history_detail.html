@@ -1,5 +1,8 @@
 {% load nvd3_tags %}
 <script>
+function reloadHistory(data){
+  $('#history-detail').html($(data).find('#history-detail').children());
+};
 $(function(){
   $("a[id^='loadHistory']").on('click',function(){
     var link = $(this);
@@ -11,30 +14,22 @@ $(function(){
         'history': history_id,
         'csrfmiddlewaretoken': window.CSRF_TOKEN
       },
-      success: function(data){
-        $('#history-detail').html($(data).find('#history-detail').children());
-      },
+      success: reloadHistory,
       error: function(xhr,status,error){
         alert(error);
       }
     });
   });
-  $('#sidebar div.btn-group button').click(function(){
-    $.ajax({
-      type: 'post',
-      url: '/model/history_detail/',
-      data: {
-        'history': $(this).closest('div.item').children('a').data('history'),
-        'csrfmiddlewaretoken': window.CSRF_TOKEN,
-        action: $(this).attr('value')
-      },
-      success: function(data){
-        location.reload();
-      },
-      error: function(xhr,status,error){
-        alert(status);
-      }
-    });
+  $("form[name=historyActionForm]").submit(function(e){
+    if ($(document.activeElement).val()=='delete'){
+      e.preventDefault();
+      $.post($(this).attr('action'), $(this).serialize()+'&action=delete', function(data){
+        $('#history-container').html($(data)[2].innerHTML);
+        <!--location.reload();-->
+        <!--$(document).html($(data));-->
+      }).fail(function(data){alert(data);
+      });
+    }
   });
   $('#deleteAction').click(function(){
     $('a[id^="loadHistory"]').prepend('<input type="checkbox" name="checkDelete" value="delete" class="mr-2 my-auto">');
@@ -49,13 +44,13 @@ $(function(){
 });
 </script>
 
-<div class="container-fluid" style="height:100%;">
+<div class="container-fluid" id="history-container" style="height:100%;">
   <div class="row">
     <div id="sidebar" data-children=".item">
       <div class="dropdown">
         <button type="button" class="py-2" id="historyAction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ACTION <i class="fa fa-angle-down"></i></button>
         <button type="button" id="confirmAction" class="py-2 d-none">confirm</button>
-        <div style="width:100%;border-bottom: 1px solid rgba(100,100,100,1);"></div>
+        <div style="width:100%;border-bottom: 2px solid rgba(100,100,100,1);"></div>
         <div class="dropdown-menu" aria-labelledby="historyAction">
           <button id="deleteAction" class="dropdown-item">delete</button>
         </div>
@@ -64,10 +59,15 @@ $(function(){
         <div class="item">
           <a href="#{{history.save_path}}" id="loadHistory{{history.name}}" class="d-flex" data-toggle="collapse" data-parent="#sidebar" data-history="{{history.id}}" aria-expanded="false" aria-controls="{{history.save_path}}">{{history.name}}</a>
           <div class="collapse" id="{{history.save_path}}" aria-labelledby="loadHistory{{history.name}}}">
-            <div class="btn-group">
-              <button class="d-flex btn btn-outline-light" value="download">download</button>
-              <button class="d-flex btn btn-outline-light" value="delete">delete</button>
-            </div>
+            <form action={% url "model:history_detail" %} method="post" name="historyActionForm">
+              {% csrf_token %}
+              <input type="hidden" name="history" value={{history.id}}>
+              <div class="btn-group">
+                <button class="d-flex btn btn-outline-light" type="submit" name="action" value="download" {% if history.status != "success" %}disabled{% endif %}>download</button>
+                <button class="d-flex btn btn-outline-light" type="submit" name="action" value="delete">delete</button>
+                <!--<button class="d-flex btn btn-outline-light" value="delete">delete</button>-->
+              </div>
+            </form>
           </div>
         </div>
       {% endfor %}
