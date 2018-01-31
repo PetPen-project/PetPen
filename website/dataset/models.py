@@ -15,23 +15,26 @@ def testing_dataset_path(instance, filename):
 def dataset_path(instance, filename):
     return 'datasets/{0}/{1}/{2}'.format(instance.user.id, instance.title, filename)
 
-# class Dataset(models.Model):
-    # user = models.ForeignKey(User,null=True) 
-    # training_csvfile = models.FileField(upload_to=training_dataset_path)
-    # testing_csvfile = models.FileField(upload_to=testing_dataset_path)
-    # title = models.CharField(max_length=50,unique=True)
-    # is_image = models.BooleanField(default=False)
-    # shared_testing = models.BooleanField(default=False)
-
 class Dataset(models.Model):
     user = models.ForeignKey(User) 
     training_input_file = models.FileField(upload_to=dataset_path)
     testing_input_file = models.FileField(upload_to=dataset_path)
     training_output_file = models.FileField(upload_to=dataset_path)
     testing_output_file = models.FileField(upload_to=dataset_path)
-    title = models.CharField(max_length=50,unique=True)
+    title = models.CharField(max_length=50)
     added = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+    train_input_size = models.IntegerField(default=0)
+    test_input_size = models.IntegerField(default=0)
+    train_output_size = models.IntegerField(default=0)
+    test_output_size = models.IntegerField(default=0)
+    train_samples = models.IntegerField(default=0)
+    test_samples = models.IntegerField(default=0)
+    FILE_CHOICES = (
+        ('CSV','csv'),
+        ('PKL','pickle'),
+    )
+    filetype = models.CharField(max_length=3, choices=FILE_CHOICES, default='CSV')
     # is_image = models.BooleanField(default=False)
 
 # @receiver(models.signals.post_delete, sender=Dataset)

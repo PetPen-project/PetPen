@@ -9,28 +9,65 @@
 {% block title %}dataset management{% endblock %}
 
 {% block content %}
-  <div class="container-fluid">
+  <div class="menubar">
+    <h2 id="dataset-header">Datasets</h2>
+    <button type="button" class="add-btn" id="open-modal"><i class="fa fa-plus" style="margin:0 10px 0 0;"></i>ADD</button>
+  </div>
+  <div class="flex-row">
+    {% if error_message %}
+      <div class="error-message">
+        {{error_message}}
+      </div>
+    {% endif %}
+  <div id="dataset-table">
     <!-- List of uploaded data -->
-    {% if datasets %}
+    {% if dataset_list %}
       <form method="post" action="{% url "dataset:index" %}">
       {% csrf_token %}
-      <h2>Dataset list:</h2>
-      <button type="button" class="btn btn-info btn-sm ml-5 d-inline" id="open-modal"><i class="fa fa-plus"></i> add dataset</button>
-      <div class="my-3"></div>
       <ul>
-        {% for dataset in datasets %}
+        {% for dataset in dataset_list %}
         <li>
-          <a href="{% url "dataset:dataset_detail" dataset_id=dataset.id %}" name="data-link" class="btn btn-primary" style="width:200px;">{{ dataset.title }}</a>
-          <button class="btn btn-outline-primary" value="{{dataset.id}}" type="submit" name="delete-dataset">delete</button>
+          <!--<a href="{% url "dataset:dataset_detail" dataset_id=dataset.id %}" name="data-link" class="li-item-name" style="width:200px;">{{ dataset.title }}</a>-->
+          <a href="" name="data-link" class="li-item-name" style="width:200px;">{{ dataset.title }}</a>
+          <span class="filetype-badge">{{dataset.get_filetype_display}}</span>
+          <div id="btn-group">
+            <button class="action-btn" value="{{dataset.id}}" type="submit" name="info-dataset"><i class="fa fa-info"></i></button>
+            <button class="action-btn" value="{{dataset.id}}" type="submit" name="download-dataset"><i class="fa fa-download"></i></button>
+            <button class="action-btn" value="{{dataset.id}}" type="submit" name="copy-dataset"><i class="fa fa-copy"></i></button>
+            <button class="action-btn" value="{{dataset.id}}" type="submit" name="delete-dataset"><i class="fa fa-times"></i></button>
+          </div>
         </li>
         {% endfor %}
       </ul>
       </form>
     {% else %}
-      <p>No dataset yet.</p>
+      <div id="no-dataset">No dataset yet.</div>
     {% endif %}
-    <!-- Upload form.-->
   </div>
+  <div id="info-sidebar">
+    {% if information %}
+      <div class="item-title">{{information.title}}</div>
+      <span class="item-name">type</span>
+      <div class="item-content">{{information.get_filetype_display}}</div>
+      <span class="item-name">training<br>input size</span>
+      <div class="item-content">{{information.train_input_size|filesizeformat}}</div>
+      <span class="item-name">training<br>output size</span>
+      <div class="item-content">{{information.train_output_size|filesizeformat}}</div>
+      <span class="item-name">testing<br>input size</span>
+      <div class="item-content">{{information.test_input_size|filesizeformat}}</div>
+      <span class="item-name">testing<br>output size</span>
+      <div class="item-content">{{information.test_output_size|filesizeformat}}</div>
+      <span class="item-name">training samples</span>
+      <div class="item-content">{{information.train_samples}}</div>
+      <span class="item-name">testing samples</span>
+      <div class="item-content">{{information.test_samples}}</div>
+    {% else %}
+      <div class="item-title">information</div>
+      Select a dataset to view its details.
+    {% endif %}
+  </div>
+  </div>
+  <!-- Upload form.-->
   <div class="upload-dataset-form" id="dataset-modal">
     <div class="form-content">
       <form action="{% url "dataset:index" %}" method="post" enctype="multipart/form-data">
@@ -60,8 +97,8 @@
           </div>
         </div>
         <br>
-        <input type="submit" value="Upload" class="btn btn-outline-primary"/>
-        <button type="button" class="btn btn-outline-primary" id="close-modal">Cancel</button>
+        <input type="submit" value="Upload" class="modal-btn"/>
+        <button type="button" class="modal-btn" id="close-modal">Cancel</button>
       </form>
       <div class="alert alert-warning mt-2" role="alert">
         <h4 class="alert-heading">Data format limitation</h4>
@@ -77,6 +114,13 @@
   var shared = "#id_shared_testing";
   var modal = $("#dataset-modal");
   $(document).ready(function(){
+  $(".filetype-badge").each(function(){
+    if ($(this).text() == 'csv'){
+      $(this).css("background","#FFCC00");
+    } else if($(this).text() == 'pickle'){
+      $(this).css("background","#0033CC");
+    }
+  });
     $("#open-modal").click(function(){
       modal.show();
       $(document).mouseup(function(e){

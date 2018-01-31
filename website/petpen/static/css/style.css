@@ -21,6 +21,19 @@
     text-align: center;
     padding: 75px 0;
 }
+#project a {
+    border-radius: 35px;
+    border: 1px solid #809fff;
+    background-color: #002db3;
+    padding: 15px 20px;
+    color: #eaeffc;
+    text-decoration: none;
+    transition: all .4s;
+}
+#project a:hover {
+    color: #FFF;
+    background: #3366ff;
+}
 #feature{
     text-align: center;
     padding: 75px 0;

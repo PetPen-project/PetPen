@@ -1,8 +1,9 @@
 {% extends 'nav.html' %}
-
+{% load static %}
 {% block title %}model index{% endblock %}
 
 {% block head %}
+  <link rel="stylesheet" href="{% static "css/project_index.css" %}">
   <script>
     function setDeleteId(text){
       $("#delete-id").val(text);
@@ -40,8 +41,7 @@
 {% endblock %}
 
 {% block content %}
-  <div class="container-fluid" style="padding:20px 0;">
-    <div class="mb-3" style="height:100px; width:100%;clear:both;">
+  <div class="project-container">
     {% if messages %}
     <div class="alert alert-danger" role="alert">
       <h4 class="alert-heading">Create project error</h4>
@@ -50,8 +50,7 @@
       {% endfor %}
     </div>
     {% endif %}
-    </div>
-    <div class="card">
+    <div class="card" style="box-shadow:1px 1px #CCC;">
       <h4 class="card-header">
         All projects
         <span class="card-right">

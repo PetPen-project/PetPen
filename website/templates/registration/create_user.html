@@ -1,0 +1,29 @@
+{% extends 'nav.html' %}
+{% load static %}
+
+{% block head %}
+<link rel="stylesheet" href="{% static "css/user_create.css" %}">
+{% endblock %}
+
+{% block title %}
+  create your petpen account
+{% endblock %}
+
+{% block content %}
+  <div class="main">
+    <div class="signup-box">
+      <form action="" method="post">
+        {% csrf_token %}
+        {% for field in form %}
+          <div class="input-field">
+          {{field.label_tag}}
+          {{field}}
+          {{field.help_text}}
+          {{field.errors}}
+          </div>
+        {% endfor %}
+        <input type="submit" value="create account">
+      </form>
+    </div>
+  </div>
+{% endblock %}

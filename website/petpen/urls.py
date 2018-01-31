@@ -15,7 +15,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import views as auth_views
 from rest_framework import routers, serializers, viewsets
 from .views import main
-from user import views as user_views
+from user.views import UserCreateView
 
 # Serializers define the API representation.
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -38,10 +38,9 @@ urlpatterns = [
     url(r'^$', main,name='main'),
     url(r'^model/', include('model.urls',namespace='model')),
     url(r'^dataset/', include('dataset.urls',namespace='dataset')),
-    # url(r'^login/', auth_views.LoginView.as_view(),name='login'),
-    # url(r'^logout/', auth_views.LogoutView.as_view(), name='logout'),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', admin.site.urls),
+    url(r'^signup/', UserCreateView.as_view(),name='user_create'),
     # url(r'^', include(router.urls)),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
 ]
