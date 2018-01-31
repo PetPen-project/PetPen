@@ -1,0 +1,14 @@
+{
+    "name": "BatchNormalization",
+    "version": "0.0.1",
+    "description": "A BatchNormalization node",
+    "dependencies": {},
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
+        "nodes": {
+            "sample": "BatchNormalizationNode/batch.js"
+        }
+    }
+}
