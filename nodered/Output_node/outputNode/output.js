@@ -151,86 +151,93 @@ module.exports = function(RED) {
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'File') {
-          path = obj[ind]['file'];
-          //var fst = require('fs');
-          //var content = fst.readFileSync(path, 'utf-8')
-          //fst.writeFileSync("./data.csv", content, 'utf8');
-          console.log("myfile");
-          console.log(path);
-        } else if (obj[ind]['type'] == 'Pretrained') {
-          name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'Pretrained', params: {project_name: obj[ind]['source'], nodes: obj[ind]['pretrainedoutput'], weight_file: obj[ind]['weightfile']}};
-          rec[obj[ind]['id']] =name;
-          obj[ind]['name'] = name;
-        } else if (obj[ind]['type'] == 'Flatten') {
-          name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'Flatten', params: {}};                      
-          rec[obj[ind]['id']] =name;            
-          obj[ind]['name'] = name; 
-        }
-      }
-      console.log("now");
-      for (var i in obj) {
-        name = obj[i]['name'];
-        if (obj[i]['wires'] == null) {
-        //		    console.log(obj[i]['wires']);
-        } else if (name != ""){
-          tmp = obj[i]['wires'];
-          res_t = []
-          for (var ii = 0; ii < tmp.length; ii++) {
-            for (var jj = 0; jj < tmp[ii].length; jj++) {
-              res_t.push(rec[tmp[ii][jj]]);
-            }
-          }
-          if (res_t.length > 0) {
-            res.connections[name] = res_t;
-          }
-        }	
-      }
-      json = JSON.stringify(res);
-      //  fs.writeFileSync('/home/kazami/.node-red/result.json', json, 'utf-8');
-      fs.writeFileSync('result.json', json, 'utf-8');
-      var fs = require('fs');
-      var obj = '';
-      if (fs.existsSync('.child.json')) {
-        obj = fs.readFileSync('child.json', 'utf-8');
-      }
-      /*var kill = function(pid, signal, callback) {
-        signal = signal || 'SIGKILL';
-        callback = callback || function() {};
-        var killTree = true;
-        if (killTree) {
-          psTree(pid, function(err, children) {
-            [pid].concat(
-          children.map(function (p) {
-            return p.PID;
-          })
-        ).forEach(function (tpid) {
-            try { process.kill(tpid, signal)}
-            catch (ex) {}
-        });
-        callback();
-          });
-        } else {
-          try { process.kill(pid, signal) }
-          catch (ex) { }
-          callback();
-        }
-      };
-      kill(previous_pid);*/
-      console.log(obj)
-      if (obj >= 1) {
-        var exec = require('child_process').exec;
-        var arg1 = "-d . ";
-        var arg2 = "-n demo1";
-        var newproc = exec('python /home/plash/petpen/develop/petpen0.1.py ' + arg1 + ' ' + arg2 + ' ', function(error, stdout, stderr) {
-          if (stdout.length > 1) {
-            console.log('offer', stdout);
-          } else {
-            console.log('don\'t offer');
-          }
-        });
-        console.log(newproc.pid);
+		path = obj[ind]['file'];
+		//var fst = require('fs');
+		//var content = fst.readFileSync(path, 'utf-8')
+		//fst.writeFileSync("./data.csv", content, 'utf8');
+		console.log("myfile");
+		console.log(path);
+	} else if (obj[ind]['type'] == 'Pretrained') {
+		name = obj[ind]['name'] + "_" + ind + "_" + timest;
+		res.layers[name] = {type: 'Pretrained', params: {project_name: obj[ind]['source'], nodes: obj[ind]['pretrainedoutput'], weight_file: obj[ind]['weightfile']}};
+		rec[obj[ind]['id']] =name;
+		obj[ind]['name'] = name;
+ 	} else if (obj[ind]['type'] == 'Flatten') {
+	    name = obj[ind]['name'] + "_" + ind + "_" + timest;
+	    res.layers[name] = {type: 'Flatten', params: {}};                      
+	    rec[obj[ind]['id']] =name;            
+	    obj[ind]['name'] = name; 
+	} else if (obj[ind]['type'] == 'BatchNormalization') {
+	    name = obj[ind]['name'] + "_" + ind + "_" + timest;
+	    res.layers[name] = {type: 'BatchNormalization', params: {axis: obj[ind]['axis']}};
+	    rec[obj[ind]['id']] = name;
+	    obj[ind]['name']= name;
+	}
+         
+
+	}
+	console.log("now");
+	for (var i in obj) {
+		name = obj[i]['name'];
+		if (obj[i]['wires'] == null) {
+//		    console.log(obj[i]['wires']);
+        	} else if (name != ""){
+			tmp = obj[i]['wires'];
+            		res_t = []
+            		for (var ii = 0; ii < tmp.length; ii++) {
+                		for (var jj = 0; jj < tmp[ii].length; jj++) {
+		            		res_t.push(rec[tmp[ii][jj]]);
+                		}
+            		}
+            		if (res_t.length > 0) {
+		    		res.connections[name] = res_t;
+            		}
+        	}	
+    	}
+	json = JSON.stringify(res);
+//      fs.writeFileSync('/home/kazami/.node-red/result.json', json, 'utf-8');
+        fs.writeFileSync('result.json', json, 'utf-8');
+	var fs = require('fs');
+	var obj = '';
+	if (fs.existsSync('.child.json')) {
+	  obj = fs.readFileSync('child.json', 'utf-8');
+	}
+	/*var kill = function(pid, signal, callback) {
+	  signal = signal || 'SIGKILL';
+	  callback = callback || function() {};
+	  var killTree = true;
+	  if (killTree) {
+	    psTree(pid, function(err, children) {
+	      [pid].concat(
+		  children.map(function (p) {
+		    return p.PID;
+		  })
+		).forEach(function (tpid) {
+		    try { process.kill(tpid, signal)}
+		    catch (ex) {}
+		});
+		callback();
+	    });
+	  } else {
+	    try { process.kill(pid, signal) }
+	    catch (ex) { }
+	    callback();
+	  }
+	};
+	kill(previous_pid);*/
+	console.log(obj)
+	if (obj >= 1) {
+	var exec = require('child_process').exec;
+	var arg1 = "-d . ";
+	var arg2 = "-n demo1";
+	var newproc = exec('python /home/plash/petpen/develop/petpen0.1.py ' + arg1 + ' ' + arg2 + ' ', function(error, stdout, stderr) {
+		if (stdout.length > 1) {
+			console.log('offer', stdout);
+		} else {
+			console.log('don\'t offer');
+		}
+	});
+	console.log(newproc.pid);
         fs.writeFileSync('pid.json', newproc.pid, 'utf-8');
       }
       node.send(msg);
