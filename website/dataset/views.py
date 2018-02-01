@@ -9,6 +9,7 @@ from .models import Dataset
 from .forms import UploadFileForm
 from django.contrib.auth.models import User
 from petpen.settings import MEDIA_ROOT
+
 import re,os,shutil
 import os.path as op
 import pandas as pd
@@ -82,6 +83,8 @@ class DatasetListView(ListView):
     def post(self, request, *args, **kwargs):
         self.object_list = self.get_queryset(request)
         context = self.get_context_data()
+        form = self.form_class()
+        context.update({'form':form})
         if 'delete-dataset' in request.POST:
             try:
                 dataset = self.model.objects.get(pk=request.POST['delete-dataset'],user=request.user)
@@ -105,9 +108,30 @@ class DatasetListView(ListView):
             if form.is_valid():
                 form_data = form.cleaned_data
                 if not self.model.objects.filter(user=request.user,title=form.cleaned_data['title']):
+                    filetype = None
                     for dataset_file in ['training_input_file','training_output_file','testing_input_file','testing_output_file']:
                         form_data[dataset_file].name = re.sub('_file',op.splitext(request.FILES[dataset_file].name)[1],dataset_file)
-                    newfile = Dataset(title=form_data['title'],training_input_file=request.FILES['training_input_file'],training_output_file=request.FILES['training_output_file'],testing_input_file=request.FILES['testing_input_file'],testing_output_file=request.FILES['testing_output_file'],user=request.user)
+                        if not filetype:
+                            filetype = op.splitext(request.FILES[dataset_file].name)
+                        elif filetype!=op.splitext(request.FILES[dataset_file].name):
+                            context.update({'error_messnage':'Found both csv and pickle files. Reformat to the same file type and try again.'})
+                            return self.render_to_response(context)
+                    newfile = Dataset(title=form_data['title'],training_input_file=request.FILES['training_input_file'],training_output_file=request.FILES['training_output_file'],testing_input_file=request.FILES['testing_input_file'],testing_output_file=request.FILES['testing_output_file'],user=request.user,filetype=filetype)
+                    newfile.save()
+                    if newfile.filetype == 'CSV':
+                        data = pd.read_csv(newfile.training_output_file.file.name,header=None)
+                        newfile.train_samples = data.shape[0]
+                        data = pd.read_csv(newfile.testing_output_file.file.name,header=None)
+                        dataset.test_samples = data.shape[0]
+                    else:
+                        data = pd.read_pickle(newfile.training_output_file.file.name)
+                        newfile.train_samples = data.shape[0]
+                        data = pd.read_pickle(newfile.testing_output_file)
+                        newfile.test_samples = data.shape[0]
+                    # newfile.train_input_size = newfile.new.st_size
+                    # newfile.train_output_size = os.stat(op.join(MR,str(dataset.training_output_file))).st_size
+                    # newfile.test_input_size = os.stat(op.join(MR,str(dataset.testing_input_file))).st_size
+                    # newfile.test_output_size = os.stat(op.join(MR,str(dataset.testing_output_file))).st_size
                     newfile.save()
                     return HttpResponseRedirect(reverse("dataset:index"))
                 else:
