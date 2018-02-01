@@ -169,6 +169,11 @@ module.exports = function(RED) {
 	    res.layers[name] = {type: 'Flatten', params: {}};                      
 	    rec[obj[ind]['id']] =name;            
 	    obj[ind]['name'] = name; 
+	} else if (obj[ind]['type'] == 'BatchNormalization') {
+	    name = obj[ind]['name'] + "_" + ind + "_" + timest;
+	    res.layers[name] = {type: 'BatchNormalization', params: {axis: obj[ind]['axis']}};
+	    rec[obj[ind]['id']] = name;
+	    obj[ind]['name']= name;
 	}
          
 
