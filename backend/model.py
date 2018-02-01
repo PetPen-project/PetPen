@@ -213,17 +213,14 @@ def deserialize_layer(layer_config, name=None):
         pass
 
     # need to fix the inconsistent parameter name and values in future
-    if layer_type.lower() == 'convolution_2d':
-        layer_type = 'Conv2D'
-    if layer_type.lower() == 'convlstm_2d':
-        layer_type = 'ConvLSTM2D'
+    if layer_type.lower() == 'convlstm2d':
         if 'return_sequence' in layer_params:
             condition = layer_params.pop('return_sequence')
             if condition == 'True':
                 layer_params['return_sequences'] = True
             else:
                 layer_params['return_sequences'] = False
-    if layer_type.lower() == 'lstm' or layer_type.lower() == 'simplernn':
+    elif layer_type.lower() == 'lstm' or layer_type.lower() == 'simplernn':
         if layer_type.lower() == 'Lstm':
             layer_type = 'LSTM'
         if 'return_sequence' in layer_params:

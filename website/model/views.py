@@ -96,6 +96,7 @@ def project_detail(request, project_id):
 
     return render(request,'model/detail.html',context)
 
+@login_required
 def history_detail(request):
     print(request.POST)
     if request.POST.get('project_id'):
@@ -138,7 +139,7 @@ def history_detail(request):
     chartdata = {}
     chartdata['x'] = range(1,log_data.shape[0]+1)
     for index in range(log_data.shape[1]):
-        chartdata['name{}'.format(index)] = log_data.columns[index]
+        chartdata['name{}'.format(index)] = 'training' if log_data.columns[index]=='loss' else 'testing'
         chartdata['y{}'.format(index)] = log_data.iloc[:,index]
     charttype = "lineChart"
     chartcontainer = 'linechart_container'

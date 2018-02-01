@@ -53,8 +53,9 @@
             {% endif %}
           </form>
           <div class="row my-1">
-          <a class="mx-3" href="">create user</a>
+            <a class="mx-3" href="{% url "user_create" %}">create user</a>
           <a class="mx-3" href="{% url "password_reset" %}">forget password</a>
+          <a class="ml-auto mr-3" href="{% url "main" %}">back to mainpage<i class="fa fa-arrow-right"></i></a>
           </div>
         </div>
       </div>
