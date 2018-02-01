@@ -61,6 +61,8 @@
       <div class="item-content">{{information.train_samples}}</div>
       <span class="item-name">testing samples</span>
       <div class="item-content">{{information.test_samples}}</div>
+      <span class="item-name">created</span>
+      <div class="item-content">{{information.added|date:"M d, Y"}}</div>
     {% else %}
       <div class="item-title">information</div>
       Select a dataset to view its details.
