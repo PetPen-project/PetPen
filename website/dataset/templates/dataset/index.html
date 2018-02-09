@@ -31,10 +31,10 @@
           <a href="" name="data-link" class="li-item-name" style="width:200px;">{{ dataset.title }}</a>
           <span class="filetype-badge">{{dataset.get_filetype_display}}</span>
           <div id="btn-group">
-            <button class="action-btn" value="{{dataset.id}}" type="submit" name="info-dataset"><i class="fa fa-info"></i></button>
-            <button class="action-btn" value="{{dataset.id}}" type="submit" name="download-dataset"><i class="fa fa-download"></i></button>
-            <button class="action-btn" value="{{dataset.id}}" type="submit" name="copy-dataset"><i class="fa fa-copy"></i></button>
-            <button class="action-btn" value="{{dataset.id}}" type="submit" name="delete-dataset"><i class="fa fa-times"></i></button>
+            <button class="action-btn" data-toggle="tooltip" title="click to show dataset properties on the sidebar" value="{{dataset.id}}" type="submit" name="info-dataset"><i class="fa fa-info"></i></button>
+            <button class="action-btn" data-toggle="tooltip" title="click to download this dataset as single zip file" value="{{dataset.id}}" type="submit" name="download-dataset"><i class="fa fa-download"></i></button>
+            <button class="action-btn" data-toggle="tooltip" title="click to copy this dataset into your account" value="{{dataset.id}}" type="submit" name="copy-dataset"><i class="fa fa-copy"></i></button>
+            <button class="action-btn" data-toggle="tooltip" title="click to delete this dataset" value="{{dataset.id}}" type="submit" name="delete-dataset"><i class="fa fa-times"></i></button>
           </div>
         </li>
         {% endfor %}

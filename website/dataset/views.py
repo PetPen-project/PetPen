@@ -13,6 +13,17 @@ from petpen.settings import MEDIA_ROOT
 import re,os,shutil
 import os.path as op
 import pandas as pd
+from io import BytesIO
+import zipfile
+
+import logging
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+hdlr = logging.FileHandler(op.join(op.abspath(op.dirname(op.dirname(__name__))),'website.log'))
+formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+hdlr.setFormatter(formatter)
+logger.addHandler(hdlr) 
+# logger.setLevel(logging.WARNING)
 
 @login_required
 def index(request):
@@ -28,7 +39,6 @@ def index(request):
                 form_data = form.cleaned_data
                 for dataset_file in ['training_input_file','training_output_file','testing_input_file','testing_output_file']:
                     form_data[dataset_file].name = re.sub('_file',op.splitext(request.FILES[dataset_file].name)[1],dataset_file)
-                print(form_data)
                 newfile = Dataset(title=form_data['title'],training_input_file=request.FILES['training_input_file'],training_output_file=request.FILES['training_output_file'],testing_input_file=request.FILES['testing_input_file'],testing_output_file=request.FILES['testing_output_file'],user=request.user)
                 newfile.save()
                 return HttpResponseRedirect(reverse("dataset:index"))
@@ -90,10 +100,27 @@ class DatasetListView(ListView):
                 dataset = self.model.objects.get(pk=request.POST['delete-dataset'],user=request.user)
                 shutil.rmtree(op.join(MEDIA_ROOT,'datasets/{}/{}'.format(request.user.id,dataset.title)))
                 dataset.delete()
-            except StandardError as e:
-                print('failed to remove dataset.')
+            except BaseException as e:
+                logger.warning('failed to DELETE dataset. user:{},title:{}'.format(request.user,dataset.title))
         elif 'download-dataset' in request.POST:
-            print(2)
+            try:
+                dataset = self.model.objects.get(pk=request.POST['download-dataset'])
+                in_memory = BytesIO()
+                with zipfile.ZipFile(in_memory,"a") as zf:
+                    zf.write(dataset.training_input_file.file.name,op.split(dataset.training_input_file.name)[1])
+                    zf.write(dataset.training_output_file.file.name,op.split(dataset.training_output_file.name)[1])
+                    zf.write(dataset.testing_input_file.file.name,op.split(dataset.testing_input_file.name)[1])
+                    zf.write(dataset.testing_output_file.file.name,op.split(dataset.testing_output_file.name)[1])
+                    # for _file in zf.filelist:
+                        # _file.create_system = 0
+                logger.debug(dataset.title)
+                in_memory.seek(0)
+                response = HttpResponse(in_memory,content_type='application/zip')
+                response['Content-Disposition'] = 'attachment: filename={}.zip'.format(dataset.title)
+                return response
+            except BaseException as e:
+                logger.warning('failed to DOWNLOAD dataset. user:{},title:{}'.format(request.user,dataset.title))
+                logger.error(e)
         elif 'info-dataset' in request.POST:
             try:
                 dataset = self.model.objects.get(user=request.user,pk=request.POST['info-dataset'])
@@ -121,18 +148,28 @@ class DatasetListView(ListView):
                     if newfile.filetype == 'CSV':
                         data = pd.read_csv(newfile.training_output_file.file.name,header=None)
                         newfile.train_samples = data.shape[0]
+                        newfile.output_shape = data.shape[1:]
+                        data = pd.read_csv(newfile.training_input_file.file.name,header=None)
+                        newfile.train_samples = data.shape[0]
+                        newfile.input_shape = data.shape[1:]
                         data = pd.read_csv(newfile.testing_output_file.file.name,header=None)
                         dataset.test_samples = data.shape[0]
                     else:
                         data = pd.read_pickle(newfile.training_output_file.file.name)
                         newfile.train_samples = data.shape[0]
+                        newfile.output_shape = data.shape[1:]
+                        data = pd.read_pickle(newfile.training_input_file.file.name)
+                        newfile.train_samples = data.shape[0]
+                        newfile.input_shape = data.shape[1:]
                         data = pd.read_pickle(newfile.testing_output_file)
                         newfile.test_samples = data.shape[0]
-                    # newfile.train_input_size = newfile.new.st_size
-                    # newfile.train_output_size = os.stat(op.join(MR,str(dataset.training_output_file))).st_size
-                    # newfile.test_input_size = os.stat(op.join(MR,str(dataset.testing_input_file))).st_size
-                    # newfile.test_output_size = os.stat(op.join(MR,str(dataset.testing_output_file))).st_size
+                    newfile.train_input_size = newfile.training_input_file.file.size
+                    newfile.train_output_size = newfile.training_output_file.file.size
+                    newfile.test_input_size = newfile.testing_input_file.file.size
+                    newfile.test_output_size = newfile.testing_output_file.file.size
+                    newfile.description = request.POST.get('description')
                     newfile.save()
+
                     return HttpResponseRedirect(reverse("dataset:index"))
                 else:
                     context.update({'error_message':'dataset title already exists.'})

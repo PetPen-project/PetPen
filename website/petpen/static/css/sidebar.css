@@ -45,3 +45,10 @@
   max-height: calc(100vh - 6.5rem);
   overflow:auto;
 }
+
+#project-tabs {
+    background: rgba(153, 255, 153, 0.1);
+}
+#project-tabs .nav-link:hover {
+    background: #FFF;
+}

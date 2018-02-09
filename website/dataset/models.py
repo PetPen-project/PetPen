@@ -30,6 +30,9 @@ class Dataset(models.Model):
     test_output_size = models.IntegerField(default=0)
     train_samples = models.IntegerField(default=0)
     test_samples = models.IntegerField(default=0)
+    input_shape = models.CharField(max_length=100)
+    output_shape = models.CharField(max_length=100)
+    desciption = models.TextField(blank=True)
     FILE_CHOICES = (
         ('CSV','csv'),
         ('PKL','pickle'),
