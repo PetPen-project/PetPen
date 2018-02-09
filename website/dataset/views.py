@@ -148,19 +148,19 @@ class DatasetListView(ListView):
                     if newfile.filetype == 'CSV':
                         data = pd.read_csv(newfile.training_output_file.file.name,header=None)
                         newfile.train_samples = data.shape[0]
-                        newfile.output_shape = data.shape[1:]
+                        newfile.output_shape = str(data.shape[1:])
                         data = pd.read_csv(newfile.training_input_file.file.name,header=None)
                         newfile.train_samples = data.shape[0]
-                        newfile.input_shape = data.shape[1:]
+                        newfile.input_shape = str(data.shape[1:])
                         data = pd.read_csv(newfile.testing_output_file.file.name,header=None)
                         dataset.test_samples = data.shape[0]
                     else:
                         data = pd.read_pickle(newfile.training_output_file.file.name)
                         newfile.train_samples = data.shape[0]
-                        newfile.output_shape = data.shape[1:]
+                        newfile.output_shape = str(data.shape[1:])
                         data = pd.read_pickle(newfile.training_input_file.file.name)
                         newfile.train_samples = data.shape[0]
-                        newfile.input_shape = data.shape[1:]
+                        newfile.input_shape = str(data.shape[1:])
                         data = pd.read_pickle(newfile.testing_output_file)
                         newfile.test_samples = data.shape[0]
                     newfile.train_input_size = newfile.training_input_file.file.size
