@@ -139,10 +139,17 @@ class DatasetListView(ListView):
                     for dataset_file in ['training_input_file','training_output_file','testing_input_file','testing_output_file']:
                         form_data[dataset_file].name = re.sub('_file',op.splitext(request.FILES[dataset_file].name)[1],dataset_file)
                         if not filetype:
-                            filetype = op.splitext(request.FILES[dataset_file].name)
-                        elif filetype!=op.splitext(request.FILES[dataset_file].name):
-                            context.update({'error_messnage':'Found both csv and pickle files. Reformat to the same file type and try again.'})
-                            return self.render_to_response(context)
+                            filetype = op.splitext(request.FILES[dataset_file].name)[1]
+                        elif filetype!=op.splitext(request.FILES[dataset_file].name)[1]:
+                            context.update({'error_message':'Found both csv and pickle files. Reformat to the same file type and try again.'})
+                    if filetype == '.csv':
+                        filetype = 'CSV'
+                    elif filetype == '.pickle' or filetype == '.pkl':
+                        filetype = 'PKL'
+                    else:
+                        context.update({'error_message':'Unsupported filetype found. Please use csv or pickle file format!'})
+                    if context.get('error_message'):
+                        return self.render_to_response(context)
                     newfile = Dataset(title=form_data['title'],training_input_file=request.FILES['training_input_file'],training_output_file=request.FILES['training_output_file'],testing_input_file=request.FILES['testing_input_file'],testing_output_file=request.FILES['testing_output_file'],user=request.user,filetype=filetype)
                     newfile.save()
                     if newfile.filetype == 'CSV':
@@ -153,7 +160,7 @@ class DatasetListView(ListView):
                         newfile.train_samples = data.shape[0]
                         newfile.input_shape = str(data.shape[1:])
                         data = pd.read_csv(newfile.testing_output_file.file.name,header=None)
-                        dataset.test_samples = data.shape[0]
+                        newfile.test_samples = data.shape[0]
                     else:
                         data = pd.read_pickle(newfile.training_output_file.file.name)
                         newfile.train_samples = data.shape[0]

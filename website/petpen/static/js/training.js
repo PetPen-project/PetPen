@@ -17,36 +17,46 @@ var savedJSON = {};
 var currentMode = "idle";
 var lastUpdateTimestamp = 0;
 var svg = '';
+var chart = '';
 
 $(function(){
-  svg = d3.select("#plotDiv").select("svg");
-  initPlot(600,300,null);
-  data = [
-    0.4,
-    0.2,
-    0.7,
-    0.5,
-    0.8
-  ];
+  //svg = d3.select("svg")
+    //.attr("width",600)
+    //.attr("height",300)
+    //.append("g").attr("transform","translate(30,30)");
+  //svg.append("path");
+  //
+    //var chart = nv.models.cumulativeLineChart()
+      //.x(function(d) { return d[0] })
+      //.y(function(d) { return d[1]/100 }) //adjusting, 100% is 1.00, not 100 as it is in the data
+      //.color(d3.scale.category10().range())
+      //.useInteractiveGuideline(true)
+      //;
+     //chart.xAxis
+        //.tickValues([1078030800000,1122782400000,1167541200000,1251691200000])
+        //.tickFormat(function(d) {
+            //return d3.time.format('%x')(new Date(d))
+          //});
+    //chart.yAxis
+        //.tickFormat(d3.format(',.1%'));
+
+  d3.json('http://nvd3.org/examples/cumulativeLineData.json', function(data) {
+    //d3.select('svg')
+        //.datum(data)
+        //.call(chart);
+  //nv.addGraph(function() {
+    //d3.select('svg')
+        //.datum(data)
+        //.call(chart);
+
+    //nv.utils.windowResize(chart.update);
+
+    //return chart;
+  //});
+  });
+  //svg = d3.select("#plotDiv").select("svg");
+  initPlot();
 	initJsonPython();//init
-  
-  console.log(svg);
-  //setInterval(function () {
-    //var y = d3.scaleLinear().range([230, 0]).domain([0.0,1.0]);
-    //var x = d3.scaleLinear().range([0, 530]).domain([0,10]);
-    //path=svg.select("path");
-    //line = d3.line()
-      //.x(function(d,i){return x(i*2+1);})
-      //.y(function(d,i){return y(d);});
-    //data.push(Math.random());
-    //path.attr("d", line(data))
-      //.attr("transform",null)
-      //.transition()
-      //.duration(200)
-      //.ease(d3.easeLinear)
-      //.attr("transform","translate("+x(-1)+",0)");
-    //data.shift();
-  //}, 2500);
 	
   timerProgress = setInterval(function () {//timer
     loadJsonPython();
@@ -77,7 +87,7 @@ function printJSON(data){
     case wordToTesting: currentMode = 'testing'; break;
     case wordToLoading: currentMode = 'loading'; emptyPlotCode(); break;
     case 'error': currentMode = 'error'; break;
-    case 'finish training': loadHTMLPython(); break;
+    case 'finish training': break;
   }
   
   //update data
@@ -126,66 +136,107 @@ function printJSON(data){
     if(data['status'] == stopKeyword) stopTimer();//stop
   }
 };
-function initPlot(width,height,margin){
+function enableStopBtn(){
+  ;
+};
+function initPlot(){
+  svg = d3.select("svg");
+  chart = nv.models.lineChart()
+    .x(function(d,i){return d[0]})
+    .y(function(d){return d[1]})
+    .color(d3.scale.category10().range())
+    .useInteractiveGuideline(true)
+    .noData('Empty data')
+    ;
+  chart.xAxis
+    .axisLabel('Epoch');
+  chart.yAxis
+    .tickFormat(d3.format(',.3f'));
+  nv.utils.windowResize(chart.update);
 
-  margin = margin || {
-    top: 30,
-    right: 20,
-    bottom: 40,
-    left: 50
-  };
-  width = width - margin.left - margin.right;
-  height = height - margin.top - margin.bottom;
+  svg.datum([])
+    .call(chart);
+  return chart;
+};
+//function initPlot(width,height,margin){
+  //margin = margin || {
+    //top: 30,
+    //right: 20,
+    //bottom: 40,
+    //left: 50
+  //};
+  //width = width - margin.left - margin.right;
+  //height = height - margin.top - margin.bottom;
 
-  var y = d3.scaleLinear().range([height, 0]);
-  var x = d3.scaleLinear().range([0, width]);
+  //var y = d3.scaleLinear().range([height, 0]);
+  //var x = d3.scaleLinear().range([0, width]);
 
-    svg = svg.attr("width", width + margin.left + margin.right)
-    .attr("height", height + margin.top + margin.bottom)
-    .append("g")
-    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    //svg = svg.attr("width", width + margin.left + margin.right)
+    //.attr("height", height + margin.top + margin.bottom)
+    //.append("g")
+    //.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-  // Scale the range of the data
-  x.domain([0, 10]);
-  y.domain([0.0, 1.0]);
+  //// Scale the range of the data
+  //x.domain([0, 10]);
+  //y.domain([0.0, 1.0]);
 
-  var xAxis = d3.axisBottom(x).ticks(5);
+  //var xAxis = d3.axisBottom(x).ticks(5);
 
-  var yAxis = d3.axisLeft(y).ticks(5);
-  data = [
-    {"x":1, "y":0.4},
-    {"x":3, "y":0.2},
-    {"x":5, "y":0.7},
-    {"x":7, "y":0.5},
-    {"x":9, "y":0.8}
-  ];
-  line = d3.line()
-    .x(function(d){return x(d.x);})
-    .y(function(d){return y(d.y);});
-  svg.append("path")
-    .attr("d",line(data))
-    .attr("stroke","blue")
-    .attr("stroke-width",2)
-    .attr("fill","none");
+  //var yAxis = d3.axisLeft(y).ticks(5);
+  //data = [
+    //{"x":1, "y":0.4},
+    //{"x":3, "y":0.2},
+    //{"x":5, "y":0.7},
+    //{"x":7, "y":0.5},
+    //{"x":9, "y":0.8}
+  //];
+  //line = d3.line()
+    //.x(function(d){return x(d.x);})
+    //.y(function(d){return y(d.y);});
+  //svg.append("path")
+    //.attr("d",line(data))
+    //.attr("stroke","blue")
+    //.attr("stroke-width",2)
+    //.attr("fill","none");
 
-  svg.append("g") // Add the X Axis
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis);
-  svg.append("g") // Add the Y Axis
-    .call(yAxis);
+  //svg.append("g") // Add the X Axis
+    //.attr("transform", "translate(0," + height + ")")
+    //.call(xAxis);
+  //svg.append("g") // Add the Y Axis
+    //.call(yAxis);
   
-  svg.append("text") // Add the X label
-    .attr("x",(width/2))
-    .attr("y",height+(margin.top))
-    .text("Epoch");
-  svg.append("text") // Add the Y label
-    .attr("transform","rotate(90)")
-    .attr("dy","2.5rem")
-    .text("Loss");
-}
+  //svg.append("text") // Add the X label
+    //.attr("x",(width/2))
+    //.attr("y",height+(margin.top))
+    //.text("Epoch");
+  //svg.append("text") // Add the Y label
+    //.attr("transform","rotate(90)")
+    //.attr("dy","2.5rem")
+    //.text("Loss");
+//}
+function updatePlot(data){
+  //console.log(data.epoch[0]);
+  plotdata = svg.datum();
+  if(data.status=='start training model'){
+    if (!plotdata[0]){
+      plotdata[0] = {'key':'training','values':[[data.epoch[0],data.loss.value]]};
+    }else{
+      if(!plotdata[0].values.find(function(item,index,array){
+        return item[0] == data.epoch[0];
+      })){
+        plotdata[0].values.push([data.epoch[0],data.loss.value]);
+      }
+    }
+  }
+  //chart.yDomain = [-1,10];//[plotdata[0].values]
+  //plotdata.push({'key':'test','values':[[data.loss.value]]});
+  //console.log(plotdata);
+  svg.call(chart);
+  //chart.update();
+};
 function emptyPlotCode(data){
   ;
-}
+};
 function setProgessBar(barClass, barName, dataArray){
   if(barName != 'training' && barName != 'testing')
     return;
@@ -193,7 +244,7 @@ function setProgessBar(barClass, barName, dataArray){
   if(dataArray.length > 0) num1 = dataArray[0];
   if(dataArray.length > 1) num2 = dataArray[1];
   progressBar($('.' + barClass + '[name="' + barName + '"]'), num1, num2, num1 + "/" + num2);
-}
+};
 //progress animation bar
 function progressBar($bar, count, total, text) {
   var percentage = 100;
@@ -212,7 +263,7 @@ function progressBar($bar, count, total, text) {
   
   if (percentage >= 100) $($bar).removeClass('active');
   else $($bar).addClass('active');	
-}
+};
 //call when error
 function errorJSON(data){
   if(typeof data != 'undefined'){
@@ -233,8 +284,11 @@ function loadJsonPython(){
     data: {
       project_id: project_id
     },
-    success: printJSON,
-    error: function(){;} // pass
+    success: function(data){
+      printJSON(data);
+      updatePlot(data);
+    },
+    error: function(){console.log('error loading json from api');} // pass
     //error: errorJSON
   });
 };

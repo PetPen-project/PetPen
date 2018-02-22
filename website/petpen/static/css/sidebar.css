@@ -11,6 +11,23 @@
   list-style:none;
   border-bottom: 1px solid rgba(100,100,100,0.3);
 }
+.history-btns {
+  width:100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+.history-btn {
+  flex-basis: 0;
+  flex-grow: 1;
+  color: #f8f9fa;
+  background-color: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all .15s ease-in-out;
+}
+.history-btn:hover {
+  background-color: #344;
+}
 #historyAction {
   color:rgba(230,230,230,0.9);
   background: #151719;
@@ -45,7 +62,11 @@
   max-height: calc(100vh - 6.5rem);
   overflow:auto;
 }
-
+.time-text {
+}
+.evaluation-btn {
+    float: right;
+}
 #project-tabs {
     background: rgba(153, 255, 153, 0.1);
 }

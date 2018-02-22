@@ -5,7 +5,10 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static "css/sidebar.css" %}">
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<!--<script src="https://d3js.org/d3.v4.min.js"></script>-->
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.min.js"></script>
+<link rel="stylesheet" href="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.css">
 <script src="{% static "js/training.js" %}"></script>
 <script>
   window.CSRF_TOKEN = "{{csrf_token}}";
@@ -45,6 +48,27 @@ $(document).ready(function(){
       }
     });
   });
+  $('#stopTrainModel').click(function(){
+    $.ajax({
+      async:false,
+      url: "/model/api/backend/",
+      method:"POST",
+      data:{
+        command: "stop",
+        name: $('#expName').val(),
+        project:'{{project_id}}'
+      }
+    });
+  });
+});
+
+</script>
+{% endblock %}
+
+{% block content %}
+  <ul class="nav nav-tabs" id="project-tabs" role="tablist">
+    <li class="nav-item">
+      <a class="nav-link active" id="training-tab" data-toggle="tab" href="#training" role="tab" aria-controls="training" aria-selected="true">Training</a>
 });
 
 </script>
@@ -136,7 +160,11 @@ $(document).ready(function(){
         </div>
       </div>
       <div id="plotDiv" class="row justify-content-center">
-        <svg></svg>
+        <div><h3>performance curve</h3></div>
+        <div class="w-100"></div>
+        <div style="width:600px;height:300px;">
+        <svg style="border:1px solid #111;"></svg>
+        </div>
       </div>
       <!--end training-->
     </div>
