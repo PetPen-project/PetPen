@@ -41,7 +41,6 @@ if __name__ == '__main__':
             id, _ = pop_('petpen_terminate')
             for i in jobstatus:
                 if id == jobstatus[i][0]:
-                    print '!!',jobstatus[i]
                     jobstatus[i][1].kill()
                     will_delete.append(i)
 
