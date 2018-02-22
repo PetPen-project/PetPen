@@ -7,7 +7,7 @@ from django.core.files import File
 from django.contrib import messages
 from django.views.generic import ListView
 
-from job_queue import push
+from job_queue import push, kill
 
 import os,json,shutil,re
 import os.path as op 
@@ -411,7 +411,7 @@ def backend_api(request):
         script_path = op.abspath(op.join(__file__,op.pardir,op.pardir,op.pardir,'backend/petpen0.1.py'))
         executed = datetime.datetime.now()
         save_path = executed.strftime('%y%m%d_%H%M%S')
-        history_name = request.POST.get(['name']) or save_path
+        history_name = request.POST.get('name') or save_path
         project = NN_model.objects.filter(user=request.user).get(pk=request.POST['project'])
         if not project:
             return Http404('project not found')
@@ -453,11 +453,11 @@ def backend_api(request):
                     return JsonResponse({'missing':'no structure file'})
             try:
                 # p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'],)
-                p = push(['python',script_path,'-m',project_path,'-t',save_path,'train'])
+                p = push(project.id,['python',script_path,'-m',project_path,'-t',save_path,'train'])
             except Exception as e:
                 logger.error('Failed to run the backend', exc_info=True)
         elif request.POST['command'] == 'stop':
-            pass
-        elif request.POST['commnad'] == evaluate:
+            p = kill(project.id)
+        elif request.POST['command'] == evaluate:
             pass
         return HttpResponse("running")
