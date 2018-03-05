@@ -2,20 +2,22 @@ function reloadHistory(data){
   $('#history-detail').html($(data).find('#history-detail').children());
 };
 function setDataset(dataset){
+  console.log(dataset);
   console.log(dataset.options[dataset.selectedIndex]);
 };
 function runEvaluation(project_id){
-  $.ajax({
-    async: false,
-    type: 'post',
-    url: '/model/api/backend/',
-    data:{
-      csrfmiddlewaretoken: window.CSRF_TOKEN,
-      command: 'evaluate',
-      dataset: '',
-      project: project_id
-    }
-  });
+  console.log($('#evaluate-dataset').val());
+  //$.ajax({
+    //async: false,
+    //type: 'post',
+    //url: '/model/api/backend/',
+    //data:{
+      //csrfmiddlewaretoken: window.CSRF_TOKEN,
+      //command: 'evaluate',
+      //dataset: '',
+      //project: project_id
+    //}
+  //});
 };
 $(function(){
   $("a[id^='loadHistory']").on('click',function(){

@@ -1,3 +1,7 @@
+body,html {
+    background: none;
+    text-align: left;
+}
 .upload-dataset-form {
     display: none;
     position: fixed;
@@ -79,6 +83,8 @@
     flex-flow: row wrap;
 }
 #info-sidebar {
+    float: right;
+    position: relative;
     padding: 1.5rem;
     flex: 0 0 20rem;
     height: calc(100vh - 120px);

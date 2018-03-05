@@ -44,9 +44,10 @@ $(document).ready(function(){
       data:{
         command: "train",
         name: $('#expName').val(),
-        project:'{{project_id}}'
+        project: project_id
       }
     });
+    $('#stopTrainModel').attr('disabled',false);
   });
   $('#stopTrainModel').click(function(){
     $.ajax({
@@ -55,10 +56,10 @@ $(document).ready(function(){
       method:"POST",
       data:{
         command: "stop",
-        name: $('#expName').val(),
-        project:'{{project_id}}'
+        project: project_id
       }
     });
+    $('#stopTrainModel').attr('disabled',true);
   });
 });
 

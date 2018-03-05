@@ -168,7 +168,7 @@ class HistoryView(ListView):
         self.kwargs['history_path'] = op.join(MEDIA_ROOT,op.dirname(self.object.project.structure_file),self.object.save_path)
         if self.kwargs.get('action') == 'delete':
             self.object_list = self.object_list.exclude(pk=self.object.id)
-            # self.object.delete()
+            self.object.delete()
         elif self.kwargs.get('action') == 'download':
             return self.generateAttachFile()
         context = self.get_context_data()
@@ -411,11 +411,11 @@ def backend_api(request):
         script_path = op.abspath(op.join(__file__,op.pardir,op.pardir,op.pardir,'backend/petpen0.1.py'))
         executed = datetime.datetime.now()
         save_path = executed.strftime('%y%m%d_%H%M%S')
-        history_name = request.POST.get('name') or save_path
         project = NN_model.objects.filter(user=request.user).get(pk=request.POST['project'])
         if not project:
             return Http404('project not found')
         if request.POST['command'] == 'train':
+            history_name = request.POST.get('name') or save_path
             history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running')
             history.save()
             project.training_counts += 1
@@ -458,6 +458,16 @@ def backend_api(request):
                 logger.error('Failed to run the backend', exc_info=True)
         elif request.POST['command'] == 'stop':
             p = kill(project.id)
+            project.status = 'idle'
+            project.save()
+            update_status(project.state_file,status='system idle')
+            history = project.history_set.latest('id')
+            history.status = 'aborted'
+            history.save()
+            os.makedirs(op.join(project_path,save_path,'logs/'))
+            with open(op.join(project_path,history.save_path,'logs/error_log'),'w') as f:
+                f.write('Training stopped by user.')
+
         elif request.POST['command'] == evaluate:
             pass
         return HttpResponse("running")

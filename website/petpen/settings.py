@@ -17,6 +17,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL='/'
 
 #setting logging configurations
 LOGGING = {
@@ -60,6 +61,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'djangobower',
     'django_nvd3',
+    'sass_processor',
 ]
 
 REST_FRAMEWORK = {
@@ -144,6 +146,10 @@ USE_TZ = False
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "petpen/static"),
     ]
+
+# sass processer
+SASS_PROCESSOR_ROOT = os.path.join(BASE_DIR, "petpen/static")
+SASS_PROCESSOR_ENABLED = True
 
 # Django-bower
 # ------------

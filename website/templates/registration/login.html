@@ -1,8 +1,10 @@
+{% extends "nav.html" %}
 {% load static %}
 <!DOCTYPE html>
-<html class="h-100">
-<title>{% block title %}user login{% endblock %}</title>
 
+{% block title %}
+user login
+{% endblock %}
 {% block header %}
       <meta charset='utf-8'>
       <meta name='viewport' content='width=device-width, initial-scale=1'>
@@ -19,9 +21,7 @@
 {% endblock %}
 
 {% block content %}
-<body class="h-100">
-<div class="container-fluid h-100">
-
+<div class="container-fluid" style="height:calc(100vh - 56px);">
   {% if request.user.is_authenticated %}
     <div class="h-100">
     <p>Welcome, {{request.user}}</p>
@@ -79,6 +79,4 @@
   {% endif %}
   </div>
 </div>
-</body>
 {% endblock %}
-</html>

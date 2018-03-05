@@ -28,7 +28,7 @@ if __name__ == '__main__':
             gpus[prefer_gpu] = 0 # mark busy
             sandbox_env = os.environ.copy()
             sandbox_env['CUDA_VISIBLE_DEVICES'] = str(prefer_gpu)
-            jobstatus[prefer_gpu] = (id, subprocess.Popen(command, env=sandbox_env, shell=True))
+            jobstatus[prefer_gpu] = (id, subprocess.Popen(command, env=sandbox_env))
 
         will_delete = []
         for i in jobstatus:
