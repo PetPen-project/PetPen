@@ -45,7 +45,7 @@ $metal-dark: #2F2F2F;
 body, html {
   margin: 0;
   padding: 0;
-  background: rgba(153, 255, 153, 0.1);
+  //background: rgba(153, 255, 153, 0.1);
   font-family: $project-font;
   //text-align: center;
 
@@ -104,12 +104,24 @@ a.overview-btn:active {
   top: -45px;
   box-shadow: 0px 5px 0px 0px darken($green-jade, 5%);
 }
-.button2 {
-  background-color: $blue-sky;
-  box-shadow: 0px 10px 0px 0px darken($blue-sky, 5%);
-  &:active {box-shadow: 0px 5px 0px 0px darken($blue-sky, 5%);}
+.buttons-sm {
+  color: white;
+  background: $green-jade;
+  position: relative;
+  top: 0px;
+  margin: 0;
+  padding: 1.5px 8px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0px 5px 0px 0px darken($green-jade, 5%), 0px 0px 15px 0px #bbb;
+  transition: all 0.2s;
+  &:active {
+    top: 3px;
+    box-shadow: 0px 2px 0px 0px darken($green-jade, 5%);
+  }
 }
-
 #logo {
   text-align: center;
   img: {vertical-align: middle;}

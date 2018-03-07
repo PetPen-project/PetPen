@@ -5,7 +5,6 @@
 body, html {
   margin: 0;
   padding: 0;
-  background: rgba(153, 255, 153, 0.1);
   font-family: "Fira Sans"; }
   body .canvas, html .canvas {
     width: 600px;
@@ -61,11 +60,22 @@ a.overview-btn:active {
   top: -45px;
   box-shadow: 0px 5px 0px 0px #3d7859; }
 
-.button2 {
-  background-color: #3498DB;
-  box-shadow: 0px 10px 0px 0px #258cd1; }
-  .button2:active {
-    box-shadow: 0px 5px 0px 0px #258cd1; }
+.buttons-sm {
+  color: white;
+  background: #468966;
+  position: relative;
+  top: 0px;
+  margin: 0;
+  padding: 1.5px 8px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+  box-shadow: 0px 5px 0px 0px #3d7859, 0px 0px 15px 0px #bbb;
+  transition: all 0.2s; }
+  .buttons-sm:active {
+    top: 3px;
+    box-shadow: 0px 2px 0px 0px #3d7859; }
 
 #logo {
   text-align: center;

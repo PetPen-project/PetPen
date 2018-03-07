@@ -2,8 +2,11 @@ function reloadHistory(data){
   $('#history-detail').html($(data).find('#history-detail').children());
 };
 function setDataset(dataset){
-  console.log(dataset);
-  console.log(dataset.options[dataset.selectedIndex]);
+  $('input[name=dataset]').val($('#evaluate-dataset').val());
+  //if ($('input[name=dataset]').val()=='custom'){
+    //$('#pred-label').attr('disabled',true);
+    //$('#pred-label').attr('display','none');
+  //}
 };
 function runEvaluation(project_id){
   console.log($('#evaluate-dataset').val());

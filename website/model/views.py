@@ -408,6 +408,10 @@ def preprocess_structure(file_path,projects,datasets):
 
 def backend_api(request):
     if request.method == "POST":
+        print(request.POST)
+        if request.POST['command']=='predict':
+            print(request)
+            return HttpResponse('good')
         script_path = op.abspath(op.join(__file__,op.pardir,op.pardir,op.pardir,'backend/petpen0.1.py'))
         executed = datetime.datetime.now()
         save_path = executed.strftime('%y%m%d_%H%M%S')

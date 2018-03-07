@@ -64,9 +64,11 @@
 }
 .time-text {
 }
-.evaluation-btn {
+.evaluation-form {
     float: right;
+    display: inline-block;
 }
+
 #project-tabs {
     background: rgba(153, 255, 153, 0.1);
 }

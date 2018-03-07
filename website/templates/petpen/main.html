@@ -20,15 +20,15 @@
           <p>dataset</p>
           <a class="overview-btn" href="{% url "dataset:index" %}">details</a>
           <ul>
-            <li>created: {{hi}}</li>
-            <li>total space used: {{hi}}</li>
+            <li>created: {{dataset_count}}</li>
+            <li>total space used: {{used_space|filesizeformat}}</li>
           </ul>
         </div>
         <div class="overview-box">
           <p>prejects</p>
           <a class="overview-btn" href="{% url "model:index" %}">details</a>
           <ul>
-            <li>created: {{hi}}</li>
+            <li>created: {{project_count}}</li>
           </ul>
         </div>
       </div>

@@ -37,14 +37,24 @@
           {% include_chart_jscss %}
           {% load_chart charttype chartdata chartcontainer extra %}
           <span class="time-text">training time:  {{history.executed}}</span>
-          <div class="evaluation-btn">
+          <form class="evaluation-form" enctype="multipart/form-data" action="{% url "model:backend_api"%}" method="post">
+            {% csrf_token %}
             Run prediction
-            <select id="evaluate-dataset" onclick="setDataset(this)">
+            <select id="evaluate-dataset" onchange="setDataset(this)">
               <option value="test">using test dataset</option>
               <option value="custom">by uploading dataset</option>
             </select>
-            <button id="run-evaluation" onclick="runEvaluation({{history.project.id}})"><i class="fa fa-play"></i></button>
-          </div>
+            <input type="hidden" name="command" value="predict"/>
+            <input type="hidden" name="project" value="{{history.project.id}}"/>
+            <input type="hidden" name="history" value="{{history.id}}"/>
+            <input type="hidden" name="dataset" value="test"/>
+            <label class="buttons-sm" id="pred-label" for="prediction-file">
+              <input id="prediction-file" style="display:none;" name="file" type="file"/>
+              upload
+            </label>
+            <button class="buttons-sm" type="submit">GO <i class="fa fa-play"></i></button>
+            <!--<button class="buttons-sm" id="run-evaluation" onclick="runEvaluation({{history.project.id}})">GO<i class="fa fa-play"></i></button>-->
+          </form>
           <div id="history-plot" class="text-center">
             <h1>loss</h1>
             {% include_container chartcontainer 400 '100%' %}
