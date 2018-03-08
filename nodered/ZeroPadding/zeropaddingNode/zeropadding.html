@@ -1,0 +1,34 @@
+<script type="text/javascript">
+    RED.nodes.registerType('ZeroPadding',{
+        category: 'Layer',
+        color: '#ffaaaa',
+        defaults: {
+            name: {value:"dense"},
+	    units: {value: ""},
+            type: {value:"ZeroPadding"},
+	    activation: {value: ""},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "face.png",
+        label: function() {
+            return this.name||"Output";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="ZeroPadding">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+        <input type="text" id="node-input-type" placeholder="Type">
+    </div>
+</script>
+ 
+<script type="text/x-red" data-help-name="Hello World">
+    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+    </p>
+</script>

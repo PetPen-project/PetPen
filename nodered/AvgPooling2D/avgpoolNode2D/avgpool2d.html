@@ -1,0 +1,50 @@
+<script type="text/javascript">
+    RED.nodes.registerType('AvgPooling2D',{
+        category: 'Layer',
+        color: '#ffaaaa',
+        defaults: {
+            name: {value:"avgpooling2d"},
+	    poolsize: {value: ""},
+            type: {value:"AvgPooling2D"},
+	    padding: {value: ""},
+	    strides: {value: ""},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "face.png",
+        label: function() {
+            return this.name||"Output";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="AvgPooling2D">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+        <input type="text" id="node-input-type" placeholder="Type">
+    </div>
+    <div class="form-row">
+        <label for="node-input-padding"><i class="icon-tag"></i> Padding</label>
+        <select id="node-input-padding">
+                <option value="valid">valid</option>
+                <option value="same">same</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-poolsize"><i class="icon-tag"></i> Pool_size</label>
+        <input type="text" id="node-input-poolsize" placeholder="Poolsize">
+    </div>
+    <div class="form-row">
+        <label for="node-input-strides"><i class="icon-tag"></i> Strides</label>
+        <input type="text" id="node-input-strides" placeholder="Strides">
+    </div>
+</script>
+ 
+<script type="text/x-red" data-help-name="Hello World">
+    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+    </p>
+</script>
