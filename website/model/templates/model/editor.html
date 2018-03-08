@@ -15,10 +15,19 @@
       window.close();
     };
     $('document').ready(function(){
-      setTimeout("$('#nodered').css('display','block');$('#nodered-frame').attr('src','http://140.109.18.114:{{port}}');", 3300);
+      setTimeout("$('#nodered').css('display','block');$('#nodered-frame').attr('src','http://www.petpen.org/editor/{{port}}');", 3300);
+      <!--setTimeout("$('#nodered').css('display','block');$('#nodered-frame').attr('src','http://140.109.18.114:{{port}}');", 3300);-->
       
-      $('#close-project').click(function(){
-      });
+      window.onbeforeunload = function(){
+        $.ajax({
+          async: false,
+          url: "{% url "model:manage_editor" %}",
+          method: "GET",
+          data:{
+            action: "close"
+          }
+        });
+      };
     });
   </script>
 {% endblock %}

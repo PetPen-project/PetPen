@@ -4,4 +4,4 @@ __pycache__
 /**/migrations/*
 db.sqlite3
 website/node_modules/
-website/datasets/
+website/petpen/setting_configs.py

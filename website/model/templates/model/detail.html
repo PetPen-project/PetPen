@@ -5,7 +5,10 @@
 
 {% block head %}
 <link rel="stylesheet" href="{% static "css/sidebar.css" %}">
-<script src="https://d3js.org/d3.v4.min.js"></script>
+<!--<script src="https://d3js.org/d3.v4.min.js"></script>-->
+<script src="https://d3js.org/d3.v3.min.js"></script>
+<script src="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.min.js"></script>
+<link rel="stylesheet" href="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.css">
 <script src="{% static "js/training.js" %}"></script>
 <script>
   window.CSRF_TOKEN = "{{csrf_token}}";
@@ -41,9 +44,22 @@ $(document).ready(function(){
       data:{
         command: "train",
         name: $('#expName').val(),
-        project:'{{project_id}}'
+        project: project_id
       }
     });
+    $('#stopTrainModel').attr('disabled',false);
+  });
+  $('#stopTrainModel').click(function(){
+    $.ajax({
+      async:false,
+      url: "/model/api/backend/",
+      method:"POST",
+      data:{
+        command: "stop",
+        project: project_id
+      }
+    });
+    $('#stopTrainModel').attr('disabled',true);
   });
 });
 
@@ -55,9 +71,6 @@ $(document).ready(function(){
     <li class="nav-item">
       <a class="nav-link active" id="training-tab" data-toggle="tab" href="#training" role="tab" aria-controls="training" aria-selected="true">Training</a>
     </li>
-    <!--<li class="nav-item">-->
-      <!--<a class="nav-link" id="evaluation-tab" data-toggle="tab" href="#evaluation" role="tab" aria-controls="evaluation" aria-selected="false">Evaluation</a>-->
-    <!--</li>-->
     <li class="nav-item">
       <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">History</a>
     </li>
@@ -136,6 +149,13 @@ $(document).ready(function(){
               <input type="input" class="form-control txfLoss" readonly="true" name="validate">
             </div>
           </div>
+        </div>
+      </div>
+      <div id="plotDiv" class="row justify-content-center">
+        <div><h3>performance curve</h3></div>
+        <div class="w-100"></div>
+        <div style="width:600px;height:300px; background:#FFF;">
+        <svg style="border:1px solid #111;"></svg>
         </div>
       </div>
       <!--end training-->

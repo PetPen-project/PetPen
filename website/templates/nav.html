@@ -1,4 +1,5 @@
 {% load static %}
+{% load sass_tags %}
 <!DOCTYPE html>
 <html lang='en'>
   <head>
@@ -9,9 +10,8 @@
       <link href="https://fonts.googleapis.com/css?family=Josefin+Sans" rel="stylesheet">
       <!-- Latest compiled and minified CSS -->
       <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css'>
-      <!--<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css'>-->
       <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-      <link rel="stylesheet" href="{% static "css/style.css" %}">
+      <link rel="stylesheet" href="{% sass_src "scss/style.scss" %}">
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
       <script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script> 
@@ -44,8 +44,8 @@
   <body>
     <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
       <a class="navbar-brand" href="{% url 'main' %}">
-        <img src="{% static "img/logo.png" %}" style="display: inline-block; height: 30px; margin-top: -5px"/>
-        <span>PetPen</span>
+        <!--<img src="{% static "img/logo.png" %}" style="display: inline-block; height: 30px; margin-top: -5px"/>-->
+        <span style="color:#BEDB39;">Pet</span><span>Pen</span>
       </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>

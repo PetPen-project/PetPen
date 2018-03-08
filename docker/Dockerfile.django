@@ -1,9 +1,10 @@
 FROM tensorflow/tensorflow:latest-gpu
 
 RUN pip install keras django bokeh docker
-RUN pip install djangorestframework
+RUN pip install djangorestframework redis
 RUN pip install django-background-tasks
 RUN pip install django-bower django-nvd3
+RUN pip install libsass django-compressor django-sass-processor
 
 RUN mkdir -p /source
 ADD . /source/

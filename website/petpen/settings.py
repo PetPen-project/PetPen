@@ -8,15 +8,16 @@ https://docs.djangoproject.com/en/1.11/ref/settings/
 """
 from django.contrib.messages import constants as message_constants
 MESSAGE_LEVEL = message_constants.DEBUG
-
+from .setting_configs import *
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
-MEDIA_ROOT = '/media/disk1/petpen/'
+STATIC_ROOT = os.path.join(BASE_DIR,'static')
+STATIC_URL = '/static/'
 MEDIA_URL = '/media/'
 LOGIN_URL = '/accounts/login/'
+LOGIN_REDIRECT_URL='/'
 
 #setting logging configurations
 LOGGING = {
@@ -44,12 +45,6 @@ LOGGING = {
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '1=@fcir9q@!6vh&8hi=dxao^p@-*qg41!ag3-h+^=60d!j@b8^'
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = ['140.109.18.114', 'localhost','www.petpen.org']
-
-
 # Application definition
 
 INSTALLED_APPS = [
@@ -66,6 +61,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'djangobower',
     'django_nvd3',
+    'sass_processor',
 ]
 
 REST_FRAMEWORK = {
@@ -117,8 +113,6 @@ DATABASES = {
     }
 }
 
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
 # Password validation
 # https://docs.djangoproject.com/en/1.11/ref/settings/#auth-password-validators
 
@@ -137,14 +131,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.11/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
-
-# TIME_ZONE = 'UTC'
-TIME_ZONE = 'Asia/Taipei'
 
 USE_I18N = True
 
@@ -153,15 +143,14 @@ USE_L10N = True
 # USE_TZ = True
 USE_TZ = False
 
-
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.11/howto/static-files/
-
-STATIC_URL = '/static/'
-
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "petpen/static"),
     ]
+
+# sass processer
+# SASS_PROCESSOR_ROOT = STATIC_ROOT
+SASS_PROCESSOR_ROOT = STATICFILES_DIRS[0]
+SASS_PROCESSOR_ENABLED = True
 
 # Django-bower
 # ------------

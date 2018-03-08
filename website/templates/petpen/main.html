@@ -7,41 +7,69 @@
 {% block content %}
   <footer class="copyrightFooter">
     <div class="container text-center">
-      <span>PetPen team @ Sinica 2018</span>
+      <span>©PetPen team 2018</span>
     </div>
   </footer>
-  <div id="project">
-    <div class="container-fluid">
-      <div class="row justify-content-md-center">
-        <div class="col-md-6">
-          <h2>Start your Deep Learning Projects Online</h2>
-          <p>design your neural network model easily using Node-RED gui</p>
-          <br>
-          <br>
-          <a href="{% url "model:index" %}" class="">view your project</a>
+  {% if user.is_authenticated %}
+  <div class="bg-blue">
+    <div class="main-content">
+      <span>Welcome, {{user}}</span><!--<span class="close">configuration</span>-->
+      <div class="overview-table">
+        <p>overview</p>
+        <div class="overview-box">
+          <p>dataset</p>
+          <a class="overview-btn" href="{% url "dataset:index" %}">details</a>
+          <ul>
+            <li>created: {{dataset_count}}</li>
+            <li>total space used: {{used_space|filesizeformat}}</li>
+          </ul>
         </div>
-        <div class="col col-md-6">
-          <img src="{% static "img/editor.PNG" %}" style="width:400px">
-        </div>
-      </div>
-    </div>
-  </div>
-  <div id="feature">
-    <div class="container-fluid">
-      <div class="row justify-content-md-center">
-        <div class="col-md-6">
-          <h2>Manage your Dataset</h2>
-          <p>upload and manage available datasets in our database</p>
-          <br>
-          <a href="{% url "dataset:index" %}" class="btn btn-lg btn-outline-primary">view dataset list</a>
-        </div>
-        <div class="col-md-6">
-          <h2>Learn how to use our Service</h2>
-          <p>train model from webpage control panel with keras and tensorflow API</p>
-          <br>
-          <a href="{% url "model:index" %}" class="btn btn-lg btn-outline-primary">view documents</a>
+        <div class="overview-box">
+          <p>prejects</p>
+          <a class="overview-btn" href="{% url "model:index" %}">details</a>
+          <ul>
+            <li>created: {{project_count}}</li>
+          </ul>
         </div>
       </div>
     </div>
   </div>
+  {% else %}
+  <div class="bg-blue">
+    <div class="main-content">
+      <div class="row justify-content--center">
+          <div class="col-md-5 col-lg-6">
+            <h1>Start your Deep Learning Projects Online</h1>
+            <p>Simplified cloud service for deep learning using our PetPen, an open source platform.</p>
+            <div class="main-link-btns">
+              <a href="{% url "login" %}" class="buttons">LOGIN</a>
+              <div class="main-link-text">or</div>
+              <a href="{% url "user_create" %}" class="buttons">SIGN UP</a>
+            </div>
+          </div>
+          <div class="col-md-7 col-lg-6">
+            <img src="{% static "img/editor.PNG" %}" style="width:400px">
+          </div>
+      </div>
+    </div>
+  </div>
+  {% endif %}
+  <!--<div id="feature">-->
+    <!--<div class="container-fluid">-->
+      <!--<div class="row justify-content-md-center">-->
+        <!--<div class="col-md-6">-->
+          <!--<h2>Manage your Dataset</h2>-->
+          <!--<p>upload and manage available datasets in our database</p>-->
+          <!--<br>-->
+          <!--<a href="{% url "dataset:index" %}" class="buttons">view dataset list</a>-->
+        <!--</div>-->
+        <!--<div class="col-md-6">-->
+          <!--<h2>Learn how to use our Service</h2>-->
+          <!--<p>train model from webpage control panel with keras and tensorflow API</p>-->
+          <!--<br>-->
+          <!--<a href="{% url "model:index" %}" class="buttons">view documents</a>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
 {% endblock %}

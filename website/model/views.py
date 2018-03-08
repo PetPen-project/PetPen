@@ -5,14 +5,16 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.files import File
 from django.contrib import messages
+from django.views.generic import ListView
 
-from job_queue import push
+from job_queue import push, kill
 
-import os,json,shutil
+import os,json,shutil,re
 import os.path as op 
 import subprocess,signal
 import time,datetime
 import docker
+import pandas as pd
 
 from model.utils import bokeh_plot, update_status
 # from dataset.models import Dataset
@@ -96,6 +98,96 @@ def project_detail(request, project_id):
 
     return render(request,'model/detail.html',context)
 
+class HistoryView(ListView):
+    model = [NN_model,History]
+    template_name = 'model/history.html'
+
+    def get_queryset(self):
+        try:
+            queryset = self.model[0].objects.get(pk=self.kwargs['project_id'])
+            queryset = queryset.history_set.all()
+            return queryset
+        except:
+            raise Http404('query failed.')
+
+    def get_context_data(self):
+        context = {}
+        context['histories'] = self.object_list
+        if self.object:
+            if self.object.status == "running":
+                if not op.exists(self.kwargs['history_path']):
+                    self.object.status = 'execute log missing'
+                else:
+                    if op.exists(op.join(self.kwargs['history_path'],'weights.h5')):
+                        self.object.status = 'success'
+                    elif op.exists(op.join(self.kwargs['history_path'],'logs/error_log')):
+                        self.object.status = 'error'
+                self.object.save()
+            if self.object.status !='success':
+                context.update({'save_path':self.object.save_path,'status':self.object.status,'executed':self.object.executed})
+                return context
+            log_data = pd.read_csv(op.join(self.kwargs['history_path'],'logs','train_log'))
+            chartdata = {}
+            chartdata['x'] = range(1,log_data.shape[0]+1)
+            for index in range(log_data.shape[1]):
+                chartdata['name{}'.format(index)] = 'training' if log_data.columns[index]=='loss' else 'testing'
+                chartdata['y{}'.format(index)] = log_data.iloc[:,index]
+            charttype = "lineChart"
+            chartcontainer = 'linechart_container'
+            best_epoch = log_data['val_loss'].argmin()
+            best_val = log_data['val_loss'][best_epoch]
+            context.update({
+                'history':self.object,
+                'epochs':log_data.shape[0],
+                'best_epoch':best_epoch,
+                'best_val':best_val,
+                'charttype': charttype,
+                'chartdata': chartdata,
+                'chartcontainer': chartcontainer,
+                'extra': {
+                    'x_is_date': False,
+                    'x_axis_format': '',
+                    'tag_script_js': True,
+                    'jquery_on_ready': False,
+                }
+            })
+        return context 
+
+    def get(self, request, *args, **kwargs):
+        self.kwargs = kwargs
+        self.object_list = self.get_queryset()
+        self.object = None
+        context = self.get_context_data()
+        return self.render_to_response(context)
+    
+    def post(self, request, *args, **kwargs):
+        self.kwargs = kwargs
+        self.kwargs.update(request.POST)
+        self.object_list = self.get_queryset()
+        self.object = self.object_list.get(pk=request.POST.get('history'))
+        self.kwargs['history_path'] = op.join(MEDIA_ROOT,op.dirname(self.object.project.structure_file),self.object.save_path)
+        if self.kwargs.get('action') == 'delete':
+            self.object_list = self.object_list.exclude(pk=self.object.id)
+            self.object.delete()
+        elif self.kwargs.get('action') == 'download':
+            return self.generateAttachFile()
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
+    def generateAttachFile(self):
+        if self.object.status == 'success':
+            import tempfile
+            f = tempfile.TemporaryFile(mode='w+b')
+            with open(op.join(self.kwargs['history_path'],'weight.h5'),'rb') as h5:
+                shutil.copyfileobj(h5,f)
+            f.seek(0)
+            response = HttpResponse(f,content_type='application/x-binary') 
+            response['Content-Disposition'] = 'attachment; filename=model.h5'
+        else:
+            response = HttpResponse('error: request model on unsuccessful training.')
+
+        return response
+
 @login_required
 def history_detail(request):
     print(request.POST)
@@ -107,9 +199,8 @@ def history_detail(request):
     histories = History.objects.filter(project=history.project)
     history_path = op.join(MEDIA_ROOT,op.dirname(history.project.structure_file),history.save_path)
     if request.POST.get('action') == 'delete':
-        print(request.POST)
         histories = histories.exclude(pk=history.id)
-        history.delete()
+        # history.delete()
         return render(request,'model/history_detail.html',{'histories':histories})
     elif request.POST.get('action') == 'download':
         if history.status == 'success':
@@ -163,6 +254,7 @@ def history_detail(request):
     }
     return render(request,'model/history_detail.html',context)
 
+@login_required
 def api(request):
     project = get_object_or_404(NN_model,user=request.user,pk=request.POST['project_id'])
     try:
@@ -184,12 +276,19 @@ def api(request):
     return JsonResponse(info)
 
 def plot_api(request):
-    import json
-    import re
     from bokeh.plotting import figure
     from bokeh.embed import components
-
-    file_path='/media/disk1/petpen/models/2'
+    
+    try:
+        project = NN_model.objects.get(user=request.user,pk=request.GET.get('p'))
+        if request.GET.get('realtime') == '1':
+            plot_data = []
+            with open(op.join(MEDIA_ROOT,project.state_file),'r') as f:
+                info = json.load(f)
+            return HttpResponse(json.dumps(info),content_type='application/json')
+    except BaseException as e:
+        logger.warning('excepttion occured when calling plot API. user:{}, method GET:{}'.format(request.user,request.GET))
+        return HttpResponse('')
     latest_excution = os.path.join(file_path,max([f for f in os.listdir(file_path) if re.match(r'\d{6}_\d{6}',f)]),'logs')
     script, div = bokeh_plot(latest_excution)
     with open('/home/plash/petpen/state.json','r+') as f:
@@ -309,63 +408,70 @@ def preprocess_structure(file_path,projects,datasets):
 
 def backend_api(request):
     if request.method == "POST":
+        print(request.POST)
+        if request.POST['command']=='predict':
+            print(request)
+            return HttpResponse('good')
         script_path = op.abspath(op.join(__file__,op.pardir,op.pardir,op.pardir,'backend/petpen0.1.py'))
         executed = datetime.datetime.now()
         save_path = executed.strftime('%y%m%d_%H%M%S')
-        history_name = request.POST['name'] or save_path
-        project = NN_model.objects.filter(user=request.user).get(id=request.POST['project'])
+        project = NN_model.objects.filter(user=request.user).get(pk=request.POST['project'])
         if not project:
             return Http404('project not found')
-        history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running')
-        history.save()
-        project.training_counts += 1
-        project.status = 'running'
-        project.save()
-        logger.debug((history_name,save_path,executed))
-        logger.debug(request.POST['project'],project.title)
-        structure_file = op.join(MEDIA_ROOT,project.structure_file)
-        info = update_status(project.state_file)
-        if info['status'] != 'system idle':
-            return HttpResponse('waiting back to idle')
-        else:
-            update_status(project.state_file,'loading model')
-            # pass
-        # state_file = op.join(MEDIA_ROOT,project.state_file)
-        # with open(state_file,'r+') as f:
-            # info = json.load(f)
-            # if info['status'] != 'system idle':
-                # return HttpResponse('waiting back to idle')
-            # info['status'] = 'loading model'
-            # f.seek(0)
-            # json.dump(info,f)
-            # f.truncate()
-        project_path = op.dirname(structure_file)
-        os.mkdir(op.join(project_path,save_path))
-        shutil.copy2(structure_file,op.join(project_path,save_path))
-        #----- file path transformation -----
-        prcs = preprocess_structure(structure_file,NN_model.objects.filter(user=request.user),Dataset.objects.filter(user=request.user))
-        print(prcs)
-        if prcs != 'successed':
-            os.makedirs(op.join(project_path,save_path,'logs/'))
-            history.status = 'aborted'
+        if request.POST['command'] == 'train':
+            history_name = request.POST.get('name') or save_path
+            history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running')
+            history.save()
+            project.training_counts += 1
+            project.status = 'running'
+            project.save()
+            logger.debug((history_name,save_path,executed))
+            logger.debug(request.POST['project'],project.title)
+            structure_file = op.join(MEDIA_ROOT,project.structure_file)
+            info = update_status(project.state_file)
+            if info['status'] != 'system idle':
+                return HttpResponse('waiting back to idle')
+            else:
+                update_status(project.state_file,'loading model')
+            project_path = op.dirname(structure_file)
+            os.mkdir(op.join(project_path,save_path))
+            shutil.copy2(structure_file,op.join(project_path,save_path))
+            #----- file path transformation -----
+            prcs = preprocess_structure(structure_file,NN_model.objects.filter(user=request.user),Dataset.objects.filter(user=request.user))
+            print(prcs)
+            if prcs != 'successed':
+                os.makedirs(op.join(project_path,save_path,'logs/'))
+                history.status = 'aborted'
+                project.status = 'idle'
+                project.save()
+                history.save()
+                if prcs != 'file missing':
+                    update_status(project.state_file,status='error',detail='structure assignment error found on nodes {}'.format(', '.join(prcs)))
+                    with open(op.join(project_path,save_path,'logs/error_log'),'w') as f:
+                        f.write('Structure assignment error found on nodes {}'.format(', '.join(prcs)))
+                    return JsonResponse({'missing':prcs})
+                else:
+                    update_status(project.state_file,status='error',detail='please depoly your model structure before running')
+                    with open(op.join(project_path,save_path,'logs/error_log'),'w') as f:
+                        f.write('No deployed neural network found. Finish your neural network editing before running experiments.')
+                    return JsonResponse({'missing':'no structure file'})
+            try:
+                # p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'],)
+                p = push(project.id,['python',script_path,'-m',project_path,'-t',save_path,'train'])
+            except Exception as e:
+                logger.error('Failed to run the backend', exc_info=True)
+        elif request.POST['command'] == 'stop':
+            p = kill(project.id)
             project.status = 'idle'
             project.save()
+            update_status(project.state_file,status='system idle')
+            history = project.history_set.latest('id')
+            history.status = 'aborted'
             history.save()
-            if prcs != 'file missing':
-                update_status(project.state_file,status='error',detail='structure assignment error found on nodes {}'.format(', '.join(prcs)))
-                with open(op.join(project_path,save_path,'logs/error_log'),'w') as f:
-                    f.write('Structure assignment error found on nodes {}'.format(', '.join(prcs)))
-                return JsonResponse({'missing':prcs})
-            else:
-                update_status(project.state_file,status='error',detail='please depoly your model structure before running')
-                with open(op.join(project_path,save_path,'logs/error_log'),'w') as f:
-                    f.write('No deployed neural network found. Finish your neural network editing before running experiments.')
-                return JsonResponse({'missing':'no structure file'})
-        try:
-            # p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'],)
-            p = push(['python',script_path,'-m',project_path,'-t',save_path,'train'])
-        except Exception as e:
-            logger.error('Failed to run the backend', exc_info=True)
-        # project.status='running'
-        # project.save()
+            os.makedirs(op.join(project_path,save_path,'logs/'))
+            with open(op.join(project_path,history.save_path,'logs/error_log'),'w') as f:
+                f.write('Training stopped by user.')
+
+        elif request.POST['command'] == evaluate:
+            pass
         return HttpResponse("running")
