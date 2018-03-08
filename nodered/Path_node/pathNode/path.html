@@ -29,15 +29,15 @@
     </div>
     <div class="form-row" id="gg">
         <label for="node-input-source"><i class="icon-tag"></i> Source</label>
-        <input type="text" id="node-input-source" placeholder="Source">
+        <input type="text" id="node-input-source" onchange="blurFunction(this)" placeholder="Source">
     </div>
     <div class="form-row" id="fix">
         <label for="node-input-pretrainedoutput"><i class="icon-tag"></i> PretrainedOutput</label>
-        <input type="text" class="fix" id="node-input-pretrainedoutput" placeholder="Pretrainedoutput">
+        <input type="text" class="fix" id="node-input-pretrainedoutput" onchange="blurFunction(this)" placeholder="Pretrainedoutput">
     </div>
     <div class="form-row" id="fix">
         <label for="node-input-weightfile"><i class="icon-tag"></i> Weightfile</label>
-        <input type="text" class="fix" id="node-input-weightfile" placeholder="Weightfile">
+        <input type="text" class="fix" id="node-input-weightfile" onchange="blurFunction(this)" placeholder="Weightfile">
     </div>
 </script>
 <script>

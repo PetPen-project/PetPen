@@ -31,7 +31,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-activation"><i class="icon-tag"></i> Activation</label>
-    	<select id="node-input-activation">
+    	<select id="node-input-activation" onchange="blurFunction(this)">
   		<option value="softmax">Softmax</option>
   		<option value="sigmoid">Sigmoid</option>
   		<option value="tanh">Tanh</option>
@@ -58,7 +58,7 @@
     </div>
     <div class="form-row">
  	<label for="node-input-return_sequence"><i class="icon-tag"></i> Return_Sequence</label>
-	<select id="node-input-return_sequence">
+	<select id="node-input-return_sequence" onchange="blurFunction(this)">
 	  <option value="True">TRUE</option>
 	  <option value="False">False</option>
 	</select>
@@ -69,11 +69,11 @@
     </div>
     <div class="form-row">
         <label for="node-input-filters"><i class="icon-tag"></i> Filters</label>
-        <input type="text" id="node-input-filters" placeholder="Filters">
+        <input type="text" id="node-input-filters" onchange="blurFunction(this)" placeholder="Filters">
     </div>
     <div class="form-row">
         <label for="node-input-kernel"><i class="icon-tag"></i> Kernel_size</label>
-        <input type="text" id="node-input-kernel" placeholder="Kernel_size">
+        <input type="text" id="node-input-kernel" onchange="blurFunction(this)" placeholder="Kernel_size">
     </div>
     <div class="form-row">
         <label for="node-input-dropout"><i class="icon-tag"></i> Dropout</label>
@@ -91,6 +91,13 @@
         <label for="node-input-topic"><i class="icon-tag"></i> Topic</label>
         <input type="text" id="node-input-topic" placeholder="Topic">
     </div>
+</script>
+<script type="text/javascript"> 
+    function blurFunctiong(gy) {
+	if (gy.value == "") {
+	gy.style.background = "red";
+	}
+    }
 </script>
  
 <script type="text/x-red" data-help-name="Hello World">

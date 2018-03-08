@@ -25,7 +25,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-return_sequence"><i class="icon-tag"></i> Return_Seq</label>
-        <select id="node-input-return_sequence">
+        <select id="node-input-return_sequence" onchange="blurFunction(this)">
                 <option value="True">True</option>
                 <option value="False">False</option>
 	</select>
@@ -46,7 +46,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-units"><i class="icon-tag"></i> Units</label>
-        <input type="text" id="node-input-units" placeholder="Units">
+        <input type="text" id="node-input-units" onchange="blurFunction(this)" placeholder="Units">
     </div>
 </script>
  

@@ -127,7 +127,7 @@ module.exports = function(RED) {
 
         } else if (obj[ind]['type'] == 'Merge') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'Merge', params: {method: obj[ind]['method']}}; 
+          res.layers[name] = {type: 'Merge', params: {method: obj[ind]['method'], axis: obj[ind]['axis']}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'SimpleRNN') {
