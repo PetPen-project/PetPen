@@ -3,9 +3,11 @@ import re
 import json
 
 from datetime import datetime
-from model import backend_model
+from model import backend_model, load_file
 from utils import save_history
 from utils import Batch_History, Model_state
+
+from keras.models import load_model
 
 def build_model(args):
     model_dir = args.model
@@ -17,19 +19,20 @@ def build_model(args):
     testx = args.testx
     testy = args.testy
 
-    model = backend_model(model_path, trainx, trainy, testx, testy)
-    model.summary()
-
     weight_file = args.weight
 
     if weight_file:
-        record_files = [f for f in os.listdir(model_dir) if re.match(r'\d{6}_\d{6}',f)]
-        if not record_files:
-            print('No weight file found. Skip weight loading step.')
-        else:
-            weight_file = os.path.join(max(record_files), weight_file)
-        if os.path.exists(weight_file):
-            model.load(weight_file)
+        # record_files = [f for f in os.listdir(model_dir) if re.match(r'\d{6}_\d{6}',f)]
+        # if not record_files:
+            # print('No weight file found. Skip weight loading step.')
+        # else:
+            # weight_file = os.path.join(max(record_files), weight_file)
+        # if os.path.exists(weight_file):
+        model = load_model(weight_file)
+    else:
+        model = backend_model(model_path, trainx, trainy, testx, testy)
+
+    model.summary()
 
     return model, model_dir, (trainx, trainy, testx, testy)
 
@@ -57,6 +60,8 @@ def validate_func(args, log_dir):
     # save_history(os.path.join(log_dir, 'valid_log'), history, history_callback)
 
 def predict_func(args):
-    testdata = None # feed some test data
-    model, model_dir, _ = build_model(args)
-    loss = model.predict(testdata)
+    test_data = load_file(args.testx)
+    model = load_model(args.weight)
+    result = model.predict(testdata)
+
+
