@@ -16,7 +16,7 @@ def load_pkl(data):
     except:
         result = pd.read_pickle(data)
     return np.array(result)
-    
+
 def load_file(f):
     if '.csv' in f:
         return load_csv(f)
@@ -85,7 +85,7 @@ class backend_model():
         """
         read model setting from given model json file, then parse to keras model
         """
-    
+
         # Read JSON
         with open(model_file) as f:
             model_parser = json.load(f)
@@ -95,22 +95,22 @@ class backend_model():
         # Check connections
         if len(connections.keys()) < len(layers.keys())-1:
             raise ValueError('some components are not connected!')
-    
+
         # Gather inputs
         inputs = list(filter(lambda layer_name: layers[layer_name]['type']=='Input', layers))
         if self.get_data_from_json:
             for i in inputs:
                 self.train_x.append(load_file(dataset[i]['train_x']))
                 self.valid_x.append(load_file(dataset[i]['valid_x']))
-        
+
         # Prepared for return values
         input_names = inputs
         output_names = []
-    
+
         # Check if inputs are given
         if not inputs:
             raise ValueError('missing input layer in the model')
-    
+
         # Translate inputs into keras layers
         model_inputs = []
         created_layers = {}
@@ -118,7 +118,7 @@ class backend_model():
             input_params = layers[nn_in]['params']
             created_layers[nn_in] = deserialize_layer(layers[nn_in], name=nn_in)
             model_inputs.append(created_layers[nn_in])
-    
+
         # Gather merge layers (didn't check)
         merges = filter(lambda layer_name: layers[layer_name]['type']=='Merge', layers)
         merge_nodes = {m:[] for m in merges}
@@ -128,7 +128,7 @@ class backend_model():
                 raise ValueError('merge layer {} needs more than one inbound nodes'.format(node))
             merge_nodes[node]=inbound_nodes
         # WARN: Above code-block didn't check
-    
+
         # Iteratively create layer objects
         model_output = []
         while inputs:
@@ -141,10 +141,10 @@ class backend_model():
                         # Already translated
                         continue
                     layer_config = layers[conn_out]
-    
+
                     layer_type, layer_params = layers[conn_out]['type'], layers[conn_out].get('params',{})
-    
-    
+
+
                     # Merge layers (didn't check)
                     if layer_type.lower() == 'merge':
                         inbound_node_names = merge_nodes[conn_out]
@@ -156,8 +156,8 @@ class backend_model():
                         else:
                             next_layers.append(conn_in)
                     # WARN: Above code-block didn't check
-    
-    
+
+
                     elif layer_type.lower() == 'output':
                         model_output.append(created_layers[conn_in])
                         config = layer_params
@@ -165,26 +165,26 @@ class backend_model():
                         if self.get_data_from_json:
                             self.train_y.append(load_file(dataset[conn_out]['train_y']))
                             self.valid_y.append(load_file(dataset[conn_out]['valid_y']))
-                        
+
                     elif layer_type.lower() == 'pretrained':
                         pretrained_model = load_pretrained_model(layer_params)
                         created_layers[conn_out] = pretrained_model(created_layers[conn_in])
                         next_layers.append(conn_out)
-    
+
                     else:
                         layer = deserialize_layer(layer_config, name=conn_out)
                         inbound_node = created_layers[conn_in]
                         created_layers[conn_out] = layer(inbound_node)
                         next_layers.append(conn_out)
-    
+
             inputs = next_layers
-    
+
         model_output = model_output or []
         if not model_output:
             raise ValueError('missing output in model')
-    
+
         model = Model(inputs=model_inputs, outputs=model_output)
-        
+
         return model, config, input_names, output_names
 
 def load_pretrained_model(layer_config):
@@ -197,7 +197,7 @@ def load_pretrained_model(layer_config):
         inputs=pretrained_model.input,
         outputs=pretrained_model.layers[output_layer].output
     )
-    
+
     for layer in model.layers:
         layer.trainable = False
 
