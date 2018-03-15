@@ -6,6 +6,7 @@
             name: {value:"merge"},
             type: {value:"Merge"},
 	    method: {value: ""},
+	    axis: {value: ""},
         },
         inputs:1,
         outputs:1,
@@ -27,7 +28,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-method"><i class="icon-tag"></i> Method</label>
-        <select id="node-input-method">
+        <select id="node-input-method" onchange="blurFunction(this)">
                 <option value="add">Add</option>
                 <option value="average">Average</option>
 		<option value="multiply">Multiply</option>
@@ -35,6 +36,10 @@
 		<option value="concatenate">Concatenate</option>
 		<option value="dot">Dot</option>
         </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-axis"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-axis" placeholder="Axis">
     </div>
 </script>
  

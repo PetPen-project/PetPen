@@ -1,14 +1,14 @@
 {
-    "name": "Lstm_node",
+    "name": "AvgPooling2D",
     "version": "0.0.1",
-    "description": "A lstm node",
+    "description": "A dense node",
     "dependencies": {},
     "keywords": [
         "node-red"
     ],
     "node-red": {
         "nodes": {
-            "sample": "lstmNode/lstm.js"
+            "sample": "avgpoolNode2D/avgpool2d.js"
         }
     }
 }

@@ -26,7 +26,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-activation"><i class="icon-tag"></i> Activation</label>
-    	<select id="node-input-activation">
+    	<select id="node-input-activation" onchange="blurFunction(this)">
   		<option value="softmax">Softmax</option>
   		<option value="sigmoid">Sigmoid</option>
   		<option value="tanh">Tanh</option>
@@ -40,11 +40,11 @@
     </div>
     <div class="form-row">
         <label for="node-input-filters"><i class="icon-tag"></i> Filters</label>
-        <input type="text" id="node-input-filters" placeholder="Filters">
+        <input type="text" id="node-input-filters" onchange="blurFunction(this)" placeholder="Filters">
     </div>
     <div class="form-row">
         <label for="node-input-kernel"><i class="icon-tag"></i> Kernel_size</label>
-        <input type="text" id="node-input-kernel" placeholder="Kernel_size">
+        <input type="text" id="node-input-kernel" onchange="blurFunction(this)" placeholder="Kernel_size">
     </div>
     <div class="form-row">
         <label for="node-input-strides"><i class="icon-tag"></i> Strides</label>

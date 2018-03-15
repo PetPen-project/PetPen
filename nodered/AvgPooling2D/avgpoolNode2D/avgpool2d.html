@@ -1,12 +1,13 @@
 <script type="text/javascript">
-    RED.nodes.registerType('SimpleRNN',{
+    RED.nodes.registerType('AvgPooling2D',{
         category: 'Layer',
         color: '#ffaaaa',
         defaults: {
-            name: {value:"simplernn"},
-	    units: {value: ""},
-            type: {value:"SimpleRNN"},
-	    activation: {value: ""},
+            name: {value:"avgpooling2d"},
+	    poolsize: {value: ""},
+            type: {value:"AvgPooling2D"},
+	    padding: {value: ""},
+	    strides: {value: ""},
         },
         inputs:1,
         outputs:1,
@@ -17,7 +18,7 @@
     });
 </script>
 
-<script type="text/x-red" data-template-name="SimpleRNN">
+<script type="text/x-red" data-template-name="AvgPooling2D">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
@@ -27,18 +28,19 @@
         <input type="text" id="node-input-type" placeholder="Type">
     </div>
     <div class="form-row">
-        <label for="node-input-activation"><i class="icon-tag"></i> Activation</label>
-        <select id="node-input-activation">
-                <option value="softmax">Softmax</option>
-                <option value="sigmoid">Sigmoid</option>
-		<option value="tanh">Tanh</option>
-		<option value="relu">Relu</option>
-		<option value="softplu">Softplus</option>
+        <label for="node-input-padding"><i class="icon-tag"></i> Padding</label>
+        <select id="node-input-padding">
+                <option value="valid">valid</option>
+                <option value="same">same</option>
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-units"><i class="icon-tag"></i> Units</label>
-        <input type="text" id="node-input-units" onchange="blurFunction(this)" placeholder="Units">
+        <label for="node-input-poolsize"><i class="icon-tag"></i> Pool_size</label>
+        <input type="text" id="node-input-poolsize" placeholder="Poolsize">
+    </div>
+    <div class="form-row">
+        <label for="node-input-strides"><i class="icon-tag"></i> Strides</label>
+        <input type="text" id="node-input-strides" placeholder="Strides">
     </div>
 </script>
  
