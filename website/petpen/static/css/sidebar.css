@@ -70,7 +70,7 @@
 }
 
 #project-tabs {
-    background: rgba(153, 255, 153, 0.1);
+    background: rgba(153, 153, 153, 0.1);
 }
 #project-tabs .nav-link:hover {
     background: #FFF;
