@@ -3,13 +3,16 @@ function reloadHistory(data){
 };
 function setDataset(dataset){
   $('input[name=dataset]').val($('#evaluate-dataset').val());
-  //if ($('input[name=dataset]').val()=='custom'){
-    //$('#pred-label').attr('disabled',true);
-    //$('#pred-label').attr('display','none');
-  //}
+  if ($('#evaluate-dataset').val()=='custom'){
+    $('#pred-label').removeClass('disabled');
+    $('#prediction-file').attr('disabled',false);
+  }
+  else if($('#evaluate-dataset').val()=='test'){
+    $('#pred-label').addClass('disabled');
+    $('#prediction-file').attr('disabled',true);
+  }
 };
 function runEvaluation(project_id){
-  console.log($('#evaluate-dataset').val());
   //$.ajax({
     //async: false,
     //type: 'post',
@@ -39,16 +42,12 @@ $(function(){
       }
     });
   });
-  $("button").on('click',function(){
-    alert('hi');
-    $.ajax({
-      type: 'post',
-    });
-  });
   $("form[name=historyActionForm]").submit(function(e){
     if ($(document.activeElement).val()=='delete'){
       e.preventDefault();
       $.post($(this).attr('action'), $(this).serialize()+'&action=delete', function(data){
+        console.log($(':focus').parents('.item')[0]);
+        $(':focus').parents('.item')[0].remove();
         $('#history-container').html($(data)[2].innerHTML);
         <!--location.reload();-->
         <!--$(document).html($(data));-->
@@ -56,14 +55,15 @@ $(function(){
       });
     }
   });
-  $('#deleteAction').click(function(){
-    $('a[id^="loadHistory"]').prepend('<input type="checkbox" name="checkDelete" value="delete" class="mr-2 my-auto">');
-    $(document).mouseup(function(e){
-      var container = $('#sidebar');
-      if (!container.is(e.target) && container.has(e.target).length === 0)
-      {
-        $('input[name=checkDelete]').remove();
-      }
-    });
-  });
+
+  //$('#deleteAction').click(function(){
+    //$('a[id^="loadHistory"]').prepend('<input type="checkbox" name="checkDelete" value="delete" class="mr-2 my-auto">');
+    //$(document).mouseup(function(e){
+      //var container = $('#sidebar');
+      //if (!container.is(e.target) && container.has(e.target).length === 0)
+      //{
+        //$('input[name=checkDelete]').remove();
+      //}
+    //});
+  //});
 });

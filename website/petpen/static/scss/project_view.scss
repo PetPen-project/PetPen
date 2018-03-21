@@ -5,11 +5,20 @@
   background: #151719;
   overflow: auto;
   padding: 0 0;
-}
-#sidebar ul li {
-  color:rgba(230,230,230,0.9);
-  list-style:none;
-  border-bottom: 1px solid rgba(100,100,100,0.3);
+  ul li {
+    color:rgba(230,230,230,0.9);
+    list-style:none;
+    border-bottom: 1px solid rgba(100,100,100,0.3);
+  }
+  .item {
+    border-bottom: 1px solid rgba(100,100,100,0.3);
+  }
+  .item a {
+    padding:15px 10px;
+    color:#EEEEEE;
+    text-decoration:none;
+    &:hover {color: #FFF;}
+  }
 }
 .history-btns {
   width:100%;
@@ -24,16 +33,20 @@
   border: 1px solid transparent;
   cursor: pointer;
   transition: all .15s ease-in-out;
-}
-.history-btn:hover {
-  background-color: #344;
+  &:hover {
+    background-color: #344;
+  }
+  &:disabled {
+    cursor: default;
+    background-color: transparent;
+    color: transparent;
+  }
 }
 #historyAction {
   color:rgba(230,230,230,0.9);
   background: #151719;
   width: 90px;
   border:0;
-  /*border-bottom: 1px solid rgba(100,100,100,0.3);*/
   text-align: left;
 }
 #confirmAction {
@@ -41,19 +54,7 @@
   background: #151719;
   width: 80px;
   border:0;
-  /*border-bottom: 1px solid rgba(100,100,100,0.3);*/
   text-align: left;
-}
-#sidebar .item a {
-  padding:15px 10px;
-  color:#EEEEEE;
-  text-decoration:none;
-}
-#sidebar .item {
-  border-bottom: 1px solid rgba(100,100,100,0.3);
-}
-#sidebar a:hover {
-  color:#FFFFFF;
 }
 #history-detail {
   margin-left: 200px;
@@ -62,16 +63,16 @@
   max-height: calc(100vh - 6.5rem);
   overflow:auto;
 }
-.time-text {
-}
 .evaluation-form {
     float: right;
     display: inline-block;
 }
 
 #project-tabs {
-    background: rgba(153, 153, 153, 0.1);
-}
-#project-tabs .nav-link:hover {
+  font-weight: 500;
+  a {color: #111;}
+  background: rgba(153, 153, 153, 0.1);
+  .nav-link:hover {
     background: #FFF;
+  }
 }

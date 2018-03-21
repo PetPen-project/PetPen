@@ -12,7 +12,7 @@
   </footer>
   {% if user.is_authenticated %}
   <div class="bg-blue">
-    <div class="main-content">
+    <div class="overview-content">
       <span>Welcome, {{user}}</span><!--<span class="close">configuration</span>-->
       <div class="overview-table">
         <p>overview</p>
@@ -37,20 +37,18 @@
   {% else %}
   <div class="bg-blue">
     <div class="main-content">
-      <div class="row justify-content--center">
-          <div class="col-md-5 col-lg-6">
-            <h1>Start your Deep Learning Projects Online</h1>
-            <p>Simplified cloud service for deep learning using our PetPen, an open source platform.</p>
-            <div class="main-link-btns">
-              <a href="{% url "login" %}" class="buttons">LOGIN</a>
-              <div class="main-link-text">or</div>
-              <a href="{% url "user_create" %}" class="buttons">SIGN UP</a>
-            </div>
-          </div>
+      <div class="col-md-5 col-lg-6">
+        <h1>Start your Deep Learning Projects Online</h1>
+        <p>Simplified cloud service for deep learning using our PetPen, an open source platform.</p>
+        <div class="main-link-btns">
+          <a href="{% url "login" %}" class="buttons main-link-btn">LOGIN</a>
+          <div class="main-link-text">or</div>
+          <a href="{% url "user_create" %}" class="buttons">SIGN UP</a>
+        </div>
+      </div>
           <div class="col-md-7 col-lg-6">
             <img src="{% static "img/editor.PNG" %}" style="width:400px">
           </div>
-      </div>
     </div>
   </div>
   {% endif %}
