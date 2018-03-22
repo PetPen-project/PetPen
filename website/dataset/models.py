@@ -16,7 +16,7 @@ def dataset_path(instance, filename):
     return 'datasets/{0}/{1}/{2}'.format(instance.user.id, instance.title, filename)
 
 class Dataset(models.Model):
-    user = models.ForeignKey(User) 
+    user = models.ForeignKey(User,on_delete=models.CASCADE) 
     training_input_file = models.FileField(upload_to=dataset_path)
     testing_input_file = models.FileField(upload_to=dataset_path)
     training_output_file = models.FileField(upload_to=dataset_path)

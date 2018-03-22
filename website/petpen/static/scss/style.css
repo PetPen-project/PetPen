@@ -46,24 +46,6 @@ a.buttons {
     box-shadow: none;
     box-shadow: 0px 2px 0px 0px #aed2bf; }
 
-a.overview-btn {
-  text-decoration: none;
-  color: white;
-  background: #468966;
-  position: relative;
-  float: right;
-  top: -50px;
-  margin: 0;
-  padding: 1.5px 8px;
-  font-size: 16px;
-  border-radius: 10px;
-  box-shadow: 0px 10px 0px 0px #3d7859, 0px 0px 20px 0px #bbb;
-  transition: all 0.2s; }
-
-a.overview-btn:active {
-  top: -45px;
-  box-shadow: 0px 5px 0px 0px #3d7859; }
-
 .buttons-sm {
   color: white;
   background: #468966;
@@ -85,6 +67,15 @@ a.overview-btn:active {
     background: #bedbcc;
     box-shadow: none;
     box-shadow: 0px 2px 0px 0px #aed2bf; }
+
+a.overview-btn {
+  text-decoration: none;
+  float: right;
+  top: -45px; }
+  a.overview-btn:active {
+    top: -42px; }
+  a.overview-btn:hover {
+    color: #EEE; }
 
 #logo {
   text-align: center;

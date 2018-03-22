@@ -1,13 +1,32 @@
 {% extends 'nav.html' %}
 {% load static %}
+{% load sass_tags %}
 {% block title %}example projects{% endblock %}
 
 {% block head %}
+  <link rel="stylesheet" href="{% sass_src "scss/demo_example.scss" %}">
 {% endblock %}
 
 {% block content %}
-  div.
-  <div>
-    projects
+  <div class="nav-div">
+  <div class="example-nav">
+    <span class="nav-item active">
+      <a href="">projects</a>
+    </span>
+    <span class="nav-item">
+      <a href="">Datasets</a>
+    </span>
+  </div>
+  </div>
+  <div class="example-table">
+    <table>
+      {% for project in projects %}
+        <tr class="example-row">
+          <td class="title">{{project.title}}</td>
+          <td>{{project.description}} description goes here.</td>
+          <td>{{project.dataset}}</td>
+        </tr>
+      {% endfor %}
+    </table>
   </div>
 {% endblock %}

@@ -1,7 +1,7 @@
 from django.shortcuts import render,render_to_response,get_object_or_404
 from django.http import HttpResponse,HttpResponseRedirect
 from django.http import JsonResponse,Http404
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from django.core.files import File
 from django.contrib import messages
@@ -72,10 +72,6 @@ def index(request):
     context['projects'] = projects
     context['form'] = form
     return render(request, 'model/index.html', context)
-
-class ExampleView(ListView):
-    model = [NN_model,Dataset]
-    template_name = 'model/example.html'
 
 @login_required
 def project_detail(request, project_id):
@@ -174,7 +170,10 @@ class HistoryView(ListView):
             print(self.object.save_path)
             print(self.object.id)
             self.object_list = self.object_list.exclude(pk=self.object.id)
-            shutil.rmtree(op.join(MEDIA_ROOT,op.dirname(self.object.project.structure_file),self.object.save_path))
+            try:
+                shutil.rmtree(op.join(MEDIA_ROOT,op.dirname(self.object.project.structure_file),self.object.save_path))
+            except:
+                pass
             self.object.delete()
         elif request.POST.get('action') == 'download':
             return self.generateAttachFile()
@@ -412,40 +411,42 @@ def backend_api(request):
         script_path = op.abspath(op.join(__file__,op.pardir,op.pardir,op.pardir,'backend/petpen0.1.py'))
         executed = datetime.datetime.now()
         save_path = executed.strftime('%y%m%d_%H%M%S')
+        if not project:
+            return Http404('project not found')
         if request.POST['command']=='predict':
             history = History.objects.filter(project=project).get(pk=request.POST['history'])
             history_dir = op.join(MEDIA_ROOT,op.dirname(history.project.structure_file),history.save_path)
             dataset_type = request.POST['dataset']
             if dataset_type == 'test':
+# only support single text input node now, so only read one dataset path
                 with open(op.join(history_dir,'preprocessed/result.json'),'r') as f:
                     structure = json.load(f)
                     import pprint
                     pprint.pprint(structure['dataset'])
-                dataset = []
+                    dataset = [v['valid_x'] for v in structure['dataset'].values() if 'valid_x' in v.keys()][0]
+
+                    p = push(project.id,['python',script_path,'-m',history_dir,'-t',save_path,'-testx',dataset,'-w',op.join(history_dir,'weights.h5'),'predict'])
             elif dataset_type == 'custom':
                 dataset = request.FILES['file']
                 print(dataset.name)
                 print(dataset.size)
-            print(request.FILES)
-            # p = push(project.id,['python',script_path,'-m',project_path,'-t',save_path,'predict'])
+                print(request.FILES)
+                # p = push(project.id,['python',script_path,'-m',project_path,'-t',save_path,'predict'])
             return HttpResponse('good')
-        if not project:
-            return Http404('project not found')
         if request.POST['command'] == 'train':
             history_name = request.POST.get('name') or save_path
-            history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running')
-            history.save()
-            project.training_counts += 1
-            project.status = 'running'
-            project.save()
-            logger.debug((history_name,save_path,executed))
-            logger.debug(request.POST['project'],project.title)
+            logger.debug('start training on model {}, save path: {}'.format(project,save_path))
             structure_file = op.join(MEDIA_ROOT,project.structure_file)
             info = update_status(project.state_file)
             if info['status'] != 'system idle':
                 return HttpResponse('waiting back to idle')
             else:
                 update_status(project.state_file,'loading model')
+            history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running')
+            history.save()
+            project.training_counts += 1
+            project.status = 'running'
+            project.save()
             project_path = op.dirname(structure_file)
             os.mkdir(op.join(project_path,save_path))
             shutil.copy2(structure_file,op.join(project_path,save_path))
@@ -468,6 +469,9 @@ def backend_api(request):
                     with open(op.join(project_path,save_path,'logs/error_log'),'w') as f:
                         f.write('No deployed neural network found. Finish your neural network editing before running experiments.')
                     return JsonResponse({'missing':'no structure file'})
+            else:
+                os.mkdir(op.join(project_path,save_path,'preprocessed'))
+                shutil.copy2(op.join(op.dirname(structure_file),'preprocessed/result.json'),op.join(project_path,save_path,'preprocessed'))
             try:
                 # p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'],)
                 p = push(project.id,['python',script_path,'-m',project_path,'-t',save_path,'train'])

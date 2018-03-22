@@ -9,6 +9,7 @@ $project-font: 'Fira Sans';
 
 // Color Variables
 $green-jade: #468966;
+$green-macha: #def9ea;
 $yellow-bright: #FFF0A5;
 $orange-light: #FFB03B;
 $orange-dark: #FD7400;
@@ -110,24 +111,6 @@ a.buttons {
     box-shadow: 0px 2px 0px 0px darken(#bedbcc, 5%);
   }
 }
-a.overview-btn {
-  text-decoration: none;
-  color: white;
-  background: $green-jade;
-  position: relative;
-  float: right;
-  top: -50px;
-  margin: 0;
-  padding: 1.5px 8px;
-  font-size: 16px;
-  border-radius: 10px;
-  box-shadow: 0px 10px 0px 0px darken($green-jade, 5%), 0px 0px 20px 0px #bbb;
-  transition: all 0.2s;
-}
-a.overview-btn:active {
-  top: -45px;
-  box-shadow: 0px 5px 0px 0px darken($green-jade, 5%);
-}
 .buttons-sm {
   color: white;
   background: $green-jade;
@@ -151,6 +134,13 @@ a.overview-btn:active {
     box-shadow: none;
     box-shadow: 0px 2px 0px 0px darken(#bedbcc, 5%);
   }
+}
+a.overview-btn {
+  text-decoration: none;
+  float: right;
+  top: -45px;
+  &:active { top: -42px; }
+  &:hover { color: #EEE; }
 }
 #logo {
   text-align: center;

@@ -14,7 +14,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth import views as auth_views
 from rest_framework import routers, serializers, viewsets
-from .views import main
+from .views import main, examples
 from user.views import UserCreateView
 
 # Serializers define the API representation.
@@ -36,11 +36,12 @@ router = routers.DefaultRouter()
 # Additionally, we include login URLs for the browsable API.
 urlpatterns = [
     url(r'^$', main,name='main'),
-    url(r'^model/', include('model.urls',namespace='model')),
-    url(r'^dataset/', include('dataset.urls',namespace='dataset')),
+    url(r'^examples/$', examples,name='examples'),
+    url(r'^model/', include(('model.urls','model'),namespace='model')),
+    url(r'^dataset/', include(('dataset.urls','dataset'),namespace='dataset')),
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^signup/', UserCreateView.as_view(),name='user_create'),
     # url(r'^', include(router.urls)),
-    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api-auth/', include(('rest_framework.urls','rest_framework'), namespace='rest_framework')),
 ]
