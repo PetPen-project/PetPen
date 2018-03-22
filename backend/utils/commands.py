@@ -60,8 +60,17 @@ def validate_func(args, log_dir):
     # save_history(os.path.join(log_dir, 'valid_log'), history, history_callback)
 
 def predict_func(args):
+    # Required: testx, model_dir, weight
+
     test_data = load_file(args.testx)
     model = load_model(args.weight)
     result = model.predict(testdata)
 
+    model_dir = args.model
+    model_file = 'preprocessed/result.json'
+    model_path = os.path.join(model_dir, model_file)
+    with open(model_path) as f:
+        model_parser = json.load(f)
+
+    print model_parser['layers']
 
