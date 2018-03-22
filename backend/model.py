@@ -29,7 +29,12 @@ class backend_model():
         self.model, self.config, self.inputs, self.outputs = self.get_model(model_path)
         self.loss = self.config.get('loss') or None
         self.optimizer = self.config.get('optimizer') or None
-        self.model.compile(loss=self.loss, optimizer=self.optimizer)
+
+        if 'entropy' in self.loss:
+            self.model.compile(loss=self.loss, optimizer=self.optimizer, metrics=['acc'])
+        else:
+            self.model.compile(loss=self.loss, optimizer=self.optimizer)
+
         self.batch_size = self.config.get('batch_size') or self.config.get('batchsize')
         self.epochs = self.config.get('epochs') or self.config.get('epoch')
         self.callbacks = []
