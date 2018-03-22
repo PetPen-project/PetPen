@@ -1,0 +1,74 @@
+#sidebar {
+  position: absolute;
+  width: 200px;
+  height: calc(100% - 100px);
+  background: #151719;
+  overflow: auto;
+  padding: 0 0; }
+  #sidebar ul li {
+    color: rgba(230, 230, 230, 0.9);
+    list-style: none;
+    border-bottom: 1px solid rgba(100, 100, 100, 0.3); }
+  #sidebar .item {
+    border-bottom: 1px solid rgba(100, 100, 100, 0.3); }
+  #sidebar .item a {
+    padding: 15px 10px;
+    color: #EEEEEE;
+    text-decoration: none; }
+    #sidebar .item a:hover {
+      color: #FFF; }
+
+.history-btns {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap; }
+
+.history-btn {
+  flex-basis: 0;
+  flex-grow: 1;
+  color: #f8f9fa;
+  background-color: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all .15s ease-in-out; }
+  .history-btn:hover {
+    background-color: #344; }
+  .history-btn:disabled {
+    cursor: default;
+    background-color: transparent;
+    color: transparent; }
+
+#historyAction {
+  color: rgba(230, 230, 230, 0.9);
+  background: #151719;
+  width: 90px;
+  border: 0;
+  text-align: left; }
+
+#confirmAction {
+  color: rgba(230, 230, 230, 0.9);
+  background: #151719;
+  width: 80px;
+  border: 0;
+  text-align: left; }
+
+#history-detail {
+  margin-left: 200px;
+  padding: 30px 30px;
+  width: calc(100% - 230px);
+  max-height: calc(100vh - 6.5rem);
+  overflow: auto; }
+
+.evaluation-form {
+  float: right;
+  display: inline-block; }
+
+#project-tabs {
+  font-weight: 500;
+  background: rgba(153, 153, 153, 0.1); }
+  #project-tabs a {
+    color: #111; }
+  #project-tabs .nav-link:hover {
+    background: #FFF; }
+
+/*# sourceMappingURL=../../../../../../../static/scss/project_view.css.map */

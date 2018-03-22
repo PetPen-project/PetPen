@@ -1,17 +1,26 @@
 {% extends 'nav.html' %}
 {% load static %}
+{% load sass_tags %}
 
 {% block title %}training history{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static "css/sidebar.css" %}">
-<script>
-  window.CSRF_TOKEN = "{{csrf_token}}";
-</script>
+  <link rel="stylesheet" href="{% sass_src "scss/project_view.scss" %}">
+  <script>
+    window.CSRF_TOKEN = "{{csrf_token}}";
+  </script>
 <script src="{% static "js/history.js" %}"></script>
 {% endblock %}
 
 {% block content %}
+  <ul class="nav nav-tabs" id="project-tabs">
+    <li class="nav-item">
+      <a class="nav-link" id="training-tab" href="{% url "model:project_detail" project_id %}">Training</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" id="history-tab" href="">History</a>
+    </li>
+  </ul>
   <div class="container-fluid">
     <div class="row">
       <div id="sidebar" data-children=".item">
@@ -19,12 +28,12 @@
           <div class="item">
             <a href="#{{history.save_path}}" id="loadHistory{{history.name}}" class="d-flex" data-toggle="collapse" data-parent="#sidebar" data-history="{{history.id}}" aria-expanded="false" aria-controls="{{history.save_path}}">{{history.name}}</a>
             <div class="collapse" id="{{history.save_path}}" aria-labelledby="loadHistory{{history.name}}}">
-              <form action={% url "model:history_detail" %} method="post" name="historyActionForm">
+              <form action="" method="post" name="historyActionForm">
                 {% csrf_token %}
-                <input type="hidden" name="history" value={{history.id}}>
+                <input type="hidden" name="history" value="{{history.id}}">
                 <div class="history-btns">
                   <button class="history-btn" type="submit" name="action" value="download" {% if history.status != "success" %}disabled{% endif %}><i class="fa fa-download"></i></button>
-                  <button class="history-btn" type="submit" name="action" value="evaluate" {% if history.status != "success" %}disabled{% endif %}><i class="fa fa-play"></i></button>
+                  <!--<button class="history-btn" type="submit" name="action" value="evaluate" {% if history.status != "success" %}disabled{% endif %}><i class="fa fa-play"></i></button>-->
                   <button class="history-btn" type="submit" name="action" value="delete"><i class="fa fa-trash"></i></button>
                 </div>
               </form>
@@ -37,30 +46,28 @@
           {% include_chart_jscss %}
           {% load_chart charttype chartdata chartcontainer extra %}
           <span class="time-text">training time:  {{history.executed}}</span>
-          <form class="evaluation-form" enctype="multipart/form-data" action="{% url "model:backend_api"%}" method="post">
-            {% csrf_token %}
-            Run prediction
-            <select id="evaluate-dataset" onchange="setDataset(this)">
-              <option value="test">using test dataset</option>
-              <option value="custom">by uploading dataset</option>
-            </select>
-            <input type="hidden" name="command" value="predict"/>
-            <input type="hidden" name="project" value="{{history.project.id}}"/>
-            <input type="hidden" name="history" value="{{history.id}}"/>
-            <input type="hidden" name="dataset" value="test"/>
-            <label class="buttons-sm" id="pred-label" for="prediction-file">
-              <input id="prediction-file" style="display:none;" name="file" type="file"/>
-              upload
-            </label>
-            <button class="buttons-sm" type="submit">GO <i class="fa fa-play"></i></button>
-            <!--<button class="buttons-sm" id="run-evaluation" onclick="runEvaluation({{history.project.id}})">GO<i class="fa fa-play"></i></button>-->
-          </form>
+          <!--<form class="evaluation-form" enctype="multipart/form-data" action="{% url "model:backend_api"%}" method="post">-->
+            <!--{% csrf_token %}-->
+            <!--Run prediction-->
+            <!--<select id="evaluate-dataset" onchange="setDataset(this)">-->
+              <!--<option value="test">using test dataset</option>-->
+              <!--<option value="custom">by uploading dataset</option>-->
+            <!--</select>-->
+            <!--<input type="hidden" name="command" value="predict"/>-->
+            <!--<input type="hidden" name="project" value="{{history.project.id}}"/>-->
+            <!--<input type="hidden" name="history" value="{{history.id}}"/>-->
+            <!--<input type="hidden" name="dataset" value="test"/>-->
+            <!--<label class="buttons-sm disabled" id="pred-label" for="prediction-file">-->
+              <!--<input id="prediction-file" disabled style="display:none;" name="file" type="file"/>-->
+              <!--upload-->
+            <!--</label>-->
+            <!--<button class="buttons-sm" type="submit">start <i class="fa fa-play"></i></button>-->
+          <!--</form>-->
           <div id="history-plot" class="text-center">
             <h1>loss</h1>
             {% include_container chartcontainer 400 '100%' %}
             <div class="mb-3"></div>
           </div>
-          <div class="alert alert-dark" role="alert">sample size: 100000</div>
           <div class="alert alert-dark" role="alert">epochs: {{epochs}}</div>
           <div class="alert alert-dark" role="alert">best validation loss: {{best_val}} at epoch {{best_epoch}}</div>
         {% elif status %}

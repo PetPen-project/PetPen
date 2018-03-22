@@ -1,14 +1,14 @@
 {% extends 'nav.html' %}
 {% load static %}
+{% load sass_tags %}
 
 {% block title %}model index{% endblock %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static "css/sidebar.css" %}">
-<!--<script src="https://d3js.org/d3.v4.min.js"></script>-->
-<script src="https://d3js.org/d3.v3.min.js"></script>
-<script src="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.min.js"></script>
-<link rel="stylesheet" href="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.css">
+  <link rel="stylesheet" href="{% sass_src "scss/project_view.scss" %}">
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script src="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.css">
 <script src="{% static "js/training.js" %}"></script>
 <script>
   window.CSRF_TOKEN = "{{csrf_token}}";
@@ -67,14 +67,22 @@ $(document).ready(function(){
 {% endblock %}
 
 {% block content %}
-  <ul class="nav nav-tabs" id="project-tabs" role="tablist">
+  <ul class="nav nav-tabs" id="project-tabs">
     <li class="nav-item">
-      <a class="nav-link active" id="training-tab" data-toggle="tab" href="#training" role="tab" aria-controls="training" aria-selected="true">Training</a>
+      <a class="nav-link active" id="training-tab" href="">Training</a>
     </li>
     <li class="nav-item">
-      <a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">History</a>
+      <a class="nav-link" id="history-tab" href="{% url "model:project_history" project_id %}">History</a>
     </li>
   </ul>
+  <!--<ul class="nav nav-tabs" id="project-tabs" role="tablist">-->
+    <!--<li class="nav-item">-->
+      <!--<a class="nav-link active" id="training-tab" data-toggle="tab" href="#training" role="tab" aria-controls="training" aria-selected="true">Training</a>-->
+    <!--</li>-->
+    <!--<li class="nav-item">-->
+      <!--<a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">History</a>-->
+    <!--</li>-->
+  <!--</ul>-->
   <div class="tab-content" id="projectContent">
     <div class="tab-pane fade show active" id="training" role="tabpanel" aria-labelledby="training-tab">
       <div class="container">
@@ -160,30 +168,7 @@ $(document).ready(function(){
       </div>
       <!--end training-->
     </div>
-    <!--<div class="tab-pane fade" id="evaluation" role="tabpanel" aria-labelledby="evaluation-tab">-->
-      <!--<div></div>-->
-    <!--</div>-->
     <div class="tab-pane fade" id="history" role="tabpanel" aria-labelledby="history-tab">
-      <!--<div class="container-fluid" style="height:100%;">-->
-        <!--<div class="row">-->
-          <!--<div id="sidebar" data-children=".item">-->
-              <!--{% for history in histories %}-->
-                <!--<div class="item">-->
-                  <!--<a href="#{{history.save_path}}" id="loadHistory{{history.name}}" class="d-flex" data-toggle="collapse" data-parent="#sidebar" data-history="{{history.id}}" aria-expanded="false" aria-controls="{{history.save_path}}">{{history.save_path}}</a>-->
-                  <!--<div class="collapse" id="{{history.save_path}}" aria-labelledby="loadHistory{{history.name}}}">-->
-                    <!--<div class="btn-group">-->
-                      <!--<button class="d-flex btn btn-outline-light" value="download">download</button>-->
-                      <!--<button class="d-flex btn btn-outline-light" value="delete">delete</button>-->
-                    <!--</div>-->
-                  <!--</div>-->
-                <!--</div>-->
-              <!--{% endfor %}-->
-          <!--</div>-->
-          <!--<div id="history-page">-->
-            <!--<h3>Select an execute history from sidebar to view its detail.</h3>-->
-          <!--</div>-->
-        <!--</div>-->
-      <!--</div>-->
     </div>
   </div>
 {% endblock %}

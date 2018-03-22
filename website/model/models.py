@@ -29,7 +29,7 @@ def get_model_path(instance):
     return os.path.join(MEDIA_ROOT,'models/{}/{}'.format(instance.user.id,instance.title))
 
 class NN_model(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User,on_delete=models.CASCADE)
     title = models.CharField(max_length=30)
     state_file = models.FilePathField(path=MEDIA_ROOT,match=r'state.json')
     structure_file = models.FilePathField(path=MEDIA_ROOT,match=r'result.json')
@@ -38,7 +38,7 @@ class NN_model(models.Model):
     status = models.CharField(default='idle',max_length=30)
 
 class History(models.Model):
-    project = models.ForeignKey(NN_model)
+    project = models.ForeignKey(NN_model,on_delete=models.CASCADE)
     name = models.CharField(max_length=30,blank=True)
     executed = models.DateTimeField(default=timezone.now)
     save_path = models.CharField(max_length=20)
