@@ -52,19 +52,16 @@ def train_func(args, log_dir):
     model.save(os.path.join(model_result_path,'weights.h5'))
 
 def validate_func(args, log_dir):
-    model, model_dir, (trainx, trainy, testx, testy) = build_model(args)
+    # Required: testx, testy, model_dir, weight
+    pass
 
-    # Callback
-    history_callback = Batch_History()
-    loss = model.evaluate()
-    # save_history(os.path.join(log_dir, 'valid_log'), history, history_callback)
 
-def predict_func(args):
+def predict_func(args, log_dir):
     # Required: testx, model_dir, weight
 
     test_data = load_file(args.testx)
     model = load_model(args.weight)
-    result = model.predict(testdata)
+    result = model.predict(test_data)
 
     model_dir = args.model
     model_file = 'preprocessed/result.json'
@@ -72,5 +69,22 @@ def predict_func(args):
     with open(model_path) as f:
         model_parser = json.load(f)
 
-    print model_parser['layers']
+    for key in model_parser['layers']:
+        if 'output' in key:
+            loss = model_parser['layers'][key]['params']['loss']
+
+    if 'entropy' in loss:
+        problem = 'classification'
+    else:
+        problem = 'regression'
+
+    with open(os.path.join(log_dir, 'type'), 'w') as f:
+        f.write(str(problem))
+
+    with open(os.path.join(log_dir, 'result'), 'w') as f:
+        for i in result:
+            f.write(','.join(map(str, i)) + '\n')
+
+
+
 
