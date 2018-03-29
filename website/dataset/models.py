@@ -32,13 +32,14 @@ class Dataset(models.Model):
     test_samples = models.IntegerField(default=0)
     input_shape = models.CharField(max_length=100)
     output_shape = models.CharField(max_length=100)
-    desciption = models.TextField(blank=True)
+    description = models.TextField(blank=True)
     FILE_CHOICES = (
         ('CSV','csv'),
         ('PKL','pickle'),
+        ('IMG','images'),
     )
     filetype = models.CharField(max_length=3, choices=FILE_CHOICES, default='CSV')
-    # is_image = models.BooleanField(default=False)
+    is_image = models.BooleanField(default=False)
 
 # @receiver(models.signals.post_delete, sender=Dataset)
 # def auto_delete_file_on_delete(sender, instance, **kwargs):

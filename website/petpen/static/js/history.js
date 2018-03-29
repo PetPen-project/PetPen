@@ -48,7 +48,8 @@ $(function(){
       $.post($(this).attr('action'), $(this).serialize()+'&action=delete', function(data){
         console.log($(':focus').parents('.item')[0]);
         $(':focus').parents('.item')[0].remove();
-        $('#history-container').html($(data)[2].innerHTML);
+        //$('#history-detail').html($(data).find('#history-detail').children());
+        reloadHistory(data);
         <!--location.reload();-->
         <!--$(document).html($(data));-->
       }).fail(function(data){alert(data);

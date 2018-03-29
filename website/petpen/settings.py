@@ -143,10 +143,6 @@ USE_L10N = True
 # USE_TZ = True
 USE_TZ = False
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "petpen/static"),
-    ]
-
 # sass processer
 SASS_PROCESSOR_ENABLED = True
 

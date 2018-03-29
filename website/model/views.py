@@ -3,13 +3,14 @@ from django.http import HttpResponse,HttpResponseRedirect
 from django.http import JsonResponse,Http404
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
+import django.utils.timezone as timezone
 from django.core.files import File
 from django.contrib import messages
 from django.views.generic import ListView
 
 from job_queue import push, kill
 
-import os,json,shutil,re
+import os,json,shutil,re,fnmatch
 import os.path as op 
 import subprocess,signal
 import time,datetime
@@ -19,7 +20,7 @@ import pandas as pd
 from model.utils import bokeh_plot, update_status
 # from dataset.models import Dataset
 from django.conf import settings
-from .models import NN_model, History
+from .models import NN_model, History, Prediction
 from dataset.models import Dataset
 from model.serializers import NN_modelSerializer
 from .forms import NN_modelForm
@@ -114,6 +115,7 @@ class HistoryView(ListView):
         context = {}
         context['project_id'] = self.kwargs['project_id']
         context['histories'] = self.object_list
+        context['history'] = self.object
         if self.object:
             if self.object.status == "running":
                 if not op.exists(self.kwargs['history_path']):
@@ -127,7 +129,48 @@ class HistoryView(ListView):
             if self.object.status !='success':
                 context.update({'save_path':self.object.save_path,'status':self.object.status,'executed':self.object.executed})
                 return context
-            log_data = pd.read_csv(op.join(self.kwargs['history_path'],'logs','train_log'))
+            log_data = pd.read_csv(op.join(self.kwargs['history_path'],'logs/train_log'))
+            if self.object.execution_type == 'classification':
+                chartdata_loss = {}
+                chartdata_acc = {}
+                chartdata_loss['x'] = range(1,log_data.shape[0]+1)
+                chartdata_acc['x'] = range(1,log_data.shape[0]+1)
+                chartdata_loss['name0'] = 'training'
+                chartdata_loss['name1'] = 'validation'
+                chartdata_acc['name0'] = 'training'
+                chartdata_acc['name1'] = 'validation'
+                chartdata_loss['y0'] = log_data['loss'].values
+                chartdata_loss['y1'] = log_data['val_loss'].values
+                chartdata_acc['y0'] = log_data['acc'].values
+                chartdata_acc['y1'] = log_data['val_acc'].values
+                charttype_loss = "lineChart"
+                charttype_acc = "lineChart"
+                chartcontainer_loss = 'linechart_container_loss'
+                chartcontainer_acc = 'linechart_container_acc'
+                best_epoch_loss = log_data['val_loss'].argmin()
+                best_loss_value = log_data['val_loss'][best_epoch_loss]
+                best_epoch_acc = log_data['val_acc'].argmin()
+                best_acc_value = log_data['val_acc'][best_epoch_acc]
+                context.update({
+                    'epochs':log_data.shape[0],
+                    'best_epoch_loss':best_epoch_loss,
+                    'best_loss_value':best_loss_value,
+                    'charttype_loss': charttype_loss,
+                    'chartdata_loss': chartdata_loss,
+                    'chartcontainer_loss': chartcontainer_loss,
+                    'best_epoch_acc':best_epoch_acc,
+                    'best_acc_value':best_acc_value,
+                    'charttype_acc': charttype_acc,
+                    'chartdata_acc': chartdata_acc,
+                    'chartcontainer_acc': chartcontainer_acc,
+                    'extra': {
+                        'x_is_date': False,
+                        'x_axis_format': '',
+                        'tag_script_js': True,
+                        'jquery_on_ready': False,
+                    }
+                })
+                return context
             chartdata = {}
             chartdata['x'] = range(1,log_data.shape[0]+1)
             for index in range(log_data.shape[1]):
@@ -175,6 +218,7 @@ class HistoryView(ListView):
             except:
                 pass
             self.object.delete()
+            self.object = None
         elif request.POST.get('action') == 'download':
             return self.generateAttachFile()
         context = self.get_context_data()
@@ -193,6 +237,117 @@ class HistoryView(ListView):
             response = HttpResponse('error: request model on unsuccessful training.')
 
         return response
+
+class PredictView(ListView):
+    model =  Prediction
+    template_name = 'model/predict.html'
+    
+    def get_queryset(self):
+        try:
+            queryset = History.objects.filter(project=self.kwargs['project_id'])
+            queryset = self.model.objects.filter(history__in=queryset)
+            return queryset
+        except:
+            raise Http404('query failed.')
+
+    def get_context_data(self):
+        context = {}
+        predict = self.object
+        context['project_id'] = self.kwargs['project_id']
+        with open(op.join(predict.path(),'logs/type'),'r') as f:
+            problem_type = f.readline()
+        input_file = [f for f in os.listdir(predict.path()) if fnmatch.fnmatch(f,'*input*')][0]
+        context['input_source'] = 'testing dataset' if input_file.startswith('testing') else 'custom input file'
+        ext = op.splitext(input_file)[1]
+        if ext == '.csv':
+            dataset = pd.read_csv(op.join(predict.path(),input_file),header=None)
+        elif ext == '.pickle'or ext == '.pkl':
+            dataset = pd.read_pickle(op.join(predict.path(),input_file))
+        outputs = pd.read_csv(op.join(predict.path(),'logs/result'))
+        dataset = dataset.iloc[:10].values
+        outputs = outputs.iloc[:10].values
+        if self.kwargs.get('img'):
+            img_size = [int(l) for l in re.search('(\d+)-*(\d+)*',self.kwargs['img']).groups() if l]
+            print(img_size)
+            if img_size:
+                for index in range(len(dataset)):
+                    dataset[index] = dataset[index]
+        if problem_type == 'classification':
+            if outputs.shape[1]>1:
+                xdata = range(outputs.shape[1])
+                chartcontents_output = []
+                charttype_output = "discreteBarChart"
+                for index in range(outputs.shape[0]):
+                    chartcontents_output.append({
+                        'chartdata': {
+                            'x': xdata,
+                            'name1': '',
+                            'y1': outputs[index],
+                            'extra1': {"tooltip": {"y_start": "", "y_end": " cal"}},
+                            },
+                        'chartcontainer': "discretebarchart_container{}".format(index),
+                        })
+            # for index in range(len(dataset)):
+                # chartdata_output[index] = {
+                    # 'x': range(1)
+                # }
+            # chartdata_loss['x'] = range(1,log_data.shape[0]+1)
+            # chartdata_acc['x'] = range(1,log_data.shape[0]+1)
+            # chartdata_loss['name0'] = 'training'
+            # chartdata_loss['name1'] = 'validation'
+            # chartdata_acc['name0'] = 'training'
+            # chartdata_acc['name1'] = 'validation'
+            # chartdata_loss['y0'] = log_data['loss'].values
+            # chartdata_loss['y1'] = log_data['val_loss'].values
+            # chartdata_acc['y0'] = log_data['acc'].values
+            # chartdata_acc['y1'] = log_data['val_acc'].values
+            # charttype_loss = "lineChart"
+            # charttype_acc = "lineChart"
+            # chartcontainer_loss = 'linechart_container_loss'
+            # chartcontainer_acc = 'linechart_container_acc'
+            # best_epoch_loss = log_data['val_loss'].argmin()
+            # best_loss_value = log_data['val_loss'][best_epoch_loss]
+            # best_epoch_acc = log_data['val_acc'].argmin()
+            # best_acc_value = log_data['val_acc'][best_epoch_acc]
+            # context.update({
+                # 'epochs':log_data.shape[0],
+                # 'best_epoch_loss':best_epoch_loss,
+                # 'best_loss_value':best_loss_value,
+                # 'charttype_loss': charttype_loss,
+                # 'chartdata_loss': chartdata_loss,
+                # 'chartcontainer_loss': chartcontainer_loss,
+                # 'best_epoch_acc':best_epoch_acc,
+                # 'best_acc_value':best_acc_value,
+                # 'charttype_acc': charttype_acc,
+                # 'chartdata_acc': chartdata_acc,
+                # 'chartcontainer_acc': chartcontainer_acc,
+                # 'extra': {
+                    # 'x_is_date': False,
+                    # 'x_axis_format': '',
+                    # 'tag_script_js': True,
+                    # 'jquery_on_ready': False,
+                # }
+            # })
+        context.update({
+            'problem_type':problem_type,
+            'inputs':dataset,
+            'outputs':outputs,
+            'charttype_output':charttype_output,
+            'chartcontents_output':chartcontents_output,
+            })
+        return context
+
+    def get(self, request, *args, **kwargs):
+        self.kwargs = kwargs
+        self.kwargs.update(request.GET.dict())
+        print(self.kwargs)
+        self.object_list = self.get_queryset()
+        self.object = self.get_queryset()[0]
+        context = self.get_context_data()
+        return self.render_to_response(context)
+    
+    def post(self, request, *args, **kwargs):
+        pass
 
 @login_required
 def history_detail(request):
@@ -233,6 +388,43 @@ def history_detail(request):
         return render(request,'model/history_detail.html',{'histories':histories,'save_path':history.save_path,'status':history.status,'executed':history.executed})
     import pandas as pd
     log_data = pd.read_csv(op.join(history_path,'logs','train_log'))
+    if history.execution_type == 'classification':
+        chartdata_loss = {}
+        chartdata_acc = {}
+        chartdata_loss['x'] = range(1,log_data.shape[0]+1)
+        chartdata_acc['x'] = range(1,log_data.shape[0]+1)
+        chartdata_loss['name0'] = 'training'
+        chartdata_loss['name1'] = 'validation'
+        chartdata_acc['name0'] = 'training'
+        chartdata_acc['name1'] = 'validation'
+        chartdata_loss['y0'] = log_data['loss'].values
+        chartdata_loss['y1'] = log_data['val_loss'].values
+        chartdata_acc['y0'] = log_data['acc'].values
+        chartdata_loss['y1'] = log_data['val_acc'].values
+        charttype_loss = "lineChart"
+        charttype_acc = "lineChart"
+        chartcontainer = 'linechart_container'
+        best_epoch_loss = log_data['val_loss'].argmin()
+        best_loss_value = log_data['val_loss'][best_epoch]
+        best_epoch_acc = log_data['val_acc'].argmin()
+        best_acc_value = log_data['val_acc'][best_epoch]
+        context = {
+            'history':history,
+            'histories':histories,
+            'epochs':log_data.shape[0],
+            'best_epoch':best_epoch_loss,
+            'best_val':best_loss_value,
+            'charttype': charttype_loss,
+            'chartdata': chartdata_loss,
+            'chartcontainer': chartcontainer,
+            'extra': {
+                'x_is_date': False,
+                'x_axis_format': '',
+                'tag_script_js': True,
+                'jquery_on_ready': False,
+            }
+        }
+        return render(request,'model/history_detail.html',context)
     chartdata = {}
     chartdata['x'] = range(1,log_data.shape[0]+1)
     for index in range(log_data.shape[1]):
@@ -305,6 +497,39 @@ def plot_api(request):
         f.truncate()
 
     return HttpResponse(json.dumps({"script":script, "div":div}), content_type="application/json")
+
+def img_api(request,*args,**kwargs):
+    import matplotlib
+    # matplotlib.use('Agg')
+    import random
+    import matplotlib.pyplot as plt
+    from matplotlib.backends.backend_agg import FigureCanvasAgg as FigureCanvas
+    from matplotlib.figure import Figure
+    from matplotlib.dates import DateFormatter
+ 
+    fig=Figure()
+    ax=fig.add_subplot(111)
+    x=[]
+    y=[]
+    now=datetime.datetime.now()
+    delta=datetime.timedelta(days=1)
+    for i in range(10):
+        x.append(now)
+        now+=delta
+        y.append(random.randint(0, 1000))
+    ax.plot_date(x, y, '-')
+    ax.xaxis.set_major_formatter(DateFormatter('%Y-%m-%d'))
+    fig.autofmt_xdate()
+    canvas=FigureCanvas(fig)
+    import io
+    output = io.BytesIO()
+    print(kwargs)
+    fig.savefig(output)
+    contents = output.getvalue()
+    response=HttpResponse(contents,content_type='image/png')
+    # response=HttpResponse(content_type='image/png')
+    # canvas.print_png(response)
+    return response
 
 @login_required
 def manage_nodered(request):
@@ -426,6 +651,10 @@ def backend_api(request):
                     dataset = [v['valid_x'] for v in structure['dataset'].values() if 'valid_x' in v.keys()][0]
 
                     p = push(project.id,['python',script_path,'-m',history_dir,'-t',save_path,'-testx',dataset,'-w',op.join(history_dir,'weights.h5'),'predict'])
+                prediction = Prediction(history=history,created=executed,expired=executed+timezone.timedelta(days=7))
+                prediction.save()
+                if not op.exists(prediction.path()): os.mkdir(prediction.path())
+                shutil.copy2(dataset,prediction.path())
             elif dataset_type == 'custom':
                 dataset = request.FILES['file']
                 print(dataset.name)
@@ -442,7 +671,18 @@ def backend_api(request):
                 return HttpResponse('waiting back to idle')
             else:
                 update_status(project.state_file,'loading model')
-            history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running')
+            with open(structure_file) as f:
+                model_parser = json.load(f)
+
+            for key in model_parser['layers']:
+                if 'output' in key:
+                    loss = model_parser['layers'][key]['params']['loss']
+
+            if 'entropy' in loss:
+                problem = 'classification'
+            else:
+                problem = 'regression'
+            history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running',execution_type=problem)
             history.save()
             project.training_counts += 1
             project.status = 'running'

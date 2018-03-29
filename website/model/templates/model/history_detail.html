@@ -83,6 +83,7 @@ $(function(){
         {% include_container chartcontainer 400 '100%' %}
         <div class="mb-3"></div>
       </div>
+      <div class="alert alert-dark" role="alert">evaluation type: {{history.execution_type}}</div>
       <div class="alert alert-dark" role="alert">sample size: 100000</div>
       <div class="alert alert-dark" role="alert">epochs: {{epochs}}</div>
       <div class="alert alert-dark" role="alert">best validation loss: {{best_val}} at epoch {{best_epoch}}</div>

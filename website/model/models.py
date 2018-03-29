@@ -5,6 +5,7 @@ import django.utils.timezone as timezone
 from petpen.settings import MEDIA_ROOT
 
 import os
+import os.path as op
 
 from django.db.models import FilePathField
 
@@ -44,3 +45,13 @@ class History(models.Model):
     save_path = models.CharField(max_length=20)
     execution_type = models.CharField(max_length=15,default='training model')
     status = models.CharField(max_length = 30,default='success')
+
+def one_week_period():
+    return timezone.now() + timezone.timedelta(days=7)
+
+class Prediction(models.Model):
+    history = models.ForeignKey(History,on_delete=models.CASCADE)
+    expired = models.DateTimeField(default=one_week_period)
+    created = models.DateTimeField(default=timezone.now)
+    def path(self):
+        return op.join(MEDIA_ROOT,op.dirname(self.history.project.structure_file),self.history.save_path,self.created.strftime('%y%m%d_%H%M%S'))

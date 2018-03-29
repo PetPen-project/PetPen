@@ -16,6 +16,7 @@ $orange-dark: #FD7400;
 $red-gentle: #B64926;
 $red-light: #E74C3C;
 $red-harsh: #8E2800;
+$red-danger: #dc3545;
 $blue-navy: #2C3E50;
 $white-imperfect: #ECF0F1;
 $blue-sky: #3498DB;
@@ -80,6 +81,13 @@ body, html {
 body {
   height: 100vh;
 }
+a {
+  text-decoration: none;
+  &:hover {
+    color: white;
+    text-decoration: none;
+  }
+}
 .bg-blue {
   background: linear-gradient(141deg, #0fb8ad 0%, #1fc8db 51%, #2cb5e8 75%);
 }
@@ -89,7 +97,6 @@ body {
   margin-right: auto;
 }
 a.buttons {
-  text-decoration: none;
   color: white;
   background: $green-jade;
   position: relative;
@@ -130,9 +137,73 @@ a.buttons {
   }
   &.disabled {
     top: 3px;
-    background: #bedbcc;
-    box-shadow: none;
+    //background: #bedbcc;
+    opacity: .65;
     box-shadow: 0px 2px 0px 0px darken(#bedbcc, 5%);
+  }
+  &:disabled {
+    top: 3px;
+    //background: #bedbcc;
+    opacity: .65;
+    box-shadow: 0px 2px 0px 0px darken(#bedbcc, 5%);
+  }
+}
+.buttons-red {
+  background: $red-danger;
+  box-shadow: 0px 5px 0px 0px darken($red-danger, 5%), 0px 0px 15px 0px #bbb;
+  &:active {
+    top: 3px;
+    box-shadow: 0px 2px 0px 0px darken($red-danger, 5%);
+  }
+  &:disabled {
+    box-shadow: 0px 2px 0px 0px darken(#bedbcc, 5%);
+  }
+}
+.buttons-group {
+  display: flex;
+  .buttons-sm:first-child:not(:last-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+  .buttons-sm:not(:last-child):not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    box-shadow: 0px 5px 0px 0px darken($green-jade, 5%);
+    &:before {
+      content: "";
+      background: white;
+      position: absolute;
+      width: .05rem;
+      height: 1rem;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+    }
+    &:active {
+      top: 3px;
+      box-shadow: 0px 2px 0px 0px darken($green-jade, 5%);
+    }
+  }
+  .buttons-sm:last-child:not(:first-child) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+    box-shadow: 0px 5px 0px 0px darken($green-jade, 5%);
+    &:before {
+      content: "";
+      background: white;
+      position: absolute;
+      width: .05rem;
+      height: 1rem;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+    }
+    &:active {
+      top: 3px;
+      box-shadow: 0px 2px 0px 0px darken($green-jade, 5%);
+    }
   }
 }
 a.overview-btn {

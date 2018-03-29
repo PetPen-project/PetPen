@@ -19,23 +19,23 @@ $.ajaxSetup({
     data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
 });
 $(document).ready(function(){
-  $("#history-tab").on('click',function(){
-    $.ajax({
-      type: 'post',
-      url: '/model/history_detail/',
-      data: {
-        'project_id': project_id,
-        'csrfmiddlewaretoken': window.CSRF_TOKEN
-      },
-      success: function(data){
-        $('#history').empty();
-        $('#history').append(data);
-      },
-      error: function(xhr,status,error){
-        alert(error);
-      }
-    });
-  });
+  <!--$("#history-tab").on('click',function(){-->
+    <!--$.ajax({-->
+      <!--type: 'post',-->
+      <!--url: '/model/history_detail/',-->
+      <!--data: {-->
+        <!--'project_id': project_id,-->
+        <!--'csrfmiddlewaretoken': window.CSRF_TOKEN-->
+      <!--},-->
+      <!--success: function(data){-->
+        <!--$('#history').empty();-->
+        <!--$('#history').append(data);-->
+      <!--},-->
+      <!--error: function(xhr,status,error){-->
+        <!--alert(error);-->
+      <!--}-->
+    <!--});-->
+  <!--});-->
   $('#trainModel').click(function(){
     $.ajax({
       async:false,

@@ -1,0 +1,44 @@
+{% extends 'nav.html' %}
+{% load static %}
+{% load sass_tags %}
+
+{% block title %}predict results{% endblock %}
+
+{% block head %}
+  <script>
+    window.CSRF_TOKEN = "{{csrf_token}}";
+  </script>
+  {% include_chart_jscss %}
+{% endblock %}
+
+{% block content %}
+  <ul class="nav nav-tabs" id="project-tabs" style="position:static;">
+    <li class="nav-item">
+      <a class="nav-link" id="training-tab" href="{% url "model:project_detail" project_id %}">Training</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" id="history-tab" href="{% url "model:project_history" project_id %}">History</a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link active" id="history-tab" href="">Prediction result</a>
+    </li>
+  </ul>
+  <div class="container-fluid" style="width:1200px; overflow-x:auto;">
+    {{ problem_type }}
+    <table>
+      <tr>
+        <th scope="col">input</th>
+        <th scope="col">output</th>
+      </tr>
+      {% for chartcontent_output in chartcontents_output %}
+        {% load_chart charttype_output chartcontent_output.chartdata chartcontent_output.chartcontainer %}
+      <tr>
+        <td><img src="{% url "model:images" pid=1 %}" alt=""></td>
+        <td>
+          {% include_container chartcontent_output.chartcontainer 400 600 %}
+        </td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+{% endblock %}

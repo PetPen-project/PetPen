@@ -2,7 +2,7 @@
  "nodes": {
   "node-red": {
    "name": "node-red",
-   "version": "0.17.5",
+   "version": "0.18.4",
    "local": false,
    "nodes": {
     "sentiment": {
@@ -349,6 +349,26 @@
      "local": false,
      "module": "node-red",
      "file": "/usr/local/lib/node_modules/node-red/nodes/core/storage/50-file.js"
+    },
+    "sort": {
+     "name": "sort",
+     "types": [
+      "sort"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/logic/18-sort.js"
+    },
+    "batch": {
+     "name": "batch",
+     "types": [
+      "batch"
+     ],
+     "enabled": false,
+     "local": false,
+     "module": "node-red",
+     "file": "/usr/local/lib/node_modules/node-red/nodes/core/logic/19-batch.js"
     }
    }
   },
@@ -372,7 +392,7 @@
   },
   "node-red-node-feedparser": {
    "name": "node-red-node-feedparser",
-   "version": "0.1.8",
+   "version": "0.1.10",
    "local": false,
    "nodes": {
     "feedparse": {
@@ -389,7 +409,7 @@
   },
   "node-red-node-rbe": {
    "name": "node-red-node-rbe",
-   "version": "0.1.13",
+   "version": "0.2.1",
    "local": false,
    "nodes": {
     "rbe": {
@@ -406,7 +426,7 @@
   },
   "node-red-node-twitter": {
    "name": "node-red-node-twitter",
-   "version": "0.1.11",
+   "version": "0.1.12",
    "local": false,
    "nodes": {
     "twitter": {
@@ -501,7 +521,7 @@
      "types": [
       "File"
      ],
-     "enabled": true,
+     "enabled": false,
      "local": false,
      "module": "File_node",
      "file": "/usr/local/lib/node_modules/File_node/fileNode/file.js"
@@ -584,8 +604,7 @@
     "sample": {
      "name": "sample",
      "types": [
-      "Dense",
-      "MaxPooling1D"
+      "Dense"
      ],
      "enabled": true,
      "local": false,
@@ -706,7 +725,7 @@
      "types": [
       "Convolution"
      ],
-     "enabled": true,
+     "enabled": false,
      "local": false,
      "module": "node-red-contrib-demo",
      "file": "/usr/local/lib/node_modules/node-red-contrib-demo/demoNodes/HelloWorld.js"
@@ -729,7 +748,105 @@
      "file": "/usr/local/lib/node_modules/node-red-contrib-wago/wago/WAGO_750_49X.js"
     }
    }
+  },
+  "Conv3D_node": {
+   "name": "Conv3D_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Conv3D"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "Conv3D_node",
+     "file": "/usr/local/lib/node_modules/Conv3D_node/conv3DNode/conv3d.js"
+    }
+   }
+  },
+  "Conv_node": {
+   "name": "Conv_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "Convolution"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "Conv_node",
+     "file": "/usr/local/lib/node_modules/Conv_node/convNode/conv.js"
+    }
+   }
+  },
+  "BatchNormalization": {
+   "name": "BatchNormalization",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "BatchNormalization"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "BatchNormalization",
+     "file": "/usr/local/lib/node_modules/BatchNormalization/BatchNormalizationNode/batch.js"
+    }
+   }
+  },
+  "AvgPooling2D": {
+   "name": "AvgPooling2D",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "AvgPooling2D"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "AvgPooling2D",
+     "file": "/usr/local/lib/node_modules/AvgPooling2D/avgpoolNode2D/avgpool2d.js"
+    }
+   }
+  },
+  "ZeroPadding_node": {
+   "name": "ZeroPadding_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "dense_sample": {
+     "name": "dense_sample",
+     "types": [
+      "ZeroPadding"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "ZeroPadding_node",
+     "file": "/usr/local/lib/node_modules/ZeroPadding_node/zeropaddingNode/zeropadding.js"
+    }
+   }
   }
  },
- "_credentialSecret": "dc0d84bcb4c8755d29489d9d7fc2c6c477661e5c50deb8fe39c4b818a11449b1"
+ "_credentialSecret": "dc0d84bcb4c8755d29489d9d7fc2c6c477661e5c50deb8fe39c4b818a11449b1",
+ "users": {
+  "_": {
+   "editor": {
+    "view": {
+     "view-grid-size": "20",
+     "view-node-status": true,
+     "view-show-tips": true,
+     "view-snap-grid": true,
+     "view-show-grid": true
+    }
+   }
+  }
+ }
 }
