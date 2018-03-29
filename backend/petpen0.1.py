@@ -27,17 +27,27 @@ subparser.set_defaults(func=predict_func)
 args = parser.parse_args()
 
 model_dir = args.model
-str_start_time = args.time if args.time else datetime.now().strftime('%y%m%d_%H%M%S')
-model_result_path = os.path.join(model_dir, str_start_time)
+
+if 'train' in args.func.__name__:
+    log_dir_name = args.time if args.time else datetime.now().strftime('%y%m%d_%H%M%S')
+else:
+    log_dir_name = 'result'
+
+model_result_path = os.path.join(model_dir, log_dir_name)
+
 if not os.path.exists(model_result_path):
     os.mkdir(model_result_path)
+
 log_dir = os.path.join(model_result_path, 'logs')
 os.mkdir(log_dir)
 
 error_log_file = os.path.join(log_dir, 'error_log')
 
 try:
-    args.func(args, log_dir)
+    if 'train' in args.func.__name__:
+        args.func(args, log_dir)
+    else:
+        args.func(args, model_result_path)
 except:
     exc_type, exc_value, exc_traceback = sys.exc_info()
     lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
