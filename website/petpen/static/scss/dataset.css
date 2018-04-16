@@ -37,7 +37,6 @@ a.buttons, .buttons {
   color: white;
   background: #468966;
   position: relative;
-  margin: 30px;
   top: 10px;
   padding: 12px;
   font-size: 16px;
@@ -308,55 +307,172 @@ a.overview-btn {
   position: relative;
   top: -110px; }
 
-.nav-div {
-  background-color: #def9ea; }
+.upload-dataset-form {
+  display: none;
+  position: fixed;
+  top: 55px;
+  left: 0;
+  padding-top: 20px;
+  width: 100%;
+  height: calc(100vh);
+  z-index: 99;
+  background-color: black;
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */ }
 
-.example-nav {
-  width: 800px;
-  margin: 0px auto 0;
-  padding-top: 5px;
-  background-color: #def9ea;
-  display: flex; }
-  .example-nav .nav-item {
-    padding: 8px 15px; }
-    .example-nav .nav-item a {
-      text-decoration: none;
-      color: #5F5F5F;
-      padding: 8px 15px; }
-      .example-nav .nav-item a:hover {
-        color: #2F2F2F; }
-    .example-nav .nav-item.active {
-      background: #FFF;
-      border: 1px solid #EFEFEF;
-      border-bottom: 0;
-      border-top-right-radius: 5px;
-      border-top-left-radius: 5px; }
+.form-content {
+  background-color: #FEFEFE;
+  max-height: calc(100vh - 10rem);
+  overflow: auto;
+  margin: auto;
+  padding: 20px;
+  border: 1px solid #888;
+  width: 60%; }
 
-.example-table {
-  width: 800px;
-  margin: 15px auto;
-  border: 1px solid #EFEFEF;
-  border-radius: 5px;
-  display: flex; }
-  .example-table .example-row:not(:first-child) {
-    border-top: 1px solid #ECF0F1; }
-  .example-table .example-row td {
-    padding: 6px 3px; }
-  .example-table .example-row .title {
-    max-width: 80px;
-    padding-left: 10px; }
-  .example-table .example-row .description {
-    max-width: 400px;
-    padding-left: 10px; }
-  .example-table .example-row .format {
-    width: 120px; }
-  .example-table .example-row .action {
-    transform: translateY(-3px);
-    width: 90px;
-    padding-left: 10px; }
-    .example-table .example-row .action .buttons-sm {
-      display: inline-block;
-      width: 32px;
-      height: 27px; }
+.close {
+  color: #AAAAAA;
+  float: right;
+  font-weight: bold; }
 
-/*# sourceMappingURL=../../../../../../../../static/scss/demo_example.css.map */
+.dataset-loading {
+  display: none;
+  position: fixed;
+  bottom: 0; }
+
+.headerbar {
+  height: 4rem;
+  background: #FFF;
+  box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+  z-index: 10; }
+
+.add-btn {
+  top: -8px;
+  padding: 5px 20px 3px 20px; }
+  .add-btn:active {
+    top: -3px; }
+
+.modal-btn {
+  position: relative;
+  top: -3px;
+  padding: 6px 25px;
+  margin-right: 1rem;
+  color: #FFF;
+  border: none;
+  border-radius: 3px;
+  background: #4d94ff; }
+  .modal-btn:hover {
+    box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12);
+    transition: ease .3s; }
+
+#dataset-header {
+  margin: 13px 30px;
+  display: inline-block; }
+
+.filetype-badge {
+  font-size: .4rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  color: #FFF;
+  box-shadow: -1px -1px 0 #CCC, 1px 1px 0 #111, 3px 3px 10px rgba(0, 0, 0, 0.3); }
+
+.flex-row {
+  display: flex;
+  flex-flow: row wrap;
+  width: 100%; }
+
+.dataset-container {
+  flex: 1; }
+
+.error-message {
+  background: #F8D7DA;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  margin: 1.2rem;
+  padding: 0 10px; }
+
+#info-sidebar {
+  flex: 1;
+  padding: 1.5rem;
+  height: calc(100vh - 120px);
+  max-width: 320px;
+  background-color: #FFF;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3);
+  z-index: -1; }
+
+.item-title {
+  font-size: 1.75rem;
+  font-weight: 500;
+  margin-bottom: 3rem; }
+
+.item-name {
+  display: inline-block;
+  width: 6rem;
+  margin: 0.3rem 0;
+  color: #777; }
+
+.item-content {
+  display: inline-block;
+  width: 10rem;
+  /*align-items: center;*/ }
+
+#dataset-table {
+  flex: 1;
+  margin: 1.2rem;
+  overflow: auto;
+  background: #FFF;
+  box-shadow: 0px 3px 3px -2px rgba(0, 0, 0, 0.2), 0px 3px 4px 0px rgba(0, 0, 0, 0.14), 0px 1px 8px 0px rgba(0, 0, 0, 0.12); }
+
+#dataset-table ul {
+  margin: 0;
+  padding: 0; }
+
+#dataset-table li {
+  list-style-type: none;
+  padding: 0 2.5rem; }
+
+#dataset-table li:hover {
+  color: rgba(0, 0, 0, 0.7);
+  background-color: #FFF; }
+
+#dataset-table li + li {
+  border-top: 1px solid rgba(0, 0, 0, 0.3); }
+
+#no-dataset {
+  height: 5rem;
+  padding: 25px 30px;
+  font-size: 20px;
+  font-family: Sans-serif; }
+
+.li-item-name {
+  display: inline-block;
+  text-decoration: none;
+  font-family: Sans-serif;
+  font-size: 20px;
+  padding: .5rem; }
+
+.li-item-name:hover {
+  text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+  text-decoration: none; }
+
+#btn-group {
+  position: relative;
+  float: right; }
+
+.action-btn {
+  width: 1.8rem;
+  height: 1.8rem;
+  background: none;
+  border: none;
+  border-radius: 50%;
+  color: #5B90BF;
+  cursor: pointer;
+  margin-top: .6rem; }
+
+.action-btn:hover {
+  /*background: linear-gradient(to bottom right,#FFF,#AAA);*/
+  /*border: 1px solid #007BFF;*/
+  font-size: 20px;
+  color: #007BFF; }
+
+/*# sourceMappingURL=../../../../../../../../static/scss/dataset.css.map */

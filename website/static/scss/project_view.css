@@ -55,8 +55,8 @@
 #history-detail {
   margin-left: 200px;
   padding: 30px 30px;
-  width: calc(100% - 230px);
-  max-height: calc(100vh - 6.5rem);
+  width: calc(100% - 200px);
+  max-height: calc(100vh - 100px);
   overflow: auto; }
 
 .evaluation-form {
@@ -71,4 +71,4 @@
   #project-tabs .nav-link:hover {
     background: #FFF; }
 
-/*# sourceMappingURL=../../../../../../../static/scss/project_view.css.map */
+/*# sourceMappingURL=../../../../../../../../static/scss/project_view.css.map */

@@ -49,9 +49,9 @@ class History(models.Model):
 def one_week_period():
     return timezone.now() + timezone.timedelta(days=7)
 
-class Prediction(models.Model):
-    history = models.ForeignKey(History,on_delete=models.CASCADE)
-    expired = models.DateTimeField(default=one_week_period)
-    created = models.DateTimeField(default=timezone.now)
-    def path(self):
-        return op.join(MEDIA_ROOT,op.dirname(self.history.project.structure_file),self.history.save_path,self.created.strftime('%y%m%d_%H%M%S'))
+# class Prediction(models.Model):
+    # history = models.ForeignKey(History,on_delete=models.CASCADE)
+    # expired = models.DateTimeField(default=one_week_period)
+    # created = models.DateTimeField(default=timezone.now)
+    # def path(self):
+        # return op.join(MEDIA_ROOT,op.dirname(self.history.project.structure_file),self.history.save_path,self.created.strftime('%y%m%d_%H%M%S'))

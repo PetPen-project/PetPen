@@ -17,11 +17,17 @@ def load_pkl(data):
         result = pd.read_pickle(data)
     return np.array(result)
 
+def load_npy(data):
+    result = np.load(data)
+    return result
+
 def load_file(f):
     if '.csv' in f:
         return load_csv(f)
     elif '.pkl' in f or '.pickle' in f:
         return load_pkl(f)
+    elif 'npy' in f:
+        return load_npy(f)
 
 class backend_model():
     def __init__(self, model_path, trainx, trainy, testx, testy):

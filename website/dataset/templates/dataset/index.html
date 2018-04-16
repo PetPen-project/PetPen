@@ -1,49 +1,62 @@
 {% extends 'nav.html' %}
 {% load static %}
-<!DOCTYPE html>
+{% load sass_tags %}
 
 {% block head %}
-<link rel="stylesheet" href="{% static "css/dataset.css" %}">
+  <link rel="stylesheet" href="{% sass_src "scss/dataset.scss" %}">
+  <script>
+  $(function(){
+    console.log(
+    $('.error-message .close')
+    );
+    $('.error-message .close').click(function(){
+      $('.error-message').hide();
+    });
+  });
+  </script>
 {% endblock %}
 
 {% block title %}dataset management{% endblock %}
 
 {% block content %}
-  <div class="menubar">
+  <div class="headerbar">
     <h2 id="dataset-header">Datasets</h2>
-    <button type="button" class="add-btn" id="open-modal"><i class="fa fa-plus" style="margin:0 10px 0 0;"></i>ADD</button>
+    <button type="button" class="buttons add-btn" id="open-modal"><i class="fa fa-plus" style="margin:0 10px 0 0;"></i>ADD</button>
   </div>
   <div class="flex-row">
+    <div class="dataset-container">
     {% if error_message %}
       <div class="error-message">
         {{error_message}}
+        <button class="close" data-dismiss="error-message"><span aria-hidden="true">&times;</span></button>
       </div>
     {% endif %}
-  <div id="dataset-table">
-    <!-- List of uploaded data -->
-    {% if dataset_list %}
-      <form method="post" action="{% url "dataset:index" %}">
-      {% csrf_token %}
-      <ul>
-        {% for dataset in dataset_list %}
-        <li>
-          <!--<a href="{% url "dataset:dataset_detail" dataset_id=dataset.id %}" name="data-link" class="li-item-name" style="width:200px;">{{ dataset.title }}</a>-->
-          <a href="" name="data-link" class="li-item-name" style="width:200px;">{{ dataset.title }}</a>
-          <span class="filetype-badge">{{dataset.get_filetype_display}}</span>
-          <div id="btn-group">
-            <button class="action-btn" data-toggle="tooltip" title="click to show dataset properties on the sidebar" value="{{dataset.id}}" type="submit" name="info-dataset"><i class="fa fa-info"></i></button>
-            <button class="action-btn" data-toggle="tooltip" title="click to download this dataset as single zip file" value="{{dataset.id}}" type="submit" name="download-dataset"><i class="fa fa-download"></i></button>
-            <button class="action-btn" data-toggle="tooltip" title="click to copy this dataset into your account" value="{{dataset.id}}" type="submit" name="copy-dataset"><i class="fa fa-copy"></i></button>
-            <button class="action-btn" data-toggle="tooltip" title="click to delete this dataset" value="{{dataset.id}}" type="submit" name="delete-dataset"><i class="fa fa-times"></i></button>
-          </div>
-        </li>
-        {% endfor %}
-      </ul>
-      </form>
-    {% else %}
-      <div id="no-dataset">No dataset yet.</div>
-    {% endif %}
-  </div>
+    <div id="dataset-table">
+      <!-- List of uploaded data -->
+      {% if dataset_list %}
+        <form method="post" action="{% url "dataset:index" %}">
+        {% csrf_token %}
+        <ul>
+          {% for dataset in dataset_list %}
+          <li>
+            <!--<a href="{% url "dataset:dataset_detail" dataset_id=dataset.id %}" name="data-link" class="li-item-name" style="width:200px;">{{ dataset.title }}</a>-->
+            <a href="" name="data-link" class="li-item-name" style="width:200px;">{{ dataset.title }}</a>
+            <span class="filetype-badge">{{dataset.get_filetype_display}}</span>
+            <div id="btn-group">
+              <button class="action-btn" data-toggle="tooltip" title="click to show dataset properties on the sidebar" value="{{dataset.id}}" type="submit" name="info-dataset"><i class="fa fa-info"></i></button>
+              <button class="action-btn" data-toggle="tooltip" title="click to download this dataset as single zip file" value="{{dataset.id}}" type="submit" name="download-dataset"><i class="fa fa-download"></i></button>
+              <!--<button class="action-btn" data-toggle="tooltip" title="click to copy this dataset into your account" value="{{dataset.id}}" type="submit" name="copy-dataset"><i class="fa fa-copy"></i></button>-->
+              <button class="action-btn" data-toggle="tooltip" title="click to delete this dataset" value="{{dataset.id}}" type="submit" name="delete-dataset"><i class="fa fa-times"></i></button>
+            </div>
+          </li>
+          {% endfor %}
+        </ul>
+        </form>
+      {% else %}
+        <div id="no-dataset">No dataset yet.</div>
+      {% endif %}
+    </div>
+    </div>
   <div id="info-sidebar">
     {% if information %}
       <div class="item-title">{{information.title}}</div>

@@ -1,47 +1,39 @@
 {% extends 'nav.html' %}
 {% load static %}
 {% load sass_tags %}
-{% block title %}example projects{% endblock %}
+{% block title %}example datasets{% endblock %}
 
 {% block head %}
   <link rel="stylesheet" href="{% sass_src "scss/demo_example.scss" %}">
   <script>
   $(function(){
-    <!--if({{user.is_authenticated}}){-->
-      <!--console.log('hi');-->
-    <!--}-->
   })
   </script>
 {% endblock %}
 
 {% block content %}
   <div class="nav-div">
-    <div class="example-nav">
-      <span class="nav-item active">
-        <a href="">projects</a>
-      </span>
-      <span class="nav-item">
-        <a href="{% url "examples_dataset" %}">Datasets</a>
-      </span>
-    </div>
+  <div class="example-nav">
+    <span class="nav-item">
+      <a href="{% url "examples" %}">projects</a>
+    </span>
+    <span class="nav-item active">
+      <a href="">Datasets</a>
+    </span>
   </div>
-  <div class="warn">
-    {% if error_message %}
-      <p>{{error_message}}</p>
-    {% endif %}
   </div>
   <div class="example-table">
     <table style="width:100%;">
-      {% for project in projects %}
+      {% for dataset in datasets %}
         <tr class="example-row">
-          <td class="title"><a href="">{{project.title}}</a></td>
-          <td class="description">{{project.description}} description goes here.</td>
-          <td>{{project.dataset}}</td>
+          <td class="title"><a href="">{{dataset.title}}</a></td>
+          <td class="description">{{dataset.description}} description goes here.</td>
+          <td class="format">format: {{dataset.filetype}}</td>
           <td class="action">
               <a class="buttons-sm" href=""><i class="fa fa-eye"></i></a>
               <form action="" method="post" style="display:inline-block;">
                 {% csrf_token %}
-                <input type="hidden" name="id" value={{project.id}}>
+                <input type="hidden" name="id" value={{dataset.id}}>
                 <button class="buttons-sm" type="submit"><i class="fa fa-copy"></i></button>
               </form>
           </td>

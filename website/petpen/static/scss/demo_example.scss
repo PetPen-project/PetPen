@@ -4,10 +4,10 @@
   background-color: $green-macha;
 }
 .example-nav {
-  max-width: 800px;
+  width: 800px;
   margin: 0px auto 0;
   padding-top: 5px;
-  //background: $green-jade;
+  background-color: $green-macha;
   display: flex;
   .nav-item {
     padding: 8px 15px;
@@ -27,29 +27,38 @@
    }
 }
 .example-table {
-  max-width: 800px;
-  margin: 0 auto;
+  width: 800px;
+  margin: 15px auto;
   border: 1px solid $metal-iron;
-  border-top: 0;
   border-radius: 5px;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
+  display: flex;
   .example-row {
+    &:not(:first-child){
     border-top: 1px solid $white-imperfect;
+    }
     td {
       padding: 6px 3px;
     }
     .title {
-      max-width: 180px;
+      max-width: 80px;
       padding-left: 10px;
     }
     .description {
-      max-width: 150px;
+      max-width: 400px;
       padding-left: 10px;
     }
+    .format {
+      width: 120px;
+    }
     .action {
-      max-width: 150px;
+      transform: translateY(-3px);
+      width: 90px;
       padding-left: 10px;
+      .buttons-sm {
+        display: inline-block;
+        width: 32px;
+        height: 27px;
+      }
     }
   }
 }

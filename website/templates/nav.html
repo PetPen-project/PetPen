@@ -19,10 +19,16 @@
       var array = {
         'model':{'url':'/model/','name':'project'},
         'dataset':{'url':'/dataset/','name':'dataset'},
-        <!--'examples':{'url':'/examples/','name':'examples'},-->
-        'document':{'url':'/document/','name':'document'},
+        'examples':{'url':'/examples/','name':'examples'},
+        'document':{'url':'/media/petpen.pdf','name':'document'},
       };
          $(document).ready(function() {
+          var leftOffset = parseInt($("#site-navbar").css('left')); //Grab the left position left first
+          $(window).scroll(function(){
+            $('#site-navbar').css({
+              'left': $(this).scrollLeft() + leftOffset //Use it later
+            });
+          });
 			var pageUrl = document.URL.match(/\/(\w+\/)+$/);
 			//var pageUrl = document.location.href.match(/[^\/]+$/);
 			var pageName =''; 
@@ -32,7 +38,11 @@
          	$.each(array, function(key, value){
          		var li = $('<li></li>').attr('class','nav-item');
             if(pageName == key || pageName == key+'/' || pageName == value['url']) li.attr('class', 'active');//select page
+            if(value['name']=='document'){
+              var anchor = $('<a></a>').attr({'href':value['url'], 'class':'nav-link', 'target':'_blank'}).text(value['name']);
+            }else{
             var anchor = $('<a></a>').attr({'href':value['url'], 'class':'nav-link'}).text(value['name']);
+            }
          		li.append(anchor);
          		$('#navList').append(li);
          	});
@@ -42,7 +52,7 @@
     {% endblock %}
   </head>
   <body>
-    <nav class="navbar navbar-expand-sm navbar-dark bg-dark">
+    <nav id="site-navbar" class="navbar navbar-expand-sm navbar-dark bg-dark">
       <a class="navbar-brand" href="{% url 'main' %}">
         <!--<img src="{% static "img/logo.png" %}" style="display: inline-block; height: 30px; margin-top: -5px"/>-->
         <span style="color:#BEDB39;">Pet</span><span>Pen</span>

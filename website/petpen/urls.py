@@ -10,12 +10,14 @@ Including another URLconf
     2. Add a URL to urlpatterns:  url(r'^blog/', include('blog.urls'))
 """
 from django.conf.urls import include, url
+from django.conf import settings
+from django.conf.urls.static import static
 from django.contrib.auth.decorators import login_required
 from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth import views as auth_views
 from rest_framework import routers, serializers, viewsets
-from .views import main, examples
+from .views import main, examples, examples_dataset
 from user.views import UserCreateView
 
 # Serializers define the API representation.
@@ -38,6 +40,7 @@ router = routers.DefaultRouter()
 urlpatterns = [
     url(r'^$', main,name='main'),
     url(r'^examples/$', examples,name='examples'),
+    url(r'^examples/dataset/$', examples_dataset,name='examples_dataset'),
     url(r'^model/', include(('model.urls','model'),namespace='model')),
     url(r'^dataset/', include(('dataset.urls','dataset'),namespace='dataset')),
     url(r'^accounts/', include('django.contrib.auth.urls')),
@@ -45,4 +48,5 @@ urlpatterns = [
     url(r'^signup/', UserCreateView.as_view(),name='user_create'),
     # url(r'^', include(router.urls)),
     url(r'^api-auth/', include(('rest_framework.urls','rest_framework'), namespace='rest_framework')),
-]
+# ]
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
