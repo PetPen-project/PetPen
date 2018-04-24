@@ -7,20 +7,39 @@
   <link rel="stylesheet" href="{% sass_src "scss/demo_example.scss" %}">
   <script>
   $(function(){
+    $('.error-message .close').click(function(){
+      $('.error-message').hide();
+    });
+    $('.info-message .close').click(function(){
+      $('.info-message').hide();
+    });
   })
   </script>
 {% endblock %}
 
 {% block content %}
   <div class="nav-div">
-  <div class="example-nav">
-    <span class="nav-item">
-      <a href="{% url "examples" %}">projects</a>
-    </span>
-    <span class="nav-item active">
-      <a href="">Datasets</a>
-    </span>
+    <div class="example-nav">
+      <span class="nav-item">
+        <a href="{% url "examples" %}">projects</a>
+      </span>
+      <span class="nav-item active">
+        <a href="">Datasets</a>
+      </span>
+    </div>
   </div>
+  <div class="message-div" style="width:800px;margin:0 auto;">
+    {% if error_message %}
+      <div class="error-message">
+        {{error_message}}
+        <button class="close" data-dismiss="error-message"><span aria-hidden="true">&times;</span></button>
+      </div>
+    {% elif info %}
+      <div class="info-message">
+        {{info}}
+        <button class="close" data-dismiss="info-message"><span aria-hidden="true">&times;</span></button>
+      </div>
+    {% endif %}
   </div>
   <div class="example-table">
     <table style="width:100%;">

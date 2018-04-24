@@ -25,28 +25,6 @@ hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
 # logger.setLevel(logging.WARNING)
 
-@login_required
-def index(request):
-    if request.method == 'POST':
-        if 'delete-dataset' in request.POST:
-            form = UploadFileForm()
-            dataset = Dataset.objects.get(id=request.POST['delete-dataset'])
-            shutil.rmtree(op.join(MEDIA_ROOT,'datasets/{}/{}'.format(request.user.id,dataset.title)))
-            dataset.delete()
-        else:
-            form = UploadFileForm(request.POST, request.FILES)
-            if form.is_valid():
-                form_data = form.cleaned_data
-                for dataset_file in ['training_input_file','training_output_file','testing_input_file','testing_output_file']:
-                    form_data[dataset_file].name = re.sub('_file',op.splitext(request.FILES[dataset_file].name)[1],dataset_file)
-                newfile = Dataset(title=form_data['title'],training_input_file=request.FILES['training_input_file'],training_output_file=request.FILES['training_output_file'],testing_input_file=request.FILES['testing_input_file'],testing_output_file=request.FILES['testing_output_file'],user=request.user)
-                newfile.save()
-                return HttpResponseRedirect(reverse("dataset:index"))
-    else:
-        form = UploadFileForm()
-    datasets = Dataset.objects.filter(user_id = request.user.id)
-    return render(request, 'dataset/index.html', {'dataset_list':datasets, 'form':form})
-
 class DatasetListView(ListView):
     model = Dataset
     template_name = 'dataset/index.html'
@@ -174,7 +152,8 @@ class DatasetListView(ListView):
                     newfile.train_output_size = newfile.training_output_file.file.size
                     newfile.test_input_size = newfile.testing_input_file.file.size
                     newfile.test_output_size = newfile.testing_output_file.file.size
-                    newfile.description = request.POST.get('description')
+                    if request.POST.get('description'):
+                        newfile.description = request.POST.get('description')
                     newfile.save()
 
                     return HttpResponseRedirect(reverse("dataset:index"))

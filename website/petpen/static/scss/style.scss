@@ -105,6 +105,7 @@ a.buttons, .buttons {
   background: $green-jade;
   position: relative;
   top: 10px;
+  margin-bottom: 20px;
   padding: 12px;
   font-size: 16px;
   border-radius: 10px;
@@ -228,6 +229,20 @@ a.overview-btn {
     font-size: 1em;
     margin-left: .2em;
   }
+}
+.info-message {
+    background: $yellow-bright;
+    color: $red-gentle;
+    border: 1px solid $skin-base;
+    margin: 1.2rem;
+    padding:0 10px;
+}
+.error-message {
+    background: $pink-danger;
+    color: $red-danger;
+    border: 1px solid $red-danger;
+    margin: 1.2rem;
+    padding:0 10px;
 }
 .main-content {
   min-height: calc(100vh - 56px);

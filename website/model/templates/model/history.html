@@ -33,7 +33,6 @@
                 <input type="hidden" name="history" value="{{history.id}}">
                 <div class="history-btns">
                   <button class="history-btn" type="submit" name="action" value="download" {% if history.status != "success" %}disabled{% endif %}><i class="fa fa-download"></i></button>
-                  <!--<button class="history-btn" type="submit" name="action" value="evaluate" {% if history.status != "success" %}disabled{% endif %}><i class="fa fa-play"></i></button>-->
                   <button class="history-btn" type="submit" name="action" value="delete"><i class="fa fa-trash"></i></button>
                 </div>
               </form>
@@ -47,7 +46,7 @@
           <hr>
           <p>executed on {{executed}}</p>
           <p>information:</p>
-          <p style="fontsize:12px; box-shadow: 0 2px 4px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);">{{message}}</p>
+          <p style="fontsize:12px; box-shadow: 0 2px 4px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);padding:12px;">{{message}}</p>
         {% elif history %}
           {% include_chart_jscss %}
           <span class="time-text">training time:  {{history.executed}}</span>
