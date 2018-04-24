@@ -1,0 +1,61 @@
+<script type="text/javascript">
+    RED.nodes.registerType('RandomGen',{
+        category: 'Layer',
+        color: '#ffaaaa',
+        defaults: {
+            name: {value:"randomgen"},
+	    units: {value: ""},
+            type: {value:"RandomGen"},
+	    conf: {value: ""},
+	    mean: {value: ""},
+	    variance: {value: ""},
+	    min: {value: ""},
+	    max: {value: ""},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "face.png",
+        label: function() {
+            return this.name||"Output";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="RandomGen">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+        <input type="text" id="node-input-type" placeholder="Type">
+    </div>
+    <div class="form-row">
+        <label for="node-input-conf"><i class="icon-tag"></i> Padding</label>
+        <select id="node-input-conf">
+                <option value="uniform">valid</option>
+                <option value="single">same</option>
+        </select>
+    </div>
+    <div class="form-row">
+        <label for="node-input-mean"><i class="icon-tag"></i> Mean</label>
+        <input type="text" id="node-input-mean" onchange="blurFunction(this)" placeholder="Mean">
+    </div>
+    <div class="form-row">
+        <label for="node-input-variance"><i class="icon-tag"></i> Variance</label>
+        <input type="text" id="node-input-variance" onchange="blurFunction(this)" placeholder="Variance">
+    </div>
+    <div class="form-row">
+        <label for="node-input-min"><i class="icon-tag"></i> Mean</label>
+        <input type="text" id="node-input-min" onchange="blurFunction(this)" placeholder="Min">
+    </div>
+    <div class="form-row">
+        <label for="node-input-max"><i class="icon-tag"></i> Mean</label>
+        <input type="text" id="node-input-max" onchange="blurFunction(this)" placeholder="Max">
+    </div>
+</script>
+ 
+<script type="text/x-red" data-help-name="Hello World">
+    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+    </p>
+</script>
