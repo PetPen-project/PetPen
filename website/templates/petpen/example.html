@@ -5,13 +5,7 @@
 
 {% block head %}
   <link rel="stylesheet" href="{% sass_src "scss/demo_example.scss" %}">
-  <script>
-  $(function(){
-    <!--if({{user.is_authenticated}}){-->
-      <!--console.log('hi');-->
-    <!--}-->
-  })
-  </script>
+  <script src={% static "js/example.js" %}></script>
 {% endblock %}
 
 {% block content %}
@@ -25,20 +19,31 @@
       </span>
     </div>
   </div>
-  <div class="warn">
+  <div class="message-div" style="width:800px;margin:0 auto;">
     {% if error_message %}
-      <p>{{error_message}}</p>
+      <div class="error-message">
+        {{error_message}}
+        <button class="close" data-dismiss="error-message"><span aria-hidden="true">&times;</span></button>
+      </div>
+    {% elif info %}
+      <div class="info-message">
+        {{info}}
+        <button class="close" data-dismiss="info-message"><span aria-hidden="true">&times;</span></button>
+      </div>
     {% endif %}
+  </div>
+  <div class="preview-modal">
+    <img src="" alt="">
   </div>
   <div class="example-table">
     <table style="width:100%;">
       {% for project in projects %}
         <tr class="example-row">
           <td class="title"><a href="">{{project.title}}</a></td>
-          <td class="description">{{project.description}} description goes here.</td>
+          <td class="description">{{project.description}}</td>
           <td>{{project.dataset}}</td>
           <td class="action">
-              <a class="buttons-sm" href=""><i class="fa fa-eye"></i></a>
+            <button class="buttons-sm" data-title="{{project.title}}" name="preview"><i class="fa fa-eye"></i></button>
               <form action="" method="post" style="display:inline-block;">
                 {% csrf_token %}
                 <input type="hidden" name="id" value={{project.id}}>

@@ -54,7 +54,7 @@
     <div class="arrow-block"><i class="fa fa-angle-right"></i></div>
     <div class="result-div">
       {% if result.type == 'chart' %}
-        {% load_chart result.content.charttype result.content.chartdata result.content.chartcontainer y_axis_format='.2f' %}
+        {% load_chart result.content.charttype result.content.chartdata result.content.chartcontainer result.content.kw_extra %}
         {% include_container result.content.chartcontainer 250 400 %}
       {% elif result.type == 'number' %}
       <h1>Predicted output: {{result.content}}</h1>

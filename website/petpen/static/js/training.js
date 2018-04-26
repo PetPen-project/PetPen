@@ -4,7 +4,7 @@ var limitMS = 60000;
 
 //timer
 var timerProgress;//request from server (python)
-var timerLimit;//file not update in time
+var idleTime = 0;//file not update in time
 
 //keywords
 var wordToTraining = "start training model";
@@ -20,47 +20,18 @@ var svg = '';
 var chart = '';
 
 $(function(){
-  //svg = d3.select("svg")
-    //.attr("width",600)
-    //.attr("height",300)
-    //.append("g").attr("transform","translate(30,30)");
-  //svg.append("path");
-  //
-    //var chart = nv.models.cumulativeLineChart()
-      //.x(function(d) { return d[0] })
-      //.y(function(d) { return d[1]/100 }) //adjusting, 100% is 1.00, not 100 as it is in the data
-      //.color(d3.scale.category10().range())
-      //.useInteractiveGuideline(true)
-      //;
-     //chart.xAxis
-        //.tickValues([1078030800000,1122782400000,1167541200000,1251691200000])
-        //.tickFormat(function(d) {
-            //return d3.time.format('%x')(new Date(d))
-          //});
-    //chart.yAxis
-        //.tickFormat(d3.format(',.1%'));
-
-  d3.json('http://nvd3.org/examples/cumulativeLineData.json', function(data) {
-    //d3.select('svg')
-        //.datum(data)
-        //.call(chart);
-  //nv.addGraph(function() {
-    //d3.select('svg')
-        //.datum(data)
-        //.call(chart);
-
-    //nv.utils.windowResize(chart.update);
-
-    //return chart;
-  //});
-  });
-  //svg = d3.select("#plotDiv").select("svg");
   initPlot();
 	initJsonPython();//init
 	
   timerProgress = setInterval(function () {//timer
     loadJsonPython();
   }, waitMS);
+  $(this).mousedown(function(){
+    idleTime = 0;
+  });
+  $(this).keypress(function(){
+    idleTime = 0;
+  });
 });
 
 function initJsonPython(){
@@ -276,20 +247,26 @@ function errorJSON(data){
   }
 };
 function loadJsonPython(){
-  $.ajax({
-    async: false,
-    dataType: "json",
-    type: 'POST',
-    url: "/model/api/parse/",
-    data: {
-      project_id: project_id
-    },
-    success: function(data){
-      printJSON(data);
-      updatePlot(data);
-    },
-    error: function(){console.log('error loading json from api');} // pass
-    //error: errorJSON
-  });
+  idleTime = idleTime + waitMS;
+  if (idleTime < limitMS){
+    $.ajax({
+      async: false,
+      dataType: "json",
+      type: 'POST',
+      url: "/model/api/parse/",
+      data: {
+        project_id: project_id
+      },
+      success: function(data){
+        printJSON(data);
+        updatePlot(data);
+      },
+      error: function(){console.log('error loading json from api');} // pass
+      //error: errorJSON
+    });
+  }
+  else{
+    console.log("page is idle");
+  }
 };
 

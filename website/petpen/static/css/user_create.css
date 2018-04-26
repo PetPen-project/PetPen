@@ -16,15 +16,15 @@ label {
 .input-field {
   margin: 0 0 20px 0;
 }
-input[type=submit] {
-  border-radius: 5px;
-  width: auto;
-  height: 40px;
-  padding: 0 13px;
-  color: #FFF;
-  background-color: #4d90FF;
-  border: 1px solid #3079ED;
-}
+/*input[type=submit] {*/
+  /*border-radius: 5px;*/
+  /*width: auto;*/
+  /*height: 40px;*/
+  /*padding: 0 13px;*/
+  /*color: #FFF;*/
+  /*background-color: #4d90FF;*/
+  /*border: 1px solid #3079ED;*/
+/*}*/
 .errorlist li {
   color: #FF0000;
 }

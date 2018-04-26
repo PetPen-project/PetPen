@@ -36,6 +36,7 @@ class NN_model(models.Model):
     structure_file = models.FilePathField(path=MEDIA_ROOT,match=r'result.json')
     modified = models.DateTimeField(default=timezone.now)
     training_counts = models.IntegerField(default=0)
+    description = models.TextField(blank=True)
     status = models.CharField(default='idle',max_length=30)
 
 class History(models.Model):

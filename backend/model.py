@@ -209,8 +209,12 @@ def load_pretrained_model(layer_config):
         outputs=pretrained_model.layers[output_layer].output
     )
 
-    for layer in model.layers:
-        layer.trainable = False
+    # Use fixed_weight flag to control if let the weights trainable
+    # TODO: wait for the API complete on frontend
+    fixed_weight = True
+    if fixed_weight:
+        for layer in model.layers:
+            layer.trainable = False
 
     return model
 

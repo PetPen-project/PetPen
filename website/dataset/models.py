@@ -32,7 +32,7 @@ class Dataset(models.Model):
     test_samples = models.IntegerField(default=0)
     input_shape = models.CharField(max_length=100)
     output_shape = models.CharField(max_length=100)
-    description = models.TextField(blank=True)
+    description = models.TextField(default='')
     FILE_CHOICES = (
         ('CSV','csv'),
         ('PKL','pickle'),

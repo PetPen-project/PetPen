@@ -38,6 +38,7 @@ a.buttons, .buttons {
   background: #468966;
   position: relative;
   top: 10px;
+  margin-bottom: 20px;
   padding: 12px;
   font-size: 16px;
   border-radius: 10px;
@@ -145,6 +146,20 @@ a.overview-btn {
   span-vertical-align: middle;
   span-font-size: 1em;
   span-margin-left: .2em; }
+
+.info-message {
+  background: #FFF0A5;
+  color: #B64926;
+  border: 1px solid #FFC794;
+  margin: 1.2rem;
+  padding: 0 10px; }
+
+.error-message {
+  background: #F8D7DA;
+  color: #dc3545;
+  border: 1px solid #dc3545;
+  margin: 1.2rem;
+  padding: 0 10px; }
 
 .main-content {
   min-height: calc(100vh - 56px);
@@ -383,13 +398,6 @@ a.overview-btn {
 
 .dataset-container {
   flex: 1; }
-
-.error-message {
-  background: #F8D7DA;
-  color: #dc3545;
-  border: 1px solid #dc3545;
-  margin: 1.2rem;
-  padding: 0 10px; }
 
 #info-sidebar {
   flex: 1;

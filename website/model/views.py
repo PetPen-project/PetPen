@@ -127,7 +127,7 @@ class HistoryView(ListView):
                     elif op.exists(op.join(self.kwargs['history_path'],'logs/error_log')):
                         self.object.status = 'error'
                 self.object.save()
-            if self.object.status =='error':
+            if self.object.status in ['error','aborted']:
                 with open(op.join(self.kwargs['history_path'],'logs/error_log'),'r') as f:
                     context['message'] = f.read()
                 context.update({'save_path':self.object.save_path,'status':self.object.status,'executed':self.object.executed})
@@ -303,6 +303,10 @@ def predict(request, *args, **kwargs):
     result = pd.read_csv(op.join(predict_dir,'result'),header=None)
     if problem_type == 'classification' and context['sample_size'] == 1:
         if result.shape[1] > 1:
+            decimal_l = max(int(np.floor(np.log10(result.iloc[0].max()))),1)
+            decimal_r = max(0,6-decimal_l)
+            print((np.log10(result.iloc[0].max())))
+            print(decimal_l,decimal_r)
             xdata = range(result.shape[1])
             chartcontents_output = []
             context_result = {
@@ -311,11 +315,12 @@ def predict(request, *args, **kwargs):
                 'charttype': 'discreteBarChart',
                 'chartdata': {
                     'x': xdata,
-                    'name1': '',
+                    'name1': 'label',
                     'y1': result.iloc[0],
                     'extra1': {"tooltip": {"y_start": "", "y_end": ""}},
                     },
                 'chartcontainer': "classification_container",
+                'kw_extra': {'y_axis_format':'.{}f'.format(decimal_r)},
                 }}
         else:
             context_result = {
@@ -588,12 +593,14 @@ def backend_api(request):
                         try:
                             data_value = pickle.load( open(dataset, 'rb') )
                         except:
-                            data_value = pd.read_pickle(data)
+                            data_value = pd.read_pickle(dataset)
                         data_value = np.array(data_value)
                         np.save(op.join(predict_dir,'input.npy'), data_value)
                         if len(data_value.shape) == 3 and data_value.shape[2] in [1,3,4]:
                             plt.imsave(op.join(predict_dir,'input.png'),data_value,format='png')
                 except Exception as err:
+                    if not op.exists(predict_dir):
+                        op.mkdir(predict_dir)
                     with open(op.join(predict_dir,'error_log'),'w') as f:
                         error_info = {
                             'error_type': str(type(err)),
@@ -666,11 +673,14 @@ def backend_api(request):
             p = kill(project.id)
             project.status = 'idle'
             project.save()
-            update_status(project.state_file,status='system idle')
             history = project.history_set.latest('id')
             history.status = 'aborted'
             history.save()
-            os.makedirs(op.join(project_path,save_path,'logs/'))
-            with open(op.join(project_path,history.save_path,'logs/error_log'),'w') as f:
+            update_status(project.state_file,status='system idle')
+            log_dir = op.join(MEDIA_ROOT,op.dirname(project.structure_file),history.save_path,'logs/')
+            print(log_dir)
+            if not op.exists(log_dir):
+                os.makedirs(log_dir)
+            with open(log_dir+'error_log','w') as f:
                 f.write('Training stopped by user.')
-        return HttpResponse("running")
+        return HttpResponse("response sent from backend")
