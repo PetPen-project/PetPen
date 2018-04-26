@@ -5,6 +5,8 @@
         defaults: {
             name: {value:"output"},
 	    loss: {value:""},
+	    sparse: {value:""},
+	    learningrate: {value:""},
 	    optimizer: {value: ""},
 	    epoch: {value: ""},
             batchsize: {value: ""},
@@ -37,6 +39,13 @@
         </select>
     </div>
     <div class="form-row">
+        <label for="node-input-sparse"><i class="icon-tag"></i> Loss Sparse</label>
+        <select id="node-input-sparse" onchange="blurFunction(this)">
+                <option value="true">turn on</option>
+                <option value="false">turn off</option>
+	</select>
+    </div>
+    <div class="form-row">
         <label for="node-input-optimizer"><i class="icon-tag"></i> Optimizer</label>
         <select id="node-input-optimizer" onchange="blurFunction(this)">
                 <option value="SGD">SGD</option>
@@ -50,6 +59,10 @@
     <div class="form-row">
         <label for="node-input-epoch"><i class="icon-tag"></i> Epoch</label>
         <input type="text" id="node-input-epoch" onchange="blurFunction(this)" placeholder="Epoch">
+    </div>
+    <div class="form-row">
+        <label for="node-input-learningrate"><i class="icon-tag"></i> Learning rate</label>
+        <input type="text" id="node-input-epoch" onchange="blurFunction(this)" placeholder="learningrate">
     </div>
     <div class="form-row">
         <label for="node-input-batchsize"><i class="icon-tag"></i> Batch size</label>
