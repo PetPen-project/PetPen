@@ -7,7 +7,8 @@
             type: {value:"Pretrained"},
 	    source: {value: "d"},
             pretrainedoutput: {value: "x"},
-	    weightfile: {value: "g"}
+	    weightfile: {value: "g"},
+	    modify: {value: ""},
         },
         inputs:1,
         outputs:1,
@@ -30,6 +31,10 @@
     <div class="form-row">
         <label for="node-input-weightfile"><i class="icon-tag"></i> Weightfile</label>
         <input type="text" class="fix" id="node-input-weightfile" onchange="blurFunction(this)" placeholder="Weightfile">
+    </div>
+    <div class="form-row">
+        <label for="node-input-modify"><i class="icon-tag"></i> Modify</label>
+        <input type="text" class="fix" id="node-input-modify" onchange="blurFunction(this)" placeholder="Modify">
     </div>
 </script>
 <script>
