@@ -18,7 +18,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import views as auth_views
 from rest_framework import routers, serializers, viewsets
 from .views import main, examples, examples_dataset
-from user.views import UserCreateView
+from user.views import UserCreateView, activate
 
 # Serializers define the API representation.
 class UserSerializer(serializers.HyperlinkedModelSerializer):
@@ -46,6 +46,7 @@ urlpatterns = [
     url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^admin/', admin.site.urls),
     url(r'^signup/', UserCreateView.as_view(),name='user_create'),
+    url(r'^activate/(?P<uidb64>[0-9A-Za-z_\-]+)/(?P<token>[0-9A-Za-z]{1,13}-[0-9A-Za-z]{1,20})/$', activate, name='activate'),
     # url(r'^', include(router.urls)),
     url(r'^api-auth/', include(('rest_framework.urls','rest_framework'), namespace='rest_framework')),
 # ]

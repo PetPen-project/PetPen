@@ -7,6 +7,14 @@ import django.utils.timezone as timezone
 from django.core.files import File
 from django.contrib import messages
 from django.views.generic import ListView
+from rest_framework.renderers import JSONRenderer
+from rest_framework.parsers import JSONParser
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.views import APIView
+from rest_framework import permissions
+from rest_framework.response import Response
+from rest_framework import status
+from django.views.decorators.csrf import csrf_exempt
 
 from job_queue import push, kill
 
@@ -24,6 +32,7 @@ from django.conf import settings
 from .models import NN_model, History
 from dataset.models import Dataset
 from model.serializers import NN_modelSerializer
+from model.permissions import IsOwner
 from .forms import NN_modelForm
 from petpen.settings import MEDIA_ROOT
 
@@ -36,13 +45,58 @@ hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
 logger.setLevel(logging.WARNING)
 
+@api_view(['GET','POST'])
+@permission_classes((permissions.IsAuthenticatedOrReadOnly,))
+# @csrf_exempt
+def project_list(request, format=None):
+    if request.method == 'GET':
+        projects = NN_model.objects.all()
+        serializer = NN_modelSerializer(projects, many=True)
+        # return JsonResponse(serializer.data, safe=False)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = NN_modelSerializer(data=request.data)
+        if serializer.is_valid():
+            pass
+            # serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class NN_modelDetail(APIView):
+    # permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsOwner,)
+    def get_object(self, pk):
+        try:
+            return NN_model.objects.get(pk=pk)
+        except NN_model.DoseNotExist:
+            raise Http404
+
+    def get(self, request, pk, format=None):
+        project = self.get_object(pk)
+        serializer = NN_modelSerializer(project)
+        return Response(serializer.data)
+
+    def put(self, request, pk, format=None):
+        project = self.get_object(pk)
+        serializer = NN_modelSerializer(project, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk, format=None):
+        project = self.get_object(pk)
+        project.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
 @login_required
 def index(request):
     context = {}
     if request.method == 'POST':
         if 'delete-project' in request.POST:
             form = NN_modelForm()
-            deleted_model = NN_model.objects.get(id=request.POST['delete-project'])
+            deleted_model = NN_model.objects.get(pk=request.POST['delete-project'])
             shutil.rmtree(op.join(MEDIA_ROOT,op.dirname(deleted_model.structure_file)))
             deleted_model.delete()
         else:
@@ -95,7 +149,8 @@ def project_detail(request, project_id):
     histories = History.objects.filter(project = project)
     context = {
             'histories':histories,
-            'project_id':project_id
+            'project_id':project_id,
+            'project_title': project.title
             }
 
     return render(request,'model/detail.html',context)
@@ -110,22 +165,22 @@ class HistoryView(ListView):
             queryset = queryset.history_set.all()
             return queryset
         except:
-            raise Http404('query failed.')
+            raise Http404('Query failed on the given model id.')
 
     def get_context_data(self):
         context = {}
         context['project_id'] = self.kwargs['project_id']
         context['histories'] = self.object_list
+        context['project_title'] = self.object_list[0].project.title
         context['history'] = self.object
         if self.object:
             if self.object.status == "running":
                 if not op.exists(self.kwargs['history_path']):
                     self.object.status = 'execute log missing'
-                else:
-                    if op.exists(op.join(self.kwargs['history_path'],'weights.h5')):
-                        self.object.status = 'success'
-                    elif op.exists(op.join(self.kwargs['history_path'],'logs/error_log')):
-                        self.object.status = 'error'
+                elif op.exists(op.join(self.kwargs['history_path'],'weights.h5')):
+                    self.object.status = 'success'
+                elif op.exists(op.join(self.kwargs['history_path'],'logs/error_log')):
+                    self.object.status = 'error'
                 self.object.save()
             if self.object.status in ['error','aborted']:
                 with open(op.join(self.kwargs['history_path'],'logs/error_log'),'r') as f:
@@ -600,7 +655,7 @@ def backend_api(request):
                             plt.imsave(op.join(predict_dir,'input.png'),data_value,format='png')
                 except Exception as err:
                     if not op.exists(predict_dir):
-                        op.mkdir(predict_dir)
+                        os.mkdir(predict_dir)
                     with open(op.join(predict_dir,'error_log'),'w') as f:
                         error_info = {
                             'error_type': str(type(err)),

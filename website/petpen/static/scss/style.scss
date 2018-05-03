@@ -1,3 +1,5 @@
+@import "colors.scss";
+
 // Project Variables
 $project-font: 'Fira Sans';
 
@@ -7,44 +9,6 @@ $project-font: 'Fira Sans';
 @import url(https://fonts.googleapis.com/css?family=Montserrat);
 @import url(https://fonts.googleapis.com/css?family=Droid+Sans);
 
-// Color Variables
-$green-jade: #468966;
-$green-macha: #def9ea;
-$yellow-bright: #FFF0A5;
-$orange-light: #FFB03B;
-$orange-dark: #FD7400;
-$red-gentle: #B64926;
-$red-dark: #721c24;
-$red-light: #E74C3C;
-$red-harsh: #8E2800;
-$red-danger: #dc3545;
-$blue-navy: #2C3E50;
-$white-imperfect: #ECF0F1;
-$blue-sky: #3498DB;
-$blue-darksky: #2980B9;
-$teal: #1F8A70;
-$green-hazard: #BEDB39;
-$yellow-banana: #FFE11A;
-$pink-hot: #F2385A;
-$pink-gentle: #D95B5B;
-$pink-danger: #F8D7DA;
-$blue-lighter: #4AD9D9;
-$blue-light: #36B1BF;
-$brown-wooddark: #D95B5B;
-$brown-wood: #BF8A49;
-$brown-woodlight: #F2CA80;
-$skin-base: #FFC794;
-$skin-pale: #FADBAE;
-$skin-tan1: #FFA16D;
-$skin-tan2: #E87551;
-$skin-tan3: #FF7865;
-$purple-dark: #5C2849;
-$gold-light: #FFDA66;
-$gold-dark: #FFCC33;
-$metal-iron: #EFEFEF;
-$metal-irondark: #5F5F5F;
-$metal-silver: #BFBFBF;
-$metal-dark: #2F2F2F;
 
 // width variables
 $break-small: 576px;
@@ -104,7 +68,7 @@ a.buttons, .buttons {
   color: white;
   background: $green-jade;
   position: relative;
-  top: 10px;
+  top: 0px;
   margin-bottom: 20px;
   padding: 12px;
   font-size: 16px;
@@ -112,11 +76,11 @@ a.buttons, .buttons {
   box-shadow: 0px 10px 0px 0px darken($green-jade, 5%), 0px 0px 20px 0px #bbb;
   transition: all 0.2s;
   &:active {
-    top: 15px;
+    top: 5px;
     box-shadow: 0px 5px 0px 0px darken($green-jade, 5%);
   }
   &:disabled {
-    top: 3px;
+    top: 5px;
     background: #bedbcc;
     box-shadow: none;
     box-shadow: 0px 2px 0px 0px darken(#bedbcc, 5%);

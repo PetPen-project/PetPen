@@ -37,7 +37,7 @@ a.buttons, .buttons {
   color: white;
   background: #468966;
   position: relative;
-  top: 10px;
+  top: 0px;
   margin-bottom: 20px;
   padding: 12px;
   font-size: 16px;
@@ -45,10 +45,10 @@ a.buttons, .buttons {
   box-shadow: 0px 10px 0px 0px #3d7859, 0px 0px 20px 0px #bbb;
   transition: all 0.2s; }
   a.buttons:active, .buttons:active {
-    top: 15px;
+    top: 5px;
     box-shadow: 0px 5px 0px 0px #3d7859; }
   a.buttons:disabled, .buttons:disabled {
-    top: 3px;
+    top: 5px;
     background: #bedbcc;
     box-shadow: none;
     box-shadow: 0px 2px 0px 0px #aed2bf; }
