@@ -5,13 +5,12 @@
         defaults: {
             name: {value:"output"},
 	    loss: {value:""},
-	    sparse: {value:""},
 	    learningrate: {value:""},
 	    optimizer: {value: ""},
 	    epoch: {value: ""},
             batchsize: {value: ""},
             type: {value:"Output"},
-	    feature: {value: ""},
+	    datasetname: {value: ""},
         },
         inputs:1,
         outputs:1,
@@ -36,14 +35,8 @@
                 <option value="mean_squared_logarithmic_error">mean_squared_logarithmic_error</option>
                 <option value="categorical_crossentropy">categorical_crossentropy</option>
                 <option value="binary_crossentropy">binary_crossentropy</option>
+		<option value="sparse_crossentropy">sparse_crossentropy</option>
         </select>
-    </div>
-    <div class="form-row">
-        <label for="node-input-sparse"><i class="icon-tag"></i> Loss Sparse</label>
-        <select id="node-input-sparse" onchange="blurFunction(this)">
-                <option value="true">turn on</option>
-                <option value="false">turn off</option>
-	</select>
     </div>
     <div class="form-row">
         <label for="node-input-optimizer"><i class="icon-tag"></i> Optimizer</label>
@@ -77,8 +70,8 @@
         <input type="text" id="node-input-topic" placeholder="Topic">
     </div>
     <div class="form-row">
-        <label for="node-input-feature"><i class="icon-tag"></i> Feature</label>
-        <input type="text" id="node-input-feature" placeholder="Feature">
+        <label for="node-input-datasetname"><i class="icon-tag"></i> DatasetName</label>
+        <input type="text" id="node-input-datasetname" placeholder="DatasetName">
     </div>
 </script>
  
