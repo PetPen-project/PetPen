@@ -120,6 +120,7 @@ class DatasetListView(ListView):
                             filetype = op.splitext(request.FILES[dataset_file].name)[1]
                         elif filetype!=op.splitext(request.FILES[dataset_file].name)[1]:
                             context.update({'error_message':'Found both csv and pickle files. Reformat to the same file type and try again.'})
+                    print(filetype)
                     if filetype == '.csv':
                         filetype = 'CSV'
                     elif filetype == '.pickle' or filetype == '.pkl':
