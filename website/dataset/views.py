@@ -124,6 +124,8 @@ class DatasetListView(ListView):
                         filetype = 'CSV'
                     elif filetype == '.pickle' or filetype == '.pkl':
                         filetype = 'PKL'
+                    elif filetype == '.npy':
+                        filetype = 'NPY'
                     else:
                         context.update({'error_message':'Unsupported filetype found. Please use csv or pickle file format!'})
                     if context.get('error_message'):
@@ -138,6 +140,12 @@ class DatasetListView(ListView):
                         newfile.train_samples = data.shape[0]
                         newfile.input_shape = str(data.shape[1:])
                         data = pd.read_csv(newfile.testing_output_file.file.name,header=None)
+                        newfile.test_samples = data.shape[0]
+                    elif newfile.filetype == 'NPY':
+                        data = np.load(newfile.training_input_file.file.name)
+                        newfile.train_samples = data.shape[0]
+                        newfile.input_shape = str(data.shape[1:])
+                        data = np.load(newfile.testing_output_file.file.name)
                         newfile.test_samples = data.shape[0]
                     else:
                         data = pd.read_pickle(newfile.training_output_file.file.name)

@@ -15,6 +15,13 @@ def testing_dataset_path(instance, filename):
 def dataset_path(instance, filename):
     return 'datasets/{0}/{1}/{2}'.format(instance.user.id, instance.title, filename)
 
+FILE_CHOICES = (
+    ('CSV','csv'),
+    ('PKL','pickle'),
+    ('NPY','npy'),
+    ('IMG','images'),
+)
+
 class Dataset(models.Model):
     user = models.ForeignKey(User,on_delete=models.CASCADE) 
     training_input_file = models.FileField(upload_to=dataset_path)
@@ -33,11 +40,6 @@ class Dataset(models.Model):
     input_shape = models.CharField(max_length=100)
     output_shape = models.CharField(max_length=100)
     description = models.TextField(default='')
-    FILE_CHOICES = (
-        ('CSV','csv'),
-        ('PKL','pickle'),
-        ('IMG','images'),
-    )
     filetype = models.CharField(max_length=3, choices=FILE_CHOICES, default='CSV')
     is_image = models.BooleanField(default=False)
 
