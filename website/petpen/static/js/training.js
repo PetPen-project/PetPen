@@ -248,7 +248,7 @@ function errorJSON(data){
 };
 function loadJsonPython(){
   idleTime = idleTime + waitMS;
-  if (idleTime < limitMS && currentMode=='training'){
+  if (idleTime < limitMS || currentMode=='training'){
     $.ajax({
       async: false,
       dataType: "json",

@@ -1,4 +1,5 @@
 from django.shortcuts import render
+from django.http import HttpResponse
 from django.views.generic import ListView
 from django.contrib.auth.decorators import login_required
 
@@ -28,6 +29,8 @@ def main(request):
 def examples(request):
     projects = NN_model.objects.filter(user=User.objects.get(pk=17))
     context = {'projects':projects}
+    if request.GET.get('description'):
+        return HttpResponse(projects.get(pk=request.GET['description']).description)
     if request.method == "POST":
         project = NN_model.objects.get(pk=request.POST['id'])
         if NN_model.objects.filter(user=request.user,title=project.title):
@@ -44,6 +47,8 @@ def examples(request):
 def examples_dataset(request):
     datasets = Dataset.objects.filter(user=User.objects.get(pk=17))
     context = {'datasets':datasets}
+    if request.GET.get('description'):
+        return HttpResponse(datasets.get(pk=request.GET['description']).description)
     if request.method == "POST":
         dataset = Dataset.objects.get(pk=request.POST['id'])
         if Dataset.objects.filter(user=request.user,title=dataset.title):

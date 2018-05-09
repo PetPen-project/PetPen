@@ -35,20 +35,21 @@
   <div class="preview-modal">
     <img src="" alt="">
   </div>
-  <div class="description-modal"></div>
+  <div class="description-modal">
+    <p></p>
+  </div>
   <div class="example-table">
     <table style="width:100%;">
       {% for project in projects %}
         <tr class="example-row">
-          <td class="title"><a href="">{{ project.title }}</a></td>
-          <td class="description">{{ project.description|truncatechars:70 }}</td>
-          <td>{{project.dataset}}</td>
+          <td class="title">{{ project.title }}</td>
+          <td class="description"><p name="description-link" data-id="{{project.id}}">{{ project.description|truncatechars:75 }}<p></td>
           <td class="action">
-            <button class="buttons-sm" data-title="{{ project.title }}" name="preview"><i class="fa fa-eye"></i></button>
+            <button class="buttons-sm" data-title="{{ project.title }}" name="preview"><i class="fa fa-eye"></i> preview</button>
               <form action="" method="post" style="display:inline-block;">
                 {% csrf_token %}
                 <input type="hidden" name="id" value={{project.id}}>
-                <button class="buttons-sm" type="submit"><i class="fa fa-copy"></i></button>
+                <button class="buttons-sm" type="submit"><i class="fa fa-copy"></i> copy</button>
               </form>
           </td>
         </tr>
