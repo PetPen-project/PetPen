@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth.decorators import login_required
+from rest_framework.urlpatterns import format_suffix_patterns
 
 from . import views
 
@@ -15,4 +16,10 @@ urlpatterns = [
     url(r'^api/backend/$', views.backend_api, name='backend_api'),
     url(r'^images/',views.img_api,name='images'),
     url(r'^images/(?P<pid>)',views.img_api,name='images'),
-]
+] + \
+    format_suffix_patterns([
+        url(r'^api/$', views.project_list),
+        url(r'^api/(?P<pk>[0-9]+)/$', views.NN_modelDetail.as_view()),
+        ])
+
+# urlpatterns = format_suffix_patterns(urlpatterns)

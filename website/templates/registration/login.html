@@ -39,11 +39,11 @@ user login
             {% csrf_token %}
             <div class="input-group margin-bottom-sm">
               <span class="input-group-addon"><i class="fa fa-user fa-fw"></i></span>
-              <input class="form-control" name="username" type="text" value="test" placeholder="Username">
+              <input class="form-control" name="username" type="text" value="" placeholder="Username">
             </div>
             <div class="input-group">
               <span class="input-group-addon"><i class="fa fa-key fa-fw"></i></span>
-              <input class="form-control" name="password" type="password" value="petpen01" placeholder="Password">
+              <input class="form-control" name="password" type="password" value="" placeholder="Password">
             </div>
             <input type="submit" value="login" class="btn btn-info my-2"/>
             {% if next %}

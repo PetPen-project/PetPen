@@ -521,7 +521,7 @@
      "types": [
       "File"
      ],
-     "enabled": false,
+     "enabled": true,
      "local": false,
      "module": "File_node",
      "file": "/usr/local/lib/node_modules/File_node/fileNode/file.js"
@@ -725,7 +725,7 @@
      "types": [
       "Convolution"
      ],
-     "enabled": false,
+     "enabled": true,
      "local": false,
      "module": "node-red-contrib-demo",
      "file": "/usr/local/lib/node_modules/node-red-contrib-demo/demoNodes/HelloWorld.js"
@@ -746,6 +746,23 @@
      "local": false,
      "module": "node-red-contrib-wago",
      "file": "/usr/local/lib/node_modules/node-red-contrib-wago/wago/WAGO_750_49X.js"
+    }
+   }
+  },
+  "BatchNormalization": {
+   "name": "BatchNormalization",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "sample": {
+     "name": "sample",
+     "types": [
+      "BatchNormalization"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "BatchNormalization",
+     "file": "/usr/local/lib/node_modules/BatchNormalization/BatchNormalizationNode/batch.js"
     }
    }
   },
@@ -783,23 +800,6 @@
     }
    }
   },
-  "BatchNormalization": {
-   "name": "BatchNormalization",
-   "version": "0.0.1",
-   "local": false,
-   "nodes": {
-    "sample": {
-     "name": "sample",
-     "types": [
-      "BatchNormalization"
-     ],
-     "enabled": true,
-     "local": false,
-     "module": "BatchNormalization",
-     "file": "/usr/local/lib/node_modules/BatchNormalization/BatchNormalizationNode/batch.js"
-    }
-   }
-  },
   "AvgPooling2D": {
    "name": "AvgPooling2D",
    "version": "0.0.1",
@@ -814,6 +814,23 @@
      "local": false,
      "module": "AvgPooling2D",
      "file": "/usr/local/lib/node_modules/AvgPooling2D/avgpoolNode2D/avgpool2d.js"
+    }
+   }
+  },
+  "RandomGen_node": {
+   "name": "RandomGen_node",
+   "version": "0.0.1",
+   "local": false,
+   "nodes": {
+    "dense_sample": {
+     "name": "dense_sample",
+     "types": [
+      "RandomGen"
+     ],
+     "enabled": true,
+     "local": false,
+     "module": "RandomGen_node",
+     "file": "/usr/local/lib/node_modules/RandomGen_node/randomgenNode/random.js"
     }
    }
   },
@@ -843,8 +860,8 @@
      "view-grid-size": "20",
      "view-node-status": true,
      "view-show-tips": true,
-     "view-snap-grid": true,
-     "view-show-grid": true
+     "view-snap-grid": false,
+     "view-show-grid": false
     }
    }
   }

@@ -5,51 +5,57 @@
 {% block title %}model index{% endblock %}
 
 {% block head %}
+  <link rel="stylesheet" href="{% sass_src "scss/style.scss" %}">
   <link rel="stylesheet" href="{% sass_src "scss/project_view.scss" %}">
   <script src="https://d3js.org/d3.v3.min.js"></script>
   <script src="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.min.js"></script>
   <link rel="stylesheet" href="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.css">
-<script src="{% static "js/training.js" %}"></script>
-<script>
-  window.CSRF_TOKEN = "{{csrf_token}}";
-  var project_id = {{project_id}};
-</script>
-<script>
-$.ajaxSetup({
-    data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
-});
-$(document).ready(function(){
-  $('#trainModel').click(function(){
-    $.ajax({
-      async:false,
-      url: "/model/api/backend/",
-      method:"POST",
-      data:{
-        command: "train",
-        name: $('#expName').val(),
-        project: project_id
-      }
-    });
-    $('#stopTrainModel').attr('disabled',false);
+  <script src="{% static "js/training.js" %}"></script>
+  <script>
+    window.CSRF_TOKEN = "{{csrf_token}}";
+    var project_id = {{project_id}};
+  </script>
+  <script>
+  $.ajaxSetup({
+      data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
   });
-  $('#stopTrainModel').click(function(){
-    $.ajax({
-      async:false,
-      url: "/model/api/backend/",
-      method:"POST",
-      data:{
-        command: "stop",
-        project: project_id
-      }
+  $(document).ready(function(){
+    $('#trainModel').click(function(){
+      $.ajax({
+        async:false,
+        url: "/model/api/backend/",
+        method:"POST",
+        data:{
+          command: "train",
+          name: $('#expName').val(),
+          project: project_id
+        }
+      });
+      $('#stopTrainModel').attr('disabled',false);
     });
-    $('#stopTrainModel').attr('disabled',true);
+    $('#stopTrainModel').click(function(){
+      $.ajax({
+        async:false,
+        url: "/model/api/backend/",
+        method:"POST",
+        data:{
+          command: "stop",
+          project: project_id
+        }
+      });
+      $('#stopTrainModel').attr('disabled',true);
+    });
   });
-});
 
-</script>
+  </script>
 {% endblock %}
 
 {% block content %}
+  <div class="pagehead">
+  <ul class="breadcrumb">
+    <li><a href="{% url "model:index" %}">Project list</a>
+    <li class="active"><a href="">{{project_title}}</a>
+  </ul>
   <ul class="nav nav-tabs" id="project-tabs">
     <li class="nav-item">
       <a class="nav-link active" id="training-tab" href="">Training</a>
@@ -58,33 +64,22 @@ $(document).ready(function(){
       <a class="nav-link" id="history-tab" href="{% url "model:project_history" project_id %}">History</a>
     </li>
   </ul>
-  <!--<ul class="nav nav-tabs" id="project-tabs" role="tablist">-->
-    <!--<li class="nav-item">-->
-      <!--<a class="nav-link active" id="training-tab" data-toggle="tab" href="#training" role="tab" aria-controls="training" aria-selected="true">Training</a>-->
-    <!--</li>-->
-    <!--<li class="nav-item">-->
-      <!--<a class="nav-link" id="history-tab" data-toggle="tab" href="#history" role="tab" aria-controls="history" aria-selected="false">History</a>-->
-    <!--</li>-->
-  <!--</ul>-->
+  </div>
   <div class="tab-content" id="projectContent">
     <div class="tab-pane fade show active" id="training" role="tabpanel" aria-labelledby="training-tab">
-      <div class="container">
-        <div id="run-model" class="py-md-3 row justify-content-center">
-          <div class="input-group col-md-4">
-            <span class="input-group-addon" id="train-addon1">experiment name</span>
-            <input class="form-control" type="text" placeholder="Default" aria-label="historyName" aria-describedby="train-addon1" id="expName">
-          </div>
-          <div class="btn-group">
-            <button id="trainModel" class="btn btn-outline-primary"><i class="fa fa-play"></i> train model</button>
-            <button id="stopTrainModel" class="btn btn-outline-primary" disabled><i class="fa fa-stop"></i> stop</button>
-          </div>
-          <button id="testModel" class="btn btn-outline-primary" style="display:none"><i class="fa fa-play"></i> evaluate</button>
+      <div class="pagecontainer">
+        <div class="exp-name">
+          Experiment name: <input type="text" placeholder="Default" id="expName">
         </div>
-        <div class="row justify-content-center">
-          <h2 class="col-md-2">Status</h2>
-          <div class="col-md-5">
-            <input id="txfStatus" type="input" class="form-control" readonly="true">
-          </div>
+        <div class="exp-btns">
+          <button id="trainModel" class="buttons-sm"><i class="fa fa-play"></i> train model</button>
+          <button id="stopTrainModel" class="buttons-sm" disabled><i class="fa fa-stop"></i> stop</button>
+        </div>
+      </div>
+      <div>
+        <div class="status-line">
+          <h2>Status</h2>
+          <input id="txfStatus" type="input" class="form-control" readonly="true">
         </div>
         <!--loading-->
         <div id="loadingDiv" class="text-center my-5">
@@ -96,7 +91,7 @@ $(document).ready(function(){
         <div id="errorDiv" class="row justify-content-center my-5">
           <h4 class="col-md-8 text-center">error log:</h4>
           <div class="w-100"></div>
-          <textarea id="txfError" readonly="true" value= class="col-md-8" style="width:25rem; height:25rem; margin:auto; overflow:auto;">"error message shows here"</textarea>
+          <textarea id="txfError" readonly="true" value= class="col-md-8" style="width:50rem; height:25rem; margin:auto; overflow:auto;">"error message shows here"</textarea>
         </div>
       </div>
       <!--training-->

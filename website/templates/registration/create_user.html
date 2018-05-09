@@ -11,6 +11,7 @@
 
 {% block content %}
   <div class="main">
+    {% if not user %}
     <div class="signup-box">
       <form action="" method="post">
         {% csrf_token %}
@@ -24,6 +25,10 @@
         {% endfor %}
         <input class="buttons" type="submit" value="create account">
       </form>
+    </div>
+    {% else %}
+    <div class="message-div">
+      <p>Please confirm your email address to complete the registration.</p>
     </div>
   </div>
 {% endblock %}

@@ -248,7 +248,7 @@ function errorJSON(data){
 };
 function loadJsonPython(){
   idleTime = idleTime + waitMS;
-  if (idleTime < limitMS){
+  if (idleTime < limitMS && currentMode=='training'){
     $.ajax({
       async: false,
       dataType: "json",
@@ -264,9 +264,6 @@ function loadJsonPython(){
       error: function(){console.log('error loading json from api');} // pass
       //error: errorJSON
     });
-  }
-  else{
-    console.log("page is idle");
   }
 };
 
