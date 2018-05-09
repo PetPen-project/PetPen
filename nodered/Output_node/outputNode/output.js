@@ -159,7 +159,7 @@ module.exports = function(RED) {
 		console.log(path);
 	} else if (obj[ind]['type'] == 'Pretrained') {
 		name = obj[ind]['name'] + "_" + ind + "_" + timest;
-		res.layers[name] = {type: 'Pretrained', params: {project_name: obj[ind]['source'], nodes: obj[ind]['pretrainedoutput'], weight_file: obj[ind]['weightfile']}};
+		res.layers[name] = {type: 'Pretrained', params: {project_name: obj[ind]['source'], nodes: obj[ind]['pretrainedoutput'], weight_file: obj[ind]['weightfile'], trainable: obj[ind]['trainable']}};
 		rec[obj[ind]['id']] =name;
 		obj[ind]['name'] = name;
  	} else if (obj[ind]['type'] == 'Flatten') {
