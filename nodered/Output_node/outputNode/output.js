@@ -66,6 +66,7 @@ module.exports = function(RED) {
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Output') {
+	  console.log(obj[ind]['datasetname']);
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
           datasetname = obj[ind]['datasetname'].split(',');
           res.layers[name] = {type: 'Output', params: {loss: obj[ind]['loss'], optimizer: obj[ind]['optimizer'], epoch: parseInt(obj[ind]['epoch']), batchsize: parseInt(obj[ind]['batchsize']), learningrate: obj[ind]['learningrate']}};

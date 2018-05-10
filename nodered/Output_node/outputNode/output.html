@@ -1,16 +1,16 @@
 <script type="text/javascript">
     RED.nodes.registerType('Output',{
-        category: 'Layer',
+        category: 'Core Layers',
         color: '#ffaaaa',
         defaults: {
-            name: {value:"output"},
+            name: {value:""},
 	    loss: {value:""},
 	    learningrate: {value:""},
 	    optimizer: {value: ""},
 	    epoch: {value: ""},
             batchsize: {value: ""},
             type: {value:"Output"},
-	    datasetname: {value: ""},
+            datasetname: {value: "gg"},
         },
         inputs:1,
         outputs:1,
@@ -66,12 +66,8 @@
         <input type="text" id="node-input-type" placeholder="Type">
     </div>
     <div class="form-row">
-        <label for="node-input-topic"><i class="icon-tag"></i> Topic</label>
-        <input type="text" id="node-input-topic" placeholder="Topic">
-    </div>
-    <div class="form-row">
-        <label for="node-input-datasetname"><i class="icon-tag"></i> DatasetName</label>
-        <input type="text" id="node-input-datasetname" placeholder="DatasetName">
+        <label for="node-input-datasetname"><i class="icon-tag"></i> Datasetname</label>
+        <input type="text" id="node-input-datasetname" placeholder="Datasetname">
     </div>
 </script>
  
