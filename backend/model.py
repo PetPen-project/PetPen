@@ -201,6 +201,7 @@ class backend_model():
 def load_pretrained_model(layer_config):
     output_layer = int(layer_config['nodes'])-1
     model_file = str(layer_config['weight_file'])
+    trainable = int(layer_config['trainable'])
 
     pretrained_model = load_model(model_file)
 
@@ -209,10 +210,7 @@ def load_pretrained_model(layer_config):
         outputs=pretrained_model.layers[output_layer].output
     )
 
-    # Use fixed_weight flag to control if let the weights trainable
-    # TODO: wait for the API complete on frontend
-    fixed_weight = True
-    if fixed_weight:
+    if not trainable:
         for layer in model.layers:
             layer.trainable = False
 
