@@ -13,6 +13,7 @@ from petpen.settings import MEDIA_ROOT
 import re,os,shutil
 import os.path as op
 import pandas as pd
+import numpy as np
 from io import BytesIO
 import zipfile
 
@@ -120,7 +121,6 @@ class DatasetListView(ListView):
                             filetype = op.splitext(request.FILES[dataset_file].name)[1]
                         elif filetype!=op.splitext(request.FILES[dataset_file].name)[1]:
                             context.update({'error_message':'Found both csv and pickle files. Reformat to the same file type and try again.'})
-                    print(filetype)
                     if filetype == '.csv':
                         filetype = 'CSV'
                     elif filetype == '.pickle' or filetype == '.pkl':

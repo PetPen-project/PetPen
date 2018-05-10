@@ -5,16 +5,7 @@
 
 {% block head %}
   <link rel="stylesheet" href="{% sass_src "scss/demo_example.scss" %}">
-  <script>
-  $(function(){
-    $('.error-message .close').click(function(){
-      $('.error-message').hide();
-    });
-    $('.info-message .close').click(function(){
-      $('.info-message').hide();
-    });
-  })
-  </script>
+  <script src={% static "js/example.js" %}></script>
 {% endblock %}
 
 {% block content %}
@@ -28,7 +19,7 @@
       </span>
     </div>
   </div>
-  <div class="message-div" style="width:800px;margin:0 auto;">
+  <div class="message-div">
     {% if error_message %}
       <div class="error-message">
         {{error_message}}
@@ -41,19 +32,22 @@
       </div>
     {% endif %}
   </div>
+  <div class="description-modal">
+    <p></p>
+  </div>
   <div class="example-table">
     <table style="width:100%;">
       {% for dataset in datasets %}
         <tr class="example-row">
-          <td class="title"><a href="">{{dataset.title}}</a></td>
-          <td class="description">{{dataset.description}} description goes here.</td>
+          <td class="title">{{dataset.title}}</td>
+          <td class="description"><p name="description-link" data-id="{{dataset.id}}">{{dataset.description|truncatechars:75}}test</p></td>
           <td class="format">format: {{dataset.filetype}}</td>
           <td class="action">
-              <a class="buttons-sm" href=""><i class="fa fa-eye"></i></a>
+              <!--<a class="buttons-sm" href=""><i class="fa fa-eye"></i></a>-->
               <form action="" method="post" style="display:inline-block;">
                 {% csrf_token %}
                 <input type="hidden" name="id" value={{dataset.id}}>
-                <button class="buttons-sm" type="submit"><i class="fa fa-copy"></i></button>
+                <button class="buttons-sm" type="submit"><i class="fa fa-copy"></i> copy</button>
               </form>
           </td>
         </tr>
