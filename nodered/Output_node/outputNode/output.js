@@ -67,9 +67,9 @@ module.exports = function(RED) {
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Output') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          features = obj[ind]['feature'].split(',');
-          res.layers[name] = {type: 'Output', params: {loss: obj[ind]['loss'], optimizer: obj[ind]['optimizer'], epoch: parseInt(obj[ind]['epoch']), batchsize: parseInt(obj[ind]['batchsize'])}};
-          res.dataset[name] = features;
+          datasetname = obj[ind]['datasetname'].split(',');
+          res.layers[name] = {type: 'Output', params: {loss: obj[ind]['loss'], optimizer: obj[ind]['optimizer'], epoch: parseInt(obj[ind]['epoch']), batchsize: parseInt(obj[ind]['batchsize']), learningrate: obj[ind]['learningrate']}};
+          res.dataset[name] = datasetname;
           /*var fs = require('fs')
           var filename = '';
           if (fs.existsSync('./file.name')) {
