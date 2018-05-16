@@ -34,6 +34,12 @@ class backend_model():
         self.load_dataset(trainx, trainy, testx, testy)
         self.model, self.config, self.inputs, self.outputs = self.get_model(model_path)
         self.loss = self.config.get('loss') or None
+        
+        # Monkey patch
+        if self.loss == 'sparse_cross_entropy':
+            self.loss = 'sparse_categorical_crossentropy'
+        # end of patch
+
         self.optimizer = self.config.get('optimizer') or None
 
         if 'entropy' in self.loss:
