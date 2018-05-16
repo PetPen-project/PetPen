@@ -1,6 +1,7 @@
 from keras.models import Model, load_model
 from keras.utils.np_utils import to_categorical
 from keras.utils import plot_model
+from keras.optimizers import *
 import keras.layers
 import numpy as np
 import pandas as pd
@@ -40,7 +41,12 @@ class backend_model():
             self.loss = 'sparse_categorical_crossentropy'
         # end of patch
 
+        self.lr = self.config.get('learningrate') or None
         self.optimizer = self.config.get('optimizer') or None
+        if self.lr and self.optimizer:
+            self.optimizer = globals()[self.optimizer](lr=self.lr)
+        elif self.optimizer:
+            self.optimizer = globals()[self.optimizer]
 
         if 'entropy' in self.loss:
             self.model.compile(loss=self.loss, optimizer=self.optimizer, metrics=['acc'])
