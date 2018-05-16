@@ -46,7 +46,7 @@ class backend_model():
         if self.lr and self.optimizer:
             self.optimizer = globals()[self.optimizer](lr=self.lr)
         elif self.optimizer:
-            self.optimizer = globals()[self.optimizer]
+            self.optimizer = globals()[self.optimizer]()
 
         if 'entropy' in self.loss:
             self.model.compile(loss=self.loss, optimizer=self.optimizer, metrics=['acc'])
