@@ -36,22 +36,36 @@
     <p></p>
   </div>
   <div class="example-table">
-    <table style="width:100%;">
-      {% for dataset in datasets %}
-        <tr class="example-row">
-          <td class="title">{{dataset.title}}</td>
-          <td class="description"><p name="description-link" data-id="{{dataset.id}}">{{dataset.description|truncatechars:75}}</p></td>
-          <td class="format">format: {{dataset.filetype}}</td>
-          <td class="action">
-              <!--<a class="buttons-sm" href=""><i class="fa fa-eye"></i></a>-->
-              <form action="" method="post" style="display:inline-block;">
-                {% csrf_token %}
-                <input type="hidden" name="id" value={{dataset.id}}>
-                <button class="buttons-sm" type="submit"><i class="fa fa-copy"></i> copy</button>
-              </form>
-          </td>
-        </tr>
-      {% endfor %}
-    </table>
+    {% for dataset in datasets %}
+      <div class="example-item">
+        <h5 class="title">{{ dataset.title }}</h5>
+        <form action="" method="post">
+          {% csrf_token %}
+          <input type="hidden" name="id" value={{dataset.id}}>
+          <button class="buttons-sm" type="submit"><i class="fa fa-copy"></i> copy</button>
+        </form>
+        <h5 class="">format: {{ dataset.filetype }}</h5>
+        <p class="description">{{ dataset.description|safe }}</p>
+      </div>
+    {% endfor %}
   </div>
+  <!--<div class="example-table">-->
+    <!--<table style="width:100%;">-->
+      <!--{% for dataset in datasets %}-->
+        <!--<tr class="example-row">-->
+          <!--<td class="title">{{dataset.title}}</td>-->
+          <!--<td class="description"><p name="description-link" data-id="{{dataset.id}}">{{dataset.description|truncatechars:75}}</p></td>-->
+          <!--<td class="format">format: {{dataset.filetype}}</td>-->
+          <!--<td class="action">-->
+              <!--[><a class="buttons-sm" href=""><i class="fa fa-eye"></i></a><]-->
+              <!--<form action="" method="post" style="display:inline-block;">-->
+                <!--{% csrf_token %}-->
+                <!--<input type="hidden" name="id" value={{dataset.id}}>-->
+                <!--<button class="buttons-sm" type="submit"><i class="fa fa-copy"></i> copy</button>-->
+              <!--</form>-->
+          <!--</td>-->
+        <!--</tr>-->
+      <!--{% endfor %}-->
+    <!--</table>-->
+  <!--</div>-->
 {% endblock %}

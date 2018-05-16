@@ -4,10 +4,10 @@ $(function(){
   $("button[name=preview]").click(function(){
     console.log("http://www.petpen.org/media/demo/" + $(this).data("title") + ".png");
     //$(".preview-modal img").attr('src',"http://140.109.18.113:8000/media/vgg.png");
-    var url = "http://www.petpen.org/media/"+$(this).data("title")+".png";
+    var url = "http://www.petpen.org/media/demo/"+$(this).data("title")+".png";
     $.get(url)
     .done(function() { 
-    $(".preview-modal img").attr('src',"http://www.petpen.org/media/"+$(this).data("title")+".png");
+    $(".preview-modal img").attr('src',"http://www.petpen.org/media/demo/"+$(this).data("title")+".png");
         // exists code 
     }).fail(function() {
       $(".preview-modal").html("preview not available");

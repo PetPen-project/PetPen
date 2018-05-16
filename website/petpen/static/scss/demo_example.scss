@@ -72,9 +72,32 @@
 .example-table {
   width: 960px;
   margin: 15px auto;
-  border: 1px solid $metal-iron;
+  //border: 1px solid $metal-iron;
   border-radius: 5px;
   display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  .example-item {
+    border: 1px solid $metal-iron;
+    width: 460px;
+    margin: 8px;
+    padding: 12px;
+    .title {
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+    form {
+      display: inline-block;
+      float:right;
+    }
+    .description {
+      margin: 10px 0 0 0;
+      img {
+        width: 100%;
+        object-fit: cover;
+      }
+    }
+  }
   .example-row {
     &:not(:first-child){
     border-top: 1px solid $white-imperfect;

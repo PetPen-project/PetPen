@@ -18,6 +18,7 @@ class UserCreateView(CreateView):
     success_url = '/accounts/login/'
 
     def get(self, request, *args, **kwargs):
+        print(request.user)
         return super().get(request, *args, *kwargs)
     def post(self, request, *args, **kwargs):
         self.object = None

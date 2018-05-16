@@ -395,9 +395,26 @@ a.overview-btn {
 .example-table {
   width: 960px;
   margin: 15px auto;
-  border: 1px solid #EFEFEF;
   border-radius: 5px;
-  display: flex; }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between; }
+  .example-table .example-item {
+    border: 1px solid #EFEFEF;
+    width: 460px;
+    margin: 8px;
+    padding: 12px; }
+    .example-table .example-item .title {
+      display: inline-block;
+      margin-bottom: 15px; }
+    .example-table .example-item form {
+      display: inline-block;
+      float: right; }
+    .example-table .example-item .description {
+      margin: 10px 0 0 0; }
+      .example-table .example-item .description img {
+        width: 100%;
+        object-fit: cover; }
   .example-table .example-row:not(:first-child) {
     border-top: 1px solid #ECF0F1; }
   .example-table .example-row td {
