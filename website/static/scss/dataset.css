@@ -23,6 +23,9 @@ a {
     text-decoration: underline;
     color: #0366d6; }
 
+#site-navbar {
+  z-index: 200; }
+
 .bg-blue {
   background: linear-gradient(141deg, #0fb8ad 0%, #1fc8db 51%, #2cb5e8 75%); }
 

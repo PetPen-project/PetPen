@@ -82,6 +82,23 @@
   justify-content: space-between;
   align-items: baseline; }
 
+#loadingDiv {
+  width: 800px;
+  margin: 5em auto;
+  text-align: center; }
+
+#errorDiv {
+  width: 800px;
+  margin: 5em auto; }
+  #errorDiv h4 {
+    margin: 1rem auto;
+    text-align: center; }
+
+#plotDiv {
+  width: 800px;
+  text-align: center;
+  margin: 2rem auto; }
+
 .exp-name {
   margin-top: 10px;
   display: inline-block;
