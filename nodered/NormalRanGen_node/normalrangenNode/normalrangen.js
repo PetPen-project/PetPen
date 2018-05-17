@@ -1,5 +1,5 @@
 module.exports = function(RED) {
-    function randomgen_go(config) {
+    function normalrangen_go(config) {
         RED.nodes.createNode(this,config);
 	var node = this;
 	this.on('input', function(msg) {
@@ -7,5 +7,5 @@ module.exports = function(RED) {
         
 	});
     }
-    RED.nodes.registerType("RandomGen",randomgen_go);
+    RED.nodes.registerType("NormalRanGen",normalrangen_go);
 };

@@ -1,5 +1,5 @@
 {
-    "name": "RandomGen_node",
+    "name": "UniformRanGen_node",
     "version": "0.0.1",
     "description": "A dense node",
     "dependencies": {},
@@ -8,7 +8,7 @@
     ],
     "node-red": {
         "nodes": {
-            "dense_sample": "randomgenNode/random.js"
+            "dense_sample": "uniformrangenNode/uniformrangen.js"
         }
     }
 }

@@ -103,6 +103,15 @@ module.exports = function(RED) {
           res.layers[name] = {type: 'Dense', params: {units: parseInt(obj[ind]['units']), activation: obj[ind]['activation']}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
+        } else if (obj[ind]['type'] == 'ZeroPadding') {
+          name = obj[ind]['name'] + "_" + ind + "_" + timest;
+          paddings = obj[ind]['padding'].split(',');
+	  for (var i = 0; i < paddings.length; i++) {
+	    paddings[i] = parseInt(paddings[i]);
+	  }
+          res.layers[name] = {type: 'ZeroPadding', params: {padding: paddings}}; 
+          rec[obj[ind]['id']] = name;
+          obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Reshape') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
           shapes = obj[ind]['shape'].split(',');
