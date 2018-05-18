@@ -7,4 +7,4 @@ website/node_modules/
 website/petpen/setting_configs.py
 website/static/*.map
 website/static/*.css
-website/petpen/static/
+website/petpen/static/*
