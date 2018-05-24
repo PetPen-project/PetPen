@@ -6,6 +6,7 @@ from datetime import datetime
 from model import backend_model, load_file
 from utils import save_history
 from utils import Batch_History, Model_state
+from utils import change_status
 
 from keras.models import load_model
 
@@ -37,6 +38,8 @@ def build_model(args):
     return model, model_dir, (trainx, trainy, testx, testy)
 
 def train_func(args, log_dir):
+    id = args.id
+    change_status('loading', id)
     model, model_dir, (trainx, trainy, testx, testy) = build_model(args)
 
     # Callback_1
@@ -46,6 +49,8 @@ def train_func(args, log_dir):
     state_file = os.path.join(model_dir, 'state.json')
     #state_file = "/home/plash/petpen/state.json"
     state_callback = Model_state(state_file, model.config)
+    
+    change_status('running', id)
     history = model.train(callbacks=[history_callback, state_callback])
     save_history(os.path.join(log_dir,'train_log'), history, history_callback)
     model_result_path = os.path.dirname(log_dir)
@@ -53,10 +58,14 @@ def train_func(args, log_dir):
 
 def validate_func(args, log_dir):
     # Required: testx, testy, model_dir, weight
+    id = args.id
+    change_status('loading', id)
 
     test_data = load_file(args.testx)
     test_target = load_file(args.testy)
     model = load_model(args.weight)
+    
+    change_status('executing', id)
     result = model.predict(test_data)
 
     model_dir = args.model
@@ -95,15 +104,15 @@ def validate_func(args, log_dir):
             f.write(','.join(map(str, i)) + '\n')
 
 
-
-
-
-
 def predict_func(args, log_dir):
     # Required: testx, model_dir, weight
+    id = args.id
+    change_status('loading', id)
 
     test_data = load_file(args.testx)
     model = load_model(args.weight)
+    
+    change_status('executing', id)
     result = model.predict(test_data)
 
     model_dir = args.model
@@ -127,7 +136,5 @@ def predict_func(args, log_dir):
     with open(os.path.join(log_dir, 'result'), 'w') as f:
         for i in result:
             f.write(','.join(map(str, i)) + '\n')
-
-
 
 

@@ -1,7 +1,9 @@
 import argparse, os, sys, json
 from utils import train_func, validate_func, predict_func
+from utils import change_status
 from datetime import datetime
 import traceback
+
 
 parser = argparse.ArgumentParser(prog='petpen')
 subparsers = parser.add_subparsers()
@@ -44,11 +46,16 @@ os.mkdir(log_dir)
 
 error_log_file = os.path.join(log_dir, 'error_log')
 
+id = args.id
+
 try:
     if 'train' in args.func.__name__:
         args.func(args, log_dir)
     else:
         args.func(args, model_result_path)
+    
+    change_status('finish', id)
+
 except:
     exc_type, exc_value, exc_traceback = sys.exc_info()
     lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -61,3 +68,7 @@ except:
             'error_log_file':error_log_file
             }
         json.dump(info,state_file)
+    
+    change_status('error', id)
+
+
