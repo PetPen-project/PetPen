@@ -69,7 +69,7 @@ module.exports = function(RED) {
 	  console.log(obj[ind]['datasetname']);
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
           datasetname = obj[ind]['datasetname'].split(',');
-          res.layers[name] = {type: 'Output', params: {loss: obj[ind]['loss'], optimizer: obj[ind]['optimizer'], epoch: parseInt(obj[ind]['epoch']), batchsize: parseInt(obj[ind]['batchsize']), learningrate: obj[ind]['learningrate']}};
+          res.layers[name] = {type: 'Output', params: {loss: obj[ind]['loss'], optimizer: obj[ind]['optimizer'], epoch: parseInt(obj[ind]['epoch']), batchsize: parseInt(obj[ind]['batchsize']), learningrate: parseInt(obj[ind]['learningrate'])}};
           res.dataset[name] = datasetname;
           /*var fs = require('fs')
           var filename = '';
