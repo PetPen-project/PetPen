@@ -26,6 +26,12 @@ module.exports = function(RED) {
           res.layers[name] = {type: 'Conv1D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: parseInt(obj[i]['kernel']), strides: parseInt(obj[ind]['strides']), activation: obj[ind]['methods']}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
+/*	} else if (obj[ind]['type'].substr(0, 7) == 'subflow') {
+	  console.log("go to subflow")
+	  name = obj[ind]['name'] + "_" + ind + "_" + timest;
+	  res.layers[name] = {type: 'subflow'};
+	  rec[obj[ind]['id']] = name;
+	  obj[ind]['name'] = name;*/
         } else if (obj[ind]['type'] == 'Conv3D') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
           kernels = obj[ind]['kernel'].split(",");
@@ -69,7 +75,7 @@ module.exports = function(RED) {
 	  console.log(obj[ind]['datasetname']);
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
           datasetname = obj[ind]['datasetname'].split(',');
-          res.layers[name] = {type: 'Output', params: {loss: obj[ind]['loss'], optimizer: obj[ind]['optimizer'], epoch: parseInt(obj[ind]['epoch']), batchsize: parseInt(obj[ind]['batchsize']), learningrate: parseInt(obj[ind]['learningrate'])}};
+          res.layers[name] = {type: 'Output', params: {loss: obj[ind]['loss'], optimizer: obj[ind]['optimizer'], epoch: parseInt(obj[ind]['epoch']), batchsize: parseInt(obj[ind]['batchsize']), learningrate: parseFloat(obj[ind]['learningrate'])}};
           res.dataset[name] = datasetname;
           /*var fs = require('fs')
           var filename = '';
