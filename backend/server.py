@@ -24,6 +24,8 @@ if __name__ == '__main__':
         if jobs_('petpen_wait') > 0 and is_any_idle_gpu(gpus):
             prefer_gpu = get_gpu(gpus)
             id, command = pop_('petpen_wait')
+            idstr = ' -id ' + str(id) + ' '
+            command = command.replace('-m', idstr + '-m')
             print(command)
             gpus[prefer_gpu] = 0 # mark busy
             sandbox_env = os.environ.copy()
