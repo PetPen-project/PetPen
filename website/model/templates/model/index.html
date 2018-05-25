@@ -84,9 +84,9 @@
                 <div class="buttons-group">
                 {% if project.status == "idle" %}
                 <!--<a id="editorOpen" target="_blank" href="{% url "model:manage_editor" %}" class="btn btn-sm btn-outline-primary" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-external-link"></i> open editor</a>-->
-                <button id="editorOpen" class="buttons-sm" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-external-link"></i> open editor</button>
+                <button id="editorOpen" class="buttons-sm" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-edit"></i> open editor</button>
                 {% else %}
-                <button class="buttons-sm" onclick="closeProject()"><i class="fa fa-external-link"></i> close_editor</button>
+                <button class="buttons-sm" onclick="closeProject()"><i class="fa fa-window-close"></i> close editor</button>
                 {% endif %}
                 <a href="{% url "model:project_detail" project.id %}" class="buttons-sm"><i class="fa fa-bar-chart"></i> execute model</a>
                 </div>

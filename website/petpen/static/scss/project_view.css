@@ -1,7 +1,7 @@
 #sidebar {
   position: absolute;
   width: 200px;
-  height: calc(100% - 100px);
+  height: calc(100% - 150px);
   background: #151719;
   overflow: auto;
   padding: 0 0; }
@@ -71,4 +71,70 @@
   #project-tabs .nav-link:hover {
     background: #FFF; }
 
+<<<<<<< Updated upstream
+=======
+.pagehead {
+  background-color: #F5F5F5; }
+
+.pagecontainer {
+  width: 800px;
+  margin: 8px auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline; }
+
+#loadingDiv {
+  width: 800px;
+  margin: 5em auto;
+  text-align: center; }
+
+#errorDiv {
+  width: 800px;
+  margin: 5em auto; }
+  #errorDiv h4 {
+    margin: 1rem auto;
+    text-align: center; }
+
+#plotDiv {
+  width: 800px;
+  text-align: center;
+  margin: 2rem auto; }
+
+.exp-name {
+  margin-top: 10px;
+  display: inline-block;
+  padding: 8px; }
+  .exp-name input {
+    border: none;
+    border-bottom: 1px solid #111; }
+
+.exp-btns {
+  display: inline-block; }
+
+.status-line {
+  width: 800px;
+  margin: 8px auto;
+  display: flex;
+  align-items: center; }
+  .status-line h2 {
+    width: 100px;
+    padding-right: 8px; }
+
+ul.breadcrumb {
+  background-color: #f5f5f5;
+  margin: 0px auto;
+  width: 800px;
+  padding: 8px 15px;
+  font-size: 24px; }
+  ul.breadcrumb li {
+    display: inline-block; }
+    ul.breadcrumb li:not(:first-child)::before {
+      padding-right: .5rem;
+      padding-left: .5rem;
+      content: "/"; }
+  ul.breadcrumb a {
+    display: inline;
+    color: #468966; }
+
+>>>>>>> Stashed changes
 /*# sourceMappingURL=../../../../../../../../static/scss/project_view.css.map */

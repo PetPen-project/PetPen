@@ -1,0 +1,90 @@
+{% extends 'nav.html' %}
+{% load static %}
+{% load sass_tags %}
+{% block title %}example datasets{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% sass_src "scss/demo_example.scss" %}">
+  <script src={% static "js/example.js" %}></script>
+  <script>
+    $(function(){
+      {% for dataset in datasets %}
+        if ($('#col1').height()<=$('#col2').height()){
+          $('#col1').append(
+            "<div class='example-item'> <h5 class='title'>{{dataset.title}}</h5> <form action='' method='post'> {% csrf_token %} <input type='hidden' name='id' value={{project.id}}> <button class='buttons-sm' type='submit'><i class='fa fa-copy'></i> copy</button> </form> <h5 class=''>format: {{ dataset.filetype }}</h5> </div>"
+          );
+          $('#col1 div.example-item:last-child').append('<p class="description">{{dataset.description|safe}}</p>');
+        }
+        else {
+          $('#col2').append(
+            "<div class='example-item'> <h5 class='title'>{{dataset.title}}</h5> <form action='' method='post'> {% csrf_token %} <input type='hidden' name='id' value={{project.id}}> <button class='buttons-sm' type='submit'><i class='fa fa-copy'></i> copy</button> </form> <h5 class=''>format: {{ dataset.filetype }}</h5> </div>"
+          );
+          $('#col2 div.example-item:last-child').append('<p class="description">{{dataset.description|safe}}</p>');
+        }
+      {% endfor %}
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+  <div class="nav-div">
+    <div class="example-nav">
+      <span class="nav-item">
+        <a href="{% url "examples" %}">projects</a>
+      </span>
+      <span class="nav-item active">
+        <a href="">Datasets</a>
+      </span>
+    </div>
+  </div>
+  <div class="message-div">
+    {% if error_message %}
+      <div class="error-message">
+        {{error_message}}
+        <button class="close" data-dismiss="error-message"><span aria-hidden="true">&times;</span></button>
+      </div>
+    {% elif info %}
+      <div class="info-message">
+        {{info}}
+        <button class="close" data-dismiss="info-message"><span aria-hidden="true">&times;</span></button>
+      </div>
+    {% endif %}
+  </div>
+  <div class="preview-modal">
+  </div>
+  <div class="example-table">
+    <div class="example-col" id="col1"></div>
+    <div class="example-col" id="col2"></div>
+    <!--{% for dataset in datasets %}-->
+      <!--<div class="example-item">-->
+        <!--<h5 class="title">{{ dataset.title }}</h5>-->
+        <!--<form action="" method="post">-->
+          <!--{% csrf_token %}-->
+          <!--<input type="hidden" name="id" value={{dataset.id}}>-->
+          <!--<button class="buttons-sm" type="submit"><i class="fa fa-copy"></i> copy</button>-->
+        <!--</form>-->
+        <!--<h5 class="">format: {{ dataset.filetype }}</h5>-->
+        <!--<p class="description">{{ dataset.description|safe }}</p>-->
+      <!--</div>-->
+    <!--{% endfor %}-->
+  </div>
+  <!--<div class="example-table">-->
+    <!--<table style="width:100%;">-->
+      <!--{% for dataset in datasets %}-->
+        <!--<tr class="example-row">-->
+          <!--<td class="title">{{dataset.title}}</td>-->
+          <!--<td class="description"><p name="description-link" data-id="{{dataset.id}}">{{dataset.description|truncatechars:75}}</p></td>-->
+          <!--<td class="format">format: {{dataset.filetype}}</td>-->
+          <!--<td class="action">-->
+              <!--[><a class="buttons-sm" href=""><i class="fa fa-eye"></i></a><]-->
+              <!--<form action="" method="post" style="display:inline-block;">-->
+                <!--{% csrf_token %}-->
+                <!--<input type="hidden" name="id" value={{dataset.id}}>-->
+                <!--<button class="buttons-sm" type="submit"><i class="fa fa-copy"></i> copy</button>-->
+              <!--</form>-->
+          <!--</td>-->
+        <!--</tr>-->
+      <!--{% endfor %}-->
+    <!--</table>-->
+  <!--</div>-->
+{% endblock %}

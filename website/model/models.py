@@ -4,7 +4,7 @@ import django.utils.timezone as timezone
 
 from petpen.settings import MEDIA_ROOT
 
-import os
+import os, shutil
 import os.path as op
 
 from django.db.models import FilePathField
@@ -30,13 +30,38 @@ def get_model_path(instance):
     return os.path.join(MEDIA_ROOT,'models/{}/{}'.format(instance.user.id,instance.title))
 
 class NN_model(models.Model):
+    status_choices = (
+        ('idle','system idle'),
+        ('loading','loading model structure'),
+        ('running','training model'),
+        ('editing','editing model structure'),
+        ('executing','predicting dataset'),
+        ('finish','finish training'),
+        ('error','error found'),
+    )
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     title = models.CharField(max_length=30)
     state_file = models.FilePathField(path=MEDIA_ROOT,match=r'state.json')
     structure_file = models.FilePathField(path=MEDIA_ROOT,match=r'result.json')
     modified = models.DateTimeField(default=timezone.now)
     training_counts = models.IntegerField(default=0)
-    status = models.CharField(default='idle',max_length=30)
+    description = models.TextField(blank=True)
+    status = models.CharField(default='idle',choices=status_choices,max_length=30)
+
+    def delete(self,**kwargs):
+        shutil.rmtree(op.join(MEDIA_ROOT,op.dirname(self.structure_file)))
+        super().delete(**kwargs)
+
+    def save(self,*args,create=False,**kwargs):
+        self.state_file = 'models/{}/{}/state.json'.format(self.user.id,self.title)
+        self.structure_file = 'models/{}/{}/result.json'.format(self.user.id,self.title)
+        self.modified = timezone.now()
+        # create initial files for new project
+        if create:
+            model_dir = op.dirname(self.structure_file)
+            os.makedirs(op.join(MEDIA_ROOT,model_dir))
+            shutil.copy2(op.abspath(op.join(op.abspath(__file__),'../../../.config.json')),op.join(MEDIA_ROOT,model_dir))
+        super().save(*args,**kwargs)
 
 class History(models.Model):
     project = models.ForeignKey(NN_model,on_delete=models.CASCADE)

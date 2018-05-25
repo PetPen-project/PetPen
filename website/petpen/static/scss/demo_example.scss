@@ -32,8 +32,36 @@
   border: 1px solid $metal-iron;
   border-top: 0;
   border-radius: 5px;
-  border-top-right-radius: 0;
-  border-top-left-radius: 0;
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  .example-col {
+    display: inline-block;
+    width: 480px;
+    min-height: 1px;
+  .example-item {
+    border: 1px solid $metal-iron;
+    width: 460px;
+    margin: 8px;
+    padding: 12px;
+    .title {
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+    form {
+      display: inline-block;
+      float:right;
+    }
+    .description {
+      margin: 10px 0 0 0;
+      img {
+        width: 100%;
+        object-fit: cover;
+      }
+    }
+  }
+  }
   .example-row {
     border-top: 1px solid $white-imperfect;
     td {
