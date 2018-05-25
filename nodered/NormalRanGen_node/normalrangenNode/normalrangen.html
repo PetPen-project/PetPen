@@ -1,0 +1,42 @@
+<script type="text/javascript">
+    RED.nodes.registerType('NormalRanGen',{
+        category: 'Layer',
+        color: '#ffaaaa',
+        defaults: {
+            name: {value:"normalrangen"},
+            type: {value:"NormalRanGen"},
+	    mean: {value: ""},
+	    variance: {value: ""},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "face.png",
+        label: function() {
+            return this.name||"Output";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="NormalRanGen">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+        <input type="text" id="node-input-type" placeholder="Type">
+    </div>
+    <div class="form-row">
+        <label for="node-input-mean"><i class="icon-tag"></i> Mean</label>
+        <input type="text" id="node-input-mean" onchange="blurFunction(this)" placeholder="Mean">
+    </div>
+    <div class="form-row">
+        <label for="node-input-variance"><i class="icon-tag"></i> Variance</label>
+        <input type="text" id="node-input-variance" onchange="blurFunction(this)" placeholder="Variance">
+    </div>
+</script>
+ 
+<script type="text/x-red" data-help-name="Hello World">
+    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+    </p>
+</script>
