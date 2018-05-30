@@ -47,7 +47,6 @@ logger.setLevel(logging.WARNING)
 
 @api_view(['GET','POST'])
 @permission_classes((permissions.IsAuthenticatedOrReadOnly,))
-# @csrf_exempt
 def project_list(request, format=None):
     if request.method == 'GET':
         projects = NN_model.objects.all()
@@ -63,9 +62,24 @@ def project_list(request, format=None):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class NN_modelDetail(APIView):
-    # permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
-    permission_classes = (IsOwner,)
+class NN_model_list(APIView):
+    permission_classes = (permissions.IsAuthenticated,)
+    def get(self, request, format=None):
+        projects = NN_model.objects.filter(user=request.user)
+        serializer = NN_modelSerializer(projects, many=True)
+        return Response(serializer.data)
+
+    def post(self, request, format=None):
+        serializer = NN_modelSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class NN_model_detail(APIView):
+    # permission_classes = (IsOwner,)
+    permission_classes = (permissions.IsAdminUser,)
     def get_object(self, pk):
         try:
             return NN_model.objects.get(pk=pk)
@@ -97,7 +111,6 @@ def index(request):
         if 'delete-project' in request.POST:
             form = NN_modelForm()
             deleted_model = NN_model.objects.get(pk=request.POST['delete-project'])
-            shutil.rmtree(op.join(MEDIA_ROOT,op.dirname(deleted_model.structure_file)))
             deleted_model.delete()
         else:
             form = NN_modelForm(request.POST)
@@ -109,22 +122,20 @@ def index(request):
                     context['error_message'] = error_message
                 else:
                     model_dir = "models/{}/{}".format(request.user.id,request.POST['title'])
-                    newModel = NN_model(title=request.POST['title'],user=request.user,state_file=model_dir+"/state.json",structure_file=model_dir+"/result.json")
-                    newModel.save()
-                    os.makedirs(op.join(MEDIA_ROOT,model_dir))
+                    newModel = NN_model(title=request.POST['title'],user=request.user)
+                    newModel.save(create=True)
                     update_status(newModel.state_file,'system idle')
-                    shutil.copy2(op.abspath(op.join(op.abspath(__file__),'../../../.config.json')),op.join(MEDIA_ROOT,model_dir))
                 return HttpResponseRedirect(reverse("model:index"))
     elif request.method == 'GET':
         form = NN_modelForm()
     projects = NN_model.objects.filter(user_id = request.user.id)
-    for project in projects:
-        status = update_status(project.state_file)['status']
-        if status == 'start training model' or status == 'start testing':
-            project.status = 'running'
-        else:
-            project.status = 'idle'
-        project.save()
+    # for project in projects:
+        # status = update_status(project.state_file)['status']
+        # if status == 'start training model' or status == 'start testing':
+            # project.status = 'running'
+        # else:
+            # project.status = 'idle'
+        # project.save()
     context['projects'] = projects
     context['form'] = form
     return render(request, 'model/index.html', context)
@@ -138,12 +149,12 @@ def project_detail(request, project_id):
         project = NN_model.objects.filter(user=request.user).get(id=project_id)
     except:
         return HttpResponseRedirect(reverse("model:index"))
-    try:
-        running_project = NN_model.objects.filter(user=request.user).get(status='editing')
-        if running_project.id != int(project_id):
-            return HttpResponse('another project editor is running! please close it first.')
-    except:
-        pass
+    # try:
+        # running_project = NN_model.objects.filter(user=request.user).get(status='editing')
+        # if running_project.id != int(project_id):
+            # return HttpResponse('another project editor is running! please close it first.')
+    # except:
+        # pass
 
     project_path = op.join(MEDIA_ROOT,os.path.dirname(project.structure_file))
     histories = History.objects.filter(project = project)
@@ -419,13 +430,16 @@ def api(request):
         info = update_status(project.state_file)
     except:
         return HttpResponse('failed parsing status')
-    if info['status'] in ['error','finish training']:
+    info['status'] = project.get_status_display()
+    # if info['status'] in ['error','finish training']:
+    if project.status in ['error','finish']:
         if request.POST.get('type') == 'init':
             logger.info('back to idle')
-        # if info['status'] not in ['start training model', 'start testing', 'loading model']:
+        # # if info['status'] not in ['start training model', 'start testing', 'loading model']:
             info['status'] = 'system idle'
-            update_status(project.state_file,info['status'])
-        elif info['status'] == 'error':
+            # update_status(project.state_file,info['status'])
+        # elif info['status'] == 'error':
+        elif project.status == 'error':
             if info.get('error_log_file'):
                 with open(info['error_log_file']) as f:
                     info['detail'] = f.read()
@@ -449,12 +463,12 @@ def plot_api(request):
         return HttpResponse('')
     latest_excution = os.path.join(file_path,max([f for f in os.listdir(file_path) if re.match(r'\d{6}_\d{6}',f)]),'logs')
     script, div = bokeh_plot(latest_excution)
-    with open('/home/plash/petpen/state.json','r+') as f:
-        info = json.load(f)
-        info['status'] = 'system idle'
-        f.seek(0)
-        json.dump(info,f)
-        f.truncate()
+    # with open('/home/plash/petpen/state.json','r+') as f:
+        # info = json.load(f)
+        # info['status'] = 'system idle'
+        # f.seek(0)
+        # json.dump(info,f)
+        # f.truncate()
 
     return HttpResponse(json.dumps({"script":script, "div":div}), content_type="application/json")
 
@@ -507,6 +521,10 @@ def manage_nodered(request):
     logger.info('action for nodered:{}'.format(action))
     if action == 'close':
         if user_container:
+            project_name = user_container.attrs['Mounts'][0]['Source'].split('/')[-1]
+            project = NN_model.objects.filter(user=request.user).get(title=project_name)
+            project.status = 'idle'
+            project.save()
             user_container.stop(timeout=0)
         return HttpResponse('Editor closed.')
     elif action == 'open':
@@ -514,7 +532,7 @@ def manage_nodered(request):
             project = NN_model.objects.filter(user=request.user).get(title=request.GET['target'])
         except:
             return HttpResponse('No available project found for editing.')
-        project.modified = datetime.datetime.now()
+        project.status = 'editing'
         project.save()
         project_path = os.path.join(MEDIA_ROOT,os.path.dirname(project.structure_file))
         if not os.path.exists(project_path):
@@ -591,7 +609,6 @@ def preprocess_structure(file_path,projects,datasets):
 
 def backend_api(request):
     if request.method == "POST":
-        print(request.POST)
         project = NN_model.objects.filter(user=request.user).get(pk=request.POST['project'])
         script_path = op.abspath(op.join(__file__,op.pardir,op.pardir,op.pardir,'backend/petpen0.1.py'))
         executed = datetime.datetime.now()
@@ -620,7 +637,6 @@ def backend_api(request):
                     structure = json.load(f)
                     input_shape = [v['params']['shape'] for v in structure['layers'].values() if v['type']=='Input'][0]
                 dataset = request.FILES['file']
-                print(dataset)
                 predict_dir = op.join(MEDIA_ROOT,op.dirname(project.structure_file),'result')
                 if op.exists(predict_dir):
                     shutil.rmtree(predict_dir)
@@ -633,10 +649,7 @@ def backend_api(request):
                                 f.write(chunk)
                         import matplotlib.pyplot as plt
                         data_value = plt.imread(op.join(predict_dir,'input'+ext),format=ext[1:])
-                        print(data_value.shape)
-                        print(input_shape)
                         data_value = data_value.reshape([1]+input_shape)
-                        print(data_value.shape)
                         np.save(op.join(predict_dir,'input.npy'), data_value)
                     elif ext == '.csv':
                         # data_value = pd.read_csv(op.join(predict_dir,'input'+ext),header = None).values
@@ -662,9 +675,8 @@ def backend_api(request):
                             'error_message': list(err.args),
                             }
                         json.dump(error_info,f)
-                    print(type(err))
-                    print(list(err.args))
-                    print(dir(err))
+                    logger.debug(err)
+                    logger.debug(list(err.args))
                     # logger.error(err)
                     return HttpResponseRedirect(reverse('model:predict',kwargs={'project_id':project.id,'history_path':history.save_path}))
                 p = push(project.id,['python',script_path,'-m',op.join(MEDIA_ROOT,op.dirname(project.structure_file)),'-testx',op.join(predict_dir,'input.npy'),'-w',op.join(history_dir,'weights.h5'),'predict'])
@@ -673,17 +685,19 @@ def backend_api(request):
             history_name = request.POST.get('name') or save_path
             logger.debug('start training on model {}, save path: {}'.format(project,save_path))
             structure_file = op.join(MEDIA_ROOT,project.structure_file)
-            info = update_status(project.state_file)
-            if info['status'] != 'system idle':
-                return HttpResponse('waiting back to idle')
+            # info = update_status(project.state_file)
+            # if info['status'] != 'system idle':
+            if project.status != 'idle':
+                return HttpResponse('waiting project back to idle')
             else:
-                update_status(project.state_file,'loading model')
+                # update_status(project.state_file,'loading model')
+                pass
             with open(structure_file) as f:
                 model_parser = json.load(f)
 
-            for key in model_parser['layers']:
-                if 'output' in key:
-                    loss = model_parser['layers'][key]['params']['loss']
+            for key,value in model_parser['layers'].items():
+                if value['type'] == 'Output':
+                    loss = value['params']['loss']
 
             if 'entropy' in loss:
                 problem = 'classification'
@@ -692,7 +706,7 @@ def backend_api(request):
             history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running',execution_type=problem)
             history.save()
             project.training_counts += 1
-            project.status = 'running'
+            project.status = 'loading'
             project.save()
             project_path = op.dirname(structure_file)
             os.mkdir(op.join(project_path,save_path))
@@ -703,16 +717,16 @@ def backend_api(request):
             if prcs != 'successed':
                 os.makedirs(op.join(project_path,save_path,'logs/'))
                 history.status = 'aborted'
-                project.status = 'idle'
+                project.status = 'error'
                 project.save()
                 history.save()
                 if prcs != 'file missing':
-                    update_status(project.state_file,status='error',detail='structure assignment error found on nodes {}'.format(', '.join(prcs)))
+                    # update_status(project.state_file,status='error',detail='structure assignment error found on nodes {}'.format(', '.join(prcs)))
                     with open(op.join(project_path,save_path,'logs/error_log'),'w') as f:
                         f.write('Structure assignment error found on nodes {}'.format(', '.join(prcs)))
                     return JsonResponse({'missing':prcs})
                 else:
-                    update_status(project.state_file,status='error',detail='please depoly your model structure before running')
+                    # update_status(project.state_file,status='error',detail='please depoly your model structure before running')
                     with open(op.join(project_path,save_path,'logs/error_log'),'w') as f:
                         f.write('No deployed neural network found. Finish your neural network editing before running experiments.')
                     return JsonResponse({'missing':'no structure file'})
@@ -720,7 +734,6 @@ def backend_api(request):
                 os.mkdir(op.join(project_path,save_path,'preprocessed'))
                 shutil.copy2(op.join(op.dirname(structure_file),'preprocessed/result.json'),op.join(project_path,save_path,'preprocessed'))
             try:
-                # p = subprocess.Popen(['python',script_path,'-m',project_path,'-t',save_path,'train'],)
                 p = push(project.id,['python',script_path,'-m',project_path,'-t',save_path,'train'])
             except Exception as e:
                 logger.error('Failed to run the backend', exc_info=True)
@@ -731,11 +744,4 @@ def backend_api(request):
             history = project.history_set.latest('id')
             history.status = 'aborted'
             history.save()
-            update_status(project.state_file,status='system idle')
-            log_dir = op.join(MEDIA_ROOT,op.dirname(project.structure_file),history.save_path,'logs/')
-            print(log_dir)
-            if not op.exists(log_dir):
-                os.makedirs(log_dir)
-            with open(log_dir+'error_log','w') as f:
-                f.write('Training stopped by user.')
         return HttpResponse("response sent from backend")

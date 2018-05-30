@@ -395,6 +395,7 @@ a.overview-btn {
   width: 960px;
   margin: 15px auto;
   border-radius: 5px;
+<<<<<<< HEAD
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between; }
@@ -415,6 +416,39 @@ a.overview-btn {
         width: 100%;
         object-fit: cover; }
   .example-table .example-row:not(:first-child) {
+=======
+<<<<<<< Updated upstream
+  border-top-right-radius: 0;
+  border-top-left-radius: 0; }
+  .example-table .example-row {
+=======
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  justify-content: space-between; }
+  .example-table .example-col {
+    display: inline-block;
+    width: 480px;
+    min-height: 1px; }
+    .example-table .example-col .example-item {
+      border: 1px solid #EFEFEF;
+      width: 460px;
+      margin: 8px;
+      padding: 12px; }
+      .example-table .example-col .example-item .title {
+        display: inline-block;
+        margin-bottom: 15px; }
+      .example-table .example-col .example-item form {
+        display: inline-block;
+        float: right; }
+      .example-table .example-col .example-item .description {
+        margin: 10px 0 0 0; }
+        .example-table .example-col .example-item .description img {
+          width: 100%;
+          object-fit: cover; }
+  .example-table .example-row:not(:first-child) {
+>>>>>>> Stashed changes
+>>>>>>> develop
     border-top: 1px solid #ECF0F1; }
   .example-table .example-row td {
     padding: 6px 3px; }
