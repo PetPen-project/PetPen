@@ -25,7 +25,7 @@ if __name__ == '__main__':
             prefer_gpu = get_gpu(gpus)
             id, command = pop_('petpen_wait')
             idstr = ' -id ' + str(id) + ' '
-            command = command.replace('-m', idstr + '-m')
+            command = command[:-3] + ['-id', str(id)] + command[-3:]
             print(command)
             gpus[prefer_gpu] = 0 # mark busy
             sandbox_env = os.environ.copy()
