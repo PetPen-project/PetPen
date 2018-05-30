@@ -237,6 +237,12 @@ def deserialize_layer(layer_config, name=None):
     if not hasattr(keras.layers,layer_type):
         pass
 
+
+    # added 5/30
+    if layer['params'].get('activation', None) == '':
+        layer['param']['activation'] = None
+
+
     # need to fix the inconsistent parameter name and values in future
     if layer_type.lower() == 'convlstm2d':
         if 'return_sequence' in layer_params:
@@ -246,7 +252,7 @@ def deserialize_layer(layer_config, name=None):
             else:
                 layer_params['return_sequences'] = False
     elif layer_type.lower() == 'lstm' or layer_type.lower() == 'simplernn':
-        if layer_type.lower() == 'Lstm':
+        if layer_type.lower() == 'lstm':
             layer_type = 'LSTM'
         if 'return_sequence' in layer_params:
             condition = layer_params.pop('return_sequence')
