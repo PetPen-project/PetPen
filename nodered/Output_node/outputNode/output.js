@@ -158,7 +158,7 @@ module.exports = function(RED) {
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Dropout') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'Dropout', params: {rate: parseInt(obj[ind]['rate'])}}; 
+          res.layers[name] = {type: 'Dropout', params: {rate: parseFloat(obj[ind]['rate'])}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Gru') {
