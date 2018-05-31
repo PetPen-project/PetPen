@@ -233,15 +233,11 @@ def deserialize_layer(layer_config, name=None):
     if layer_type is None:
         raise ValueError('Undefined layer type')
     layer_params = layer_config.get('params',{})
+    if layer_params.get('activation', None) == '':
+        layer_params['activation'] = None
 
     if not hasattr(keras.layers,layer_type):
         pass
-
-
-    # added 5/30
-    if layer['params'].get('activation', None) == '':
-        layer['param']['activation'] = None
-
 
     # need to fix the inconsistent parameter name and values in future
     if layer_type.lower() == 'convlstm2d':

@@ -6,6 +6,9 @@ from django.contrib.auth.decorators import login_required
 import django.utils.timezone as timezone
 from django.core.files import File
 from django.contrib import messages
+from django.template.loader import render_to_string
+from django.core.mail import EmailMessage, send_mail
+from django.contrib.sites.shortcuts import get_current_site
 from django.views.generic import ListView
 from rest_framework.renderers import JSONRenderer
 from rest_framework.parsers import JSONParser
@@ -45,23 +48,6 @@ hdlr.setFormatter(formatter)
 logger.addHandler(hdlr) 
 logger.setLevel(logging.WARNING)
 
-@api_view(['GET','POST'])
-@permission_classes((permissions.IsAuthenticatedOrReadOnly,))
-def project_list(request, format=None):
-    if request.method == 'GET':
-        projects = NN_model.objects.all()
-        serializer = NN_modelSerializer(projects, many=True)
-        # return JsonResponse(serializer.data, safe=False)
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
-        serializer = NN_modelSerializer(data=request.data)
-        if serializer.is_valid():
-            pass
-            # serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 class NN_model_list(APIView):
     permission_classes = (permissions.IsAuthenticated,)
     def get(self, request, format=None):
@@ -75,7 +61,6 @@ class NN_model_list(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
 
 class NN_model_detail(APIView):
     # permission_classes = (IsOwner,)
@@ -96,6 +81,18 @@ class NN_model_detail(APIView):
         serializer = NN_modelSerializer(project, data=request.data)
         if serializer.is_valid():
             serializer.save()
+            # inform email for training complete.
+            if serializer.data['status'] == 'finish':
+                mail_subject = '[PetPen Notification] Training job completion'
+                message = render_to_string('petpen/training_complete_notify.html', {
+                    'project': project,
+                    'domain': get_current_site(request).domain,
+                    })
+                to_email = project.user.email
+                if to_email:
+                    email = EmailMessage(mail_subject,message,to=[to_email])
+                    email.content_subtype = 'html'
+                    email.send()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -182,7 +179,10 @@ class HistoryView(ListView):
         context = {}
         context['project_id'] = self.kwargs['project_id']
         context['histories'] = self.object_list
-        context['project_title'] = self.object_list[0].project.title
+        if self.object_list:
+            context['project_title'] = self.object_list[0].project.title
+        else:
+            context['project_title'] = self.model[0].objects.get(pk=self.kwargs['project_id']).title
         context['history'] = self.object
         if self.object:
             if self.object.status == "running":

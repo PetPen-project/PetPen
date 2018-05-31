@@ -7,9 +7,9 @@ var timerProgress;//request from server (python)
 var idleTime = 0;//file not update in time
 
 //keywords
-var wordToTraining = "start training model";
+var wordToTraining = "training model";
 var wordToTesting = "start testing";
-var wordToLoading = "loading model";
+var wordToLoading = "loading model structure";
 var stopKeyword = "job done";//finish training
 
 //variable
@@ -158,7 +158,7 @@ return chart;
 function updatePlot(data){
   //console.log(data.epoch[0]);
   plotdata = svg.datum();
-  if(data.status=='start training model'){
+  if(data.status==wordToTraining){
     if (!plotdata[0]){
       plotdata[0] = {'key':'training','values':[[data.epoch[0],data.loss.value]]};
     }else{

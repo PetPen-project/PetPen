@@ -44,9 +44,6 @@ body, html {
     box-shadow: 0px 0px 20px 1px #bbb;
   }
 }
-body {
-  height: 100vh;
-}
 a {
   text-decoration: none;
   &:hover {
@@ -304,12 +301,6 @@ a.overview-btn {
 #feature {
   padding: 75px 0;
 }
-//p
-  //font-family: sans-serif
-
-//#manage-project {
-  /*padding:50px 0;*/
-//}
 #history-list {
     position: -webkit-sticky;
     position: sticky;
@@ -318,10 +309,6 @@ a.overview-btn {
 	max-height: calc(100vh - 4rem);
 	height: calc(100vh - 6rem);
 	width: 25%;
-}
-#history-detail {
-  padding: 30px 30px;
-  width: 75%;
 }
 .svg-container {
   display: inline-block;
