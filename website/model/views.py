@@ -439,12 +439,12 @@ def api(request):
             info['status'] = 'system idle'
             # update_status(project.state_file,info['status'])
         # elif info['status'] == 'error':
+            project.status = 'idle'
+            project.save()
         elif project.status == 'error':
             if info.get('error_log_file'):
                 with open(info['error_log_file']) as f:
                     info['detail'] = f.read()
-        project.status = 'idle'
-        project.save()
     return JsonResponse(info)
 
 def plot_api(request):

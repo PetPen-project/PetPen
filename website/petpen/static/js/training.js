@@ -111,21 +111,21 @@ if(JSON.stringify(data)){
       $('#trainingDiv').show();
       $('#loadingDiv,#testingDiv,#errorDiv').hide();
       $('#stopTrainModel').attr('disabled',false);
+      $('#trainModel').attr('disabled',true);
       break;
-    //case 'testing':
-      //$('#trainingDiv,#testingDiv').show();
-      //$('#loadingDiv').hide();
-      //break;
     case 'error':
       $('#errorDiv').show();
       $('#loadingDiv,trainingDiv').hide();
+      $('#trainModel').attr('disabled',false);
       break;
     case 'loading':
       $('#loadingDiv').show();
       $('#trainingDiv,#errorDiv').hide();
+      $('#trainModel').attr('disabled',true);
       break;
     default:
       $('#trainingDiv,#loadingDiv,#errorDiv').hide();
+      $('#trainModel').attr('disabled',false);
       break;
   }
 
