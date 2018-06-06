@@ -219,9 +219,9 @@ class HistoryView(ListView):
                 charttype_acc = "lineChart"
                 chartcontainer_loss = 'linechart_container_loss'
                 chartcontainer_acc = 'linechart_container_acc'
-                best_epoch_loss = log_data['val_loss'].argmin()
+                best_epoch_loss = log_data['val_loss'].idxmin()
                 best_loss_value = log_data['val_loss'][best_epoch_loss]
-                best_epoch_acc = log_data['val_acc'].argmin()
+                best_epoch_acc = log_data['val_acc'].idxmin()
                 best_acc_value = log_data['val_acc'][best_epoch_acc]
                 context.update({
                     'epochs':log_data.shape[0],
@@ -744,4 +744,7 @@ def backend_api(request):
             history = project.history_set.latest('id')
             history.status = 'aborted'
             history.save()
+            history_path = op.join(MEDIA_ROOT,op.dirname(project.structure_file),history.save_path)
+            with open(op.join(history_path,'logs/error_log'),'w') as f:
+                f.write('training process stopped by user.')
         return HttpResponse("response sent from backend")

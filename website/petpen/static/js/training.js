@@ -7,15 +7,16 @@ var timerProgress;//request from server (python)
 var idleTime = 0;//file not update in time
 
 //keywords
-var wordToTraining = "training model";
-var wordToTesting = "start testing";
-var wordToLoading = "loading model structure";
+var wordForTraining = "training model";
+var wordForIdle = "system idle"
+var wordForTesting = "start testing";
+var wordForLoading = "loading model structure";
+var wordForError = "error found";
+var wordForFinish = "finish training"
 var stopKeyword = "job done";//finish training
 
 //variable
-var savedJSON = {};
 var currentMode = "idle";
-var lastUpdateTimestamp = 0;
 var svg = '';
 var chart = '';
 
@@ -31,7 +32,7 @@ $(function(){
         project: project_id
       }
     });
-    $('#stopTrainModel').attr('disabled',false);
+    $('#trainModel').attr('disabled',true);
   });
   $('#stopTrainModel').click(function(){
     $.ajax({
@@ -43,7 +44,6 @@ $(function(){
         project: project_id
       }
     });
-    $('#stopTrainModel').attr('disabled',true);
   });
   initPlot();
   initJsonPython();//init
@@ -58,7 +58,16 @@ $(function(){
     idleTime = 0;
   });
 });
-
+function getStatus(data){
+  switch(data['status']){
+    case wordForIdle: currentMode = 'idle'; break;
+    case wordForTraining: currentMode = 'training'; break;
+    case wordForLoading: currentMode = 'loading'; emptyPlotCode(); break;
+    case wordForError: currentMode = 'error'; break;
+    case wordForFinish: currentMode = 'finish'; break;
+  }
+  return currentMode;
+};
 function initJsonPython(){
 $.ajax({
   async: false,
@@ -72,69 +81,58 @@ $.ajax({
   error: errorJSON
 });
 };
-//call when success
 function printJSON(data){
-//alert(JSON.stringify(data));//print json
-
-//===== switch mode =====//
-switch(data['status']){
-  case 'system idle': currentMode = 'idle'; break;
-  case wordToTraining: currentMode = 'training'; break;
-  case wordToTesting: currentMode = 'testing'; break;
-  case wordToLoading: currentMode = 'loading'; emptyPlotCode(); break;
-  case 'error': currentMode = 'error'; break;
-  case 'finish training': break;
-}
-
+  //===== switch mode =====//
+  currentMode = getStatus(data);
 //update data
-//if(JSON.stringify(savedJSON) != JSON.stringify(data)){
-if(JSON.stringify(data)){
-  savedJSON = data;//update
-  lastUpdateTimestamp = new Date().getTime();//time
-  
-  //===== updated data on screen =====//
-  $('#txfStatus').val(data['status']);//status
-  $('#txfTime').val(data['time']);//time
-  if (data['status']=='error'){$('#txfError').val(data['detail']);}
-  if ('loss' in data && data['loss']['value']!='null'){
-    var lossText = data['loss']['type'] + ':' + data['loss']['value'];//loss
-  } else{
-    var lossText = '--';
-  }
-  $('.txfLoss[name="' + currentMode + '"]').val(lossText);
-  setProgessBar('barEpoch', currentMode, data['epoch']);//epoch
-  setProgessBar('barProgress', currentMode, data['progress']);//progress
-
-  //different mode
-  switch(currentMode){
-    case 'training':
-      $('#trainingDiv').show();
-      $('#loadingDiv,#testingDiv,#errorDiv').hide();
-      $('#stopTrainModel').attr('disabled',false);
-      $('#trainModel').attr('disabled',true);
-      break;
-    case 'error':
-      $('#errorDiv').show();
-      $('#loadingDiv,trainingDiv').hide();
-      $('#trainModel').attr('disabled',false);
-      break;
-    case 'loading':
-      $('#loadingDiv').show();
-      $('#trainingDiv,#errorDiv').hide();
-      $('#trainModel').attr('disabled',true);
-      break;
-    default:
-      $('#trainingDiv,#loadingDiv,#errorDiv').hide();
-      $('#trainModel').attr('disabled',false);
-      break;
+  if(JSON.stringify(data)){
+    //===== updated data on screen =====//
+    $('#txfStatus').val(data['status']);//status
+    $('#txfTime').val(data['time']);//time
+    if ('loss' in data && data['loss']['value']!='null'){
+      var lossText = data['loss']['type'] + ':' + data['loss']['value'];//loss
+    } else{
+      var lossText = '--';
+    }
+    if(currentMode=='training'){
+      $('.txfLoss[name="' + currentMode + '"]').val(lossText);
+      setProgessBar('barEpoch', currentMode, data['epoch']);//epoch
+      setProgessBar('barProgress', currentMode, data['progress']);//progress
+    }
   }
 
-  //===== finish =====//
-  if(data['status'] == stopKeyword) stopTimer();//stop
-}
-};
-function enableStopBtn(){
-;
+    //different mode
+    switch(currentMode){
+      case 'training':
+        $('#trainingDiv').show();
+        $('#loadingDiv,#testingDiv,#errorDiv').hide();
+        $('#stopTrainModel').attr('disabled',false);
+        $('#trainModel').attr('disabled',true);
+        break;
+      case 'error':
+        $('#errorDiv').show();
+        $('#loadingDiv,trainingDiv').hide();
+        $('#trainModel').attr('disabled',false);
+        $('#stopTrainModel').attr('disabled',true);
+        break;
+      case 'loading':
+        $('#loadingDiv').show();
+        $('#trainingDiv,#errorDiv').hide();
+        $('#trainModel').attr('disabled',true);
+        $('#stopTrainModel').attr('disabled',false);
+        break;
+      case 'finish':
+        $('#trainingDiv').show();
+        $('#loadingDiv,#testingDiv,#errorDiv').hide();
+        $('#trainModel').attr('disabled',false);
+        $('#stopTrainModel').attr('disabled',true);
+        break;
+      default:
+        $('#trainingDiv,#loadingDiv,#errorDiv').hide();
+        $('#trainModel').attr('disabled',false);
+        $('#stopTrainModel').attr('disabled',true);
+        break;
+    }
 };
 function initPlot(){
 svg = d3.select("svg");
@@ -158,7 +156,7 @@ return chart;
 function updatePlot(data){
   //console.log(data.epoch[0]);
   plotdata = svg.datum();
-  if(data.status==wordToTraining){
+  if(data.status==wordForTraining){
     if (!plotdata[0]){
       plotdata[0] = {'key':'training','values':[[data.epoch[0],data.loss.value]]};
     }else{
@@ -208,17 +206,16 @@ function progressBar($bar, count, total, text) {
 //call when error
 function errorJSON(data){
   if(typeof data != 'undefined'){
-    alert(data['responseText']);
-    //stopTimer();//stop
+    console.log(data['responseText']);
   }
   else{
-  alert('undefined error found');
-  alert(data);
+    console.log('undefined error found');
+    console.log(data);
   }
 };
 function loadJsonPython(){
   idleTime = idleTime + waitMS;
-  if (idleTime < limitMS || currentMode=='training'){
+  if (currentMode!='error' && currentMode!='finish' && (idleTime < limitMS || currentMode=='training')){
     $.ajax({
       async: false,
       dataType: "json",
@@ -231,7 +228,10 @@ function loadJsonPython(){
         printJSON(data);
         updatePlot(data);
       },
-      error: function(){console.log('error loading json from api');} // pass
+      error: function(err){
+        console.log('error loading json from api');
+        console.log(err);
+      } // pass
       //error: errorJSON
     });
   }

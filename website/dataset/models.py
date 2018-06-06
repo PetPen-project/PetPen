@@ -42,45 +42,5 @@ class Dataset(models.Model):
     description = models.TextField(default='')
     filetype = models.CharField(max_length=3, choices=FILE_CHOICES, default='CSV')
     is_image = models.BooleanField(default=False)
-
-# @receiver(models.signals.post_delete, sender=Dataset)
-# def auto_delete_file_on_delete(sender, instance, **kwargs):
-    # """
-    # Deletes file from filesystem
-    # when corresponding `MediaFile` object is deleted.
-    # """
-    # if instance.training_csvfile:
-        # if os.path.isfile(instance.training_csvfile.path):
-            # os.remove(instance.training_csvfile.path)
-    # if instance.testing_csvfile:
-        # if os.path.isfile(instance.testing_csvfile.path):
-            # os.remove(instance.testing_csvfile.path)
-
-# @receiver(models.signals.pre_save, sender=Dataset)
-# def auto_delete_file_on_change(sender, instance, **kwargs):
-    # """
-    # Deletes old file from filesystem
-    # when corresponding `MediaFile` object is updated
-    # with new file.
-    # """
-    # if not instance.pk:
-        # return False
-
-    # try:
-        # old_file = Dataset.objects.get(pk=instance.pk).training_csvfile
-    # except Dataset.DoesNotExist:
-        # return False
-
-    # new_file = instance.training_csvfile
-    # if not old_file == new_file:
-        # if os.path.isfile(old_file.path):
-            # os.remove(old_file.path)
-    # try:
-        # old_file = Dataset.objects.get(pk=instance.pk).testing_csvfile
-    # except Dataset.DoesNotExist:
-        # return False
-
-    # new_file = instance.testing_csvfile
-    # if not old_file == new_file:
-        # if os.path.isfile(old_file.path):
-            # os.remove(old_file.path)
+    feature_labels = models.TextField(default="")
+    target_labels = models.TextField(default="")

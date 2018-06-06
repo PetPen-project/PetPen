@@ -100,7 +100,7 @@
         {% endif %}
         <div class="alert alert-dark" role="alert">evaluation type: {{history.execution_type}}</div>
         <div class="alert alert-dark" role="alert">epochs: {{epochs}}</div>
-        <div class="alert alert-dark" role="alert">best validation loss: {{best_val}} at epoch {{best_epoch}}</div>
+        <div class="alert alert-dark" role="alert">best validation loss: {{best_loss_value}} at epoch {{best_epoch_loss}}</div>
       {% elif status %}
         <h2>training not complete.</h2>
         <h4>training time: {{executed}}, {{status}}</h4>

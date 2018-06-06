@@ -1,16 +1,19 @@
 import json
 import requests
+import sys
+sys.path.append("../website")
+from petpen.setting_configs import ALLOWED_HOSTS,PORT,AUTH
 
 def change_status(status, id, test=False):
     if test:
         print(status)
         print(id)
     else:
-        url = 'http://140.109.18.113:8000/model/api/' + str(id) + '/'
-        r = requests.get(url, auth=('petpenadmin', 'cr31qrh5ev'))
+        url = 'http://{}:{}/model/api/{}/'.format(ALLOWED_HOSTS[0],PORT,id)
+        r = requests.get(url, auth=AUTH)
         data = json.loads(r.text)
         data['status'] = str(status)
-        r = requests.put(url, auth=('petpenadmin', 'cr31qrh5ev'), data=data)
+        r = requests.put(url, auth=AUTH, data=data)
 
 
 class Status():
