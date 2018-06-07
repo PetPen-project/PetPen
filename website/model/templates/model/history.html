@@ -27,87 +27,92 @@
       </li>
     </ul>
   </div>
-  <div class="container-fluid">
-    <div class="row">
-      <div id="sidebar" data-children=".item">
-        {% for history in histories %}
-          <div class="item">
-            <a href="#{{history.save_path}}" id="loadHistory{{history.name}}" class="d-flex" data-toggle="collapse" data-parent="#sidebar" data-history="{{history.id}}" aria-expanded="false" aria-controls="{{history.save_path}}">{{history.name}}</a>
-            <div class="collapse" id="{{history.save_path}}" aria-labelledby="loadHistory{{history.name}}}">
-              <form action="" method="post" name="historyActionForm">
-                {% csrf_token %}
-                <input type="hidden" name="history" value="{{history.id}}">
-                <div class="history-btns">
-                  <button class="history-btn" type="submit" name="action" value="download" {% if history.status != "success" %}disabled{% endif %}><i class="fa fa-download"></i></button>
-                  <button class="history-btn" type="submit" name="action" value="delete"><i class="fa fa-trash"></i></button>
-                </div>
-              </form>
-            </div>
+  <div class="pagecontainer">
+    {% if histories %}
+    <div id="sidebar" data-children=".item">
+      {% for history in histories %}
+        <div class="item">
+          <a href="#{{history.save_path}}" id="loadHistory{{history.name}}" class="d-flex" data-toggle="collapse" data-parent="#sidebar" data-history="{{history.id}}" aria-expanded="false" aria-controls="{{history.save_path}}">{{history.name}}</a>
+          <div class="collapse" id="{{history.save_path}}" aria-labelledby="loadHistory{{history.name}}}">
+            <form action="" method="post" name="historyActionForm">
+              {% csrf_token %}
+              <input type="hidden" name="history" value="{{history.id}}">
+              <div class="history-btns">
+                <button class="history-btn" type="submit" name="action" value="download" {% if history.status != "success" %}disabled{% endif %}><i class="fa fa-download"></i></button>
+                <button class="history-btn" type="submit" name="action" value="delete"><i class="fa fa-trash"></i></button>
+              </div>
+            </form>
           </div>
-        {% endfor %}
-      </div>
-      <div id="history-detail">
-        {% if status %}
-          <h1 class="p-2">{{status}}</h1>
-          <hr>
-          <p>executed on {{executed}}</p>
-          <p>information:</p>
-          <p style="fontsize:12px; box-shadow: 0 2px 4px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);padding:12px;">{{message}}</p>
-        {% elif history %}
-          {% include_chart_jscss %}
-          <span class="time-text">training time:  {{history.executed}}</span>
-          <form class="evaluation-form" enctype="multipart/form-data" action="{% url "model:backend_api"%}" method="post">
-            {% csrf_token %}
-            Run prediction
-            <select id="evaluate-dataset" onchange="setDataset(this)">
-              <option value="custom">by uploading dataset</option>
-              <option value="test">using test dataset</option>
-            </select>
-            <input type="hidden" name="command" value="predict"/>
-            <input type="hidden" name="project" value="{{history.project.id}}"/>
-            <input type="hidden" name="history" value="{{history.id}}"/>
-            <input type="hidden" name="dataset" value="custom"/>
-            <!--<label class="buttons-sm disabled" id="pred-label" for="prediction-file">-->
-              <!--<input id="prediction-file" disabled style="display:none;" name="file" type="file"/>-->
-              <!--upload-->
-            <!--</label>-->
-            <label class="buttons-sm" id="pred-label" for="prediction-file">
-              <input id="prediction-file" style="display:none;" name="file" type="file"/>
-              upload
-            </label>
-            <button class="buttons-sm" type="submit">start <i class="fa fa-play"></i></button>
-          </form>
-          {% if chartcontainer_acc %}
-          {% load_chart charttype_acc chartdata_acc chartcontainer_acc extra %}
-          <div name="history-plot" class="text-center my-3">
-            <h1>Accuracy</h1>
-            {% include_container chartcontainer_acc 400 '100%' %}
-          </div>
-          {% endif %}
-          {% if chartcontainer_loss %}
-          {% load_chart charttype_loss chartdata_loss chartcontainer_loss extra %}
-          <div name="history-plot" class="text-center my-3">
-            <h1>loss</h1>
-            {% include_container chartcontainer_loss 400 '100%' %}
-          </div>
-          {% endif %}
-          {% if chartcontainer %}
-          {% load_chart charttype chartdata chartcontainer extra %}
-          <div name="history-plot" class="text-center my-3">
-            <h1>loss</h1>
-            {% include_container chartcontainer 400 '100%' %}
-          </div>
-          {% endif %}
-          <div class="alert alert-dark" role="alert">evaluation type: {{history.execution_type}}</div>
-          <div class="alert alert-dark" role="alert">epochs: {{epochs}}</div>
-          <div class="alert alert-dark" role="alert">best validation loss: {{best_val}} at epoch {{best_epoch}}</div>
-        {% elif status %}
-          <h2>training not complete.</h2>
-          <h4>training time: {{executed}}, {{status}}</h4>
-        {% else %}
-          <h3>Select an execute history from sidebar to view its detail.</h3>
-        {% endif %}
-      </div>
+        </div>
+      {% endfor %}
     </div>
+    <div class="history-detail" id="history-detail">
+      {% if status %}
+        <h1 class="p-2">{{status}}</h1>
+        <hr>
+        <p>executed on {{executed}}</p>
+        <p>information:</p>
+        <p style="fontsize:12px; box-shadow: 0 2px 4px 0 rgba(0,0,0,0.16), 0 0 0 1px rgba(0,0,0,0.08);padding:12px;">{{message}}</p>
+      {% elif history %}
+        {% include_chart_jscss %}
+        <span class="time-text">training time:  {{history.executed}}</span>
+        <form class="evaluation-form" enctype="multipart/form-data" action="{% url "model:backend_api"%}" method="post">
+          {% csrf_token %}
+          Run prediction
+          <select id="evaluate-dataset" onchange="setDataset(this)">
+            <option value="custom">by uploading dataset</option>
+            <option value="test">using test dataset</option>
+          </select>
+          <input type="hidden" name="command" value="predict"/>
+          <input type="hidden" name="project" value="{{history.project.id}}"/>
+          <input type="hidden" name="history" value="{{history.id}}"/>
+          <input type="hidden" name="dataset" value="custom"/>
+          <!--<label class="buttons-sm disabled" id="pred-label" for="prediction-file">-->
+            <!--<input id="prediction-file" disabled style="display:none;" name="file" type="file"/>-->
+            <!--upload-->
+          <!--</label>-->
+          <label class="buttons-sm" id="pred-label" for="prediction-file">
+            <input id="prediction-file" style="display:none;" name="file" type="file"/>
+            upload
+          </label>
+          <button class="buttons-sm" type="submit">start <i class="fa fa-play"></i></button>
+        </form>
+        {% if chartcontainer_acc %}
+        {% load_chart charttype_acc chartdata_acc chartcontainer_acc extra %}
+        <div name="history-plot" class="text-center my-3">
+          <h1>Accuracy</h1>
+          {% include_container chartcontainer_acc 400 '100%' %}
+        </div>
+        {% endif %}
+        {% if chartcontainer_loss %}
+        {% load_chart charttype_loss chartdata_loss chartcontainer_loss extra %}
+        <div name="history-plot" class="text-center my-3">
+          <h1>loss</h1>
+          {% include_container chartcontainer_loss 400 '100%' %}
+        </div>
+        {% endif %}
+        {% if chartcontainer %}
+        {% load_chart charttype chartdata chartcontainer extra %}
+        <div name="history-plot" class="text-center my-3">
+          <h1>loss</h1>
+          {% include_container chartcontainer 400 '100%' %}
+        </div>
+        {% endif %}
+        <div class="alert alert-dark" role="alert">evaluation type: {{history.execution_type}}</div>
+        <div class="alert alert-dark" role="alert">epochs: {{epochs}}</div>
+        <div class="alert alert-dark" role="alert">best validation loss: {{best_loss_value}} at epoch {{best_epoch_loss}}</div>
+      {% elif status %}
+        <h2>training not complete.</h2>
+        <h4>training time: {{executed}}, {{status}}</h4>
+      {% else %}
+        <h3>Select an execute history from sidebar to view its detail.</h3>
+      {% endif %}
+    </div>
+    {% else %}
+    <div class="page-center">
+      <br>
+      <h3>Oh no! This project doesn't have any training history yet!</h3>
+    </div>
+    {% endif %}
   </div>
 {% endblock %}

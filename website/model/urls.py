@@ -18,8 +18,9 @@ urlpatterns = [
     url(r'^images/(?P<pid>)',views.img_api,name='images'),
 ] + \
     format_suffix_patterns([
-        url(r'^api/$', views.project_list),
-        url(r'^api/(?P<pk>[0-9]+)/$', views.NN_modelDetail.as_view()),
+        # url(r'^api/$', views.project_list),
+        url(r'^api/$', views.NN_model_list.as_view()),
+        url(r'^api/(?P<pk>[0-9]+)/$', views.NN_model_detail.as_view()),
         ])
 
 # urlpatterns = format_suffix_patterns(urlpatterns)

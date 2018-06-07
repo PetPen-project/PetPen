@@ -1,4 +1,4 @@
-@import "style.scss";
+@import "colors.scss";
 
 .upload-dataset-form {
     display: none;
@@ -20,11 +20,13 @@
     padding: 20px;
     border: 1px solid #888;
     width: 60%;
+    max-width: 800px;
 }
 .close {
     color: #AAAAAA;
     float: right;
     font-weight: bold;
+    cursor: pointer;
 }
 .dataset-loading {
     display: none;
@@ -81,8 +83,6 @@
 .flex-row {
     display: flex;
     flex-flow: row wrap;
-    //.error-message {
-    //}
     width: 100%;
 }
 .dataset-container {
@@ -90,13 +90,16 @@
     flex: 1;
 }
 #info-sidebar {
-    flex: 1;
-    padding: 1.5rem;
     height: calc(100vh - 120px);
-    max-width: 320px;
-    background-color: #FFF;
-    box-shadow: 0 -1px 3px rgba(0,0,0,0.3);
-    z-index: -1;
+    width: 320px;
+    //width: 0px;
+    //overflow: hidden;
+    padding: 1.5rem;
+    box-shadow: 0 3px 3px rgba(0,0,0,0.3);
+    transition: width 0.3s;
+}
+#info-sidebar.show {
+    width: 320px;
 }
 .item-title {
     font-size: 1.75rem;
@@ -169,11 +172,6 @@
     margin-top: .6rem;
 }
 .action-btn:hover {
-    /*background: linear-gradient(to bottom right,#FFF,#AAA);*/
-    /*border: 1px solid #007BFF;*/
-    font-size: 20px;
+    //font-size: 20px;
     color: #007BFF;
-}
-body {
-    //background: rgba(153, 255, 153, 0.1);
 }
