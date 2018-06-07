@@ -687,11 +687,11 @@ def backend_api(request):
             structure_file = op.join(MEDIA_ROOT,project.structure_file)
             # info = update_status(project.state_file)
             # if info['status'] != 'system idle':
-            if project.status != 'idle':
+            if project.status not in ['idle','finish']:
                 return HttpResponse('waiting project back to idle')
             else:
-                # update_status(project.state_file,'loading model')
-                pass
+                project.status = 'loading'
+                project.save()
             with open(structure_file) as f:
                 model_parser = json.load(f)
 
@@ -745,6 +745,8 @@ def backend_api(request):
             history.status = 'aborted'
             history.save()
             history_path = op.join(MEDIA_ROOT,op.dirname(project.structure_file),history.save_path)
+            if not op.exists(op.join(history_path,'logs/')):
+                os.mkdir(op.join(history_path,'logs'))
             with open(op.join(history_path,'logs/error_log'),'w') as f:
                 f.write('training process stopped by user.')
         return HttpResponse("response sent from backend")
