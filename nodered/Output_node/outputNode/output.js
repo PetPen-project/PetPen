@@ -115,7 +115,7 @@ module.exports = function(RED) {
 	  for (var i = 0; i < paddings.length; i++) {
 	    paddings[i] = parseInt(paddings[i]);
 	  }
-          res.layers[name] = {type: 'ZeroPadding', params: {padding: paddings}}; 
+          res.layers[name] = {type: 'ZeroPadding', params: {padding: paddings, dimension: parseInt(obj[ind]['dimension'])}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Reshape') {

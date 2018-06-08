@@ -25,5 +25,7 @@ class UploadFileForm(forms.Form):
         label='testing output data',
         content_types=content_types,
     )
+    feature_labels = forms.CharField(label='feature labels',required=False,widget=forms.TextInput(attrs={'size': '60'}))
+    target_labels = forms.CharField(label='target labels',required=False,widget=forms.TextInput(attrs={'size': '60'}))
     # is_image = forms.BooleanField(required=False)
     

@@ -4,13 +4,7 @@
 
 {% block head %}
   <link rel="stylesheet" href="{% sass_src "scss/dataset.scss" %}">
-  <script>
-  $(function(){
-    $('.error-message .close').click(function(){
-      $('.error-message').hide();
-    });
-  });
-  </script>
+  <script src="{% static "js/dataset.js" %}"></script>
 {% endblock %}
 
 {% block title %}dataset management{% endblock %}
@@ -22,75 +16,76 @@
   </div>
   <div class="flex-row">
     <div class="dataset-container">
-    {% if error_message %}
-      <div class="error-message">
-        {{error_message}}
-        <button class="close" data-dismiss="error-message"><span aria-hidden="true">&times;</span></button>
+      {% if error_message %}
+        <div class="error-message">
+          {{error_message}}
+          <button class="close" data-dismiss="error-message"><span aria-hidden="true">&times;</span></button>
+        </div>
+      {% endif %}
+      <div id="dataset-table">
+        <!-- List of uploaded data -->
+        {% if dataset_list %}
+          <form method="post" action="{% url "dataset:index" %}">
+          {% csrf_token %}
+          <ul>
+            {% for dataset in dataset_list %}
+            <li>
+              <!--<a href="{% url "dataset:dataset_detail" dataset_id=dataset.id %}" name="data-link" class="li-item-name" style="width:200px;">{{ dataset.title }}</a>-->
+              <a href="" name="data-link" class="li-item-name" style="width:200px;">{{ dataset.title }}</a>
+              <span class="filetype-badge">{{dataset.get_filetype_display}}</span>
+              <div id="btn-group">
+                <button class="action-btn" data-toggle="tooltip" title="click to show dataset properties on the sidebar" value="{{dataset.id}}" type="submit" name="info-dataset"><i class="fa fa-info"></i></button>
+                <button class="action-btn" data-toggle="tooltip" title="click to download this dataset as single zip file" value="{{dataset.id}}" type="submit" name="download-dataset"><i class="fa fa-download"></i></button>
+                <!--<button class="action-btn" data-toggle="tooltip" title="click to copy this dataset into your account" value="{{dataset.id}}" type="submit" name="copy-dataset"><i class="fa fa-copy"></i></button>-->
+                <button class="action-btn" data-toggle="tooltip" title="click to delete this dataset" value="{{dataset.id}}" type="submit" name="delete-dataset"><i class="fa fa-times"></i></button>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+          </form>
+        {% else %}
+          <div id="no-dataset">No dataset yet.</div>
+        {% endif %}
       </div>
-    {% endif %}
-    <div id="dataset-table">
-      <!-- List of uploaded data -->
-      {% if dataset_list %}
-        <form method="post" action="{% url "dataset:index" %}">
-        {% csrf_token %}
-        <ul>
-          {% for dataset in dataset_list %}
-          <li>
-            <!--<a href="{% url "dataset:dataset_detail" dataset_id=dataset.id %}" name="data-link" class="li-item-name" style="width:200px;">{{ dataset.title }}</a>-->
-            <a href="" name="data-link" class="li-item-name" style="width:200px;">{{ dataset.title }}</a>
-            <span class="filetype-badge">{{dataset.get_filetype_display}}</span>
-            <div id="btn-group">
-              <button class="action-btn" data-toggle="tooltip" title="click to show dataset properties on the sidebar" value="{{dataset.id}}" type="submit" name="info-dataset"><i class="fa fa-info"></i></button>
-              <button class="action-btn" data-toggle="tooltip" title="click to download this dataset as single zip file" value="{{dataset.id}}" type="submit" name="download-dataset"><i class="fa fa-download"></i></button>
-              <!--<button class="action-btn" data-toggle="tooltip" title="click to copy this dataset into your account" value="{{dataset.id}}" type="submit" name="copy-dataset"><i class="fa fa-copy"></i></button>-->
-              <button class="action-btn" data-toggle="tooltip" title="click to delete this dataset" value="{{dataset.id}}" type="submit" name="delete-dataset"><i class="fa fa-times"></i></button>
-            </div>
-          </li>
-          {% endfor %}
-        </ul>
-        </form>
+    </div>
+    <div id="info-sidebar">
+      <div class="close"><i class="fa fa-times"></i></div>
+      {% if information %}
+        <div class="item-title">{{information.title}}</div>
+        <span class="item-name">type</span>
+        <div class="item-content">{{information.get_filetype_display}}</div>
+        <span class="item-name">training<br>input size</span>
+        <div class="item-content">{{information.train_input_size|filesizeformat}}</div>
+        <span class="item-name">training<br>output size</span>
+        <div class="item-content">{{information.train_output_size|filesizeformat}}</div>
+        <span class="item-name">testing<br>input size</span>
+        <div class="item-content">{{information.test_input_size|filesizeformat}}</div>
+        <span class="item-name">testing<br>output size</span>
+        <div class="item-content">{{information.test_output_size|filesizeformat}}</div>
+        <span class="item-name">training samples</span>
+        <div class="item-content">{{information.train_samples}}</div>
+        <span class="item-name">testing samples</span>
+        <div class="item-content">{{information.test_samples}}</div>
+        <span class="item-name">created</span>
+        <div class="item-content">{{information.added|date:"M d, Y"}}</div>
       {% else %}
-        <div id="no-dataset">No dataset yet.</div>
+        <div class="item-title">information</div>
+        Select a dataset to view its details.
       {% endif %}
     </div>
-    </div>
-  <div id="info-sidebar">
-    {% if information %}
-      <div class="item-title">{{information.title}}</div>
-      <span class="item-name">type</span>
-      <div class="item-content">{{information.get_filetype_display}}</div>
-      <span class="item-name">training<br>input size</span>
-      <div class="item-content">{{information.train_input_size|filesizeformat}}</div>
-      <span class="item-name">training<br>output size</span>
-      <div class="item-content">{{information.train_output_size|filesizeformat}}</div>
-      <span class="item-name">testing<br>input size</span>
-      <div class="item-content">{{information.test_input_size|filesizeformat}}</div>
-      <span class="item-name">testing<br>output size</span>
-      <div class="item-content">{{information.test_output_size|filesizeformat}}</div>
-      <span class="item-name">training samples</span>
-      <div class="item-content">{{information.train_samples}}</div>
-      <span class="item-name">testing samples</span>
-      <div class="item-content">{{information.test_samples}}</div>
-      <span class="item-name">created</span>
-      <div class="item-content">{{information.added|date:"M d, Y"}}</div>
-    {% else %}
-      <div class="item-title">information</div>
-      Select a dataset to view its details.
-    {% endif %}
   </div>
-  </div>
-  <!-- Upload form.-->
-  <div class="upload-dataset-form" id="dataset-modal">
-    <div class="form-content">
-      <form action="{% url "dataset:index" %}" method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        <p>Dataset title: {{ form.title }}</p>
+    <!-- Upload form.-->
+    <div class="upload-dataset-form" id="dataset-modal">
+      <div class="form-content">
+        <form action="{% url "dataset:index" %}" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <p>Dataset title: {{ form.title }}</p>
 
-        <p>{{ form.non_field_errors }}</p>
-        
-        <div id="training_upload" class="row">
-          <div id="training-input" class="col border border-dark mx-2 my-2">
-            <p>{{ form.training_input_file.label_tag }} {{ form.training_input_file.help_text }}</p>
+          <p>{{ form.non_field_errors }}</p>
+          
+          <div id="training_upload" class="row">
+            <div id="training-input" class="col border border-dark mx-2 my-2">
+              <p>{{ form.training_input_file.label_tag }} {{ form.training_input_file.help_text }}</p>
             <span>{{ form.training_input_file.errors }} {{ form.training_input_file }}</span>
           </div>
           <div id="training-output" class="col border border-dark mx-2 my-2">
@@ -108,54 +103,27 @@
             <span>{{ form.testing_output_file.errors }} {{ form.testing_output_file }}</span>
           </div>
         </div>
+        <hr>
+        <!--<div class="col mb-2">-->
+          <!--<span>{{ form.feature_labels.label }} (optional):</span>-->
+          <!--<div>{{ form.feature_labels.error }}{{ form.feature_labels }}</div>-->
+        <!--</div>-->
+        <!--<div class="col mb-2">-->
+          <!--<span>{{ form.target_labels.label }} (optional):</span>-->
+          <!--<div>{{ form.target_labels.error }}{{ form.target_labels }}</div>-->
+        <!--</div>-->
         <br>
         <input type="submit" value="Upload" class="modal-btn"/>
         <button type="button" class="modal-btn" id="close-modal">Cancel</button>
       </form>
       <div class="alert alert-warning mt-2" role="alert">
         <h4 class="alert-heading">Data format limitation</h4>
-        <p>The uploaded dataset contains 4 files, and all files should be in csv or pickle format.(can't mix those two format together!)</p>
-        <p>Header column in each dataset file should be removed before uploading.</p>
+        <p>The uploaded dataset contains 4 files, and all files should be in csv, npy or pickle format.(can't mix these formats together!)</p>
+        <p>labels for inout and output data are optional, and they shouldn't be included in those dataset files.</p>
       </div>
     </div>
   </div>
   <div class="dataset-loading">
     <h2><i class="fa fa-hourglass"></i> Loading dataset...</h2>
   </div>
-  <script>
-  var shared = "#id_shared_testing";
-  var modal = $("#dataset-modal");
-  $(document).ready(function(){
-  $(".filetype-badge").each(function(){
-    if ($(this).text() == 'csv'){
-      $(this).css("background","#FFCC00");
-    } else if($(this).text() == 'pickle'){
-      $(this).css("background","#0033CC");
-    }
-  });
-    $("#open-modal").click(function(){
-      modal.show();
-      $(document).mouseup(function(e){
-        var container = $(".form-content");
-        if (!container.is(e.target) && container.has(e.target).length === 0){
-          modal.hide();
-        }
-      });
-    });
-    $("#close-modal").click(function(){
-      modal.hide();
-    });
-    $("a[name=dataset-link]").click(function(){
-      alert('hi');
-      $(".dataset-loading").show();
-    });
-    $(shared).click(function(){
-      if($(shared).prop("checked")){
-        $("#testing_upload").hide();
-      }else{
-        $("#testing_upload").show();
-      }
-    });
-  });
-  </script>
 {% endblock %}

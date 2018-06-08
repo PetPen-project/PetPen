@@ -233,6 +233,8 @@ def deserialize_layer(layer_config, name=None):
     if layer_type is None:
         raise ValueError('Undefined layer type')
     layer_params = layer_config.get('params',{})
+    if layer_params.get('activation', None) == '':
+        layer_params['activation'] = None
 
     if not hasattr(keras.layers,layer_type):
         pass
@@ -246,7 +248,7 @@ def deserialize_layer(layer_config, name=None):
             else:
                 layer_params['return_sequences'] = False
     elif layer_type.lower() == 'lstm' or layer_type.lower() == 'simplernn':
-        if layer_type.lower() == 'Lstm':
+        if layer_type.lower() == 'lstm':
             layer_type = 'LSTM'
         if 'return_sequence' in layer_params:
             condition = layer_params.pop('return_sequence')

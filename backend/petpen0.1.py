@@ -1,7 +1,9 @@
 import argparse, os, sys, json
 from utils import train_func, validate_func, predict_func
+from utils import change_status
 from datetime import datetime
 import traceback
+
 
 parser = argparse.ArgumentParser(prog='petpen')
 subparsers = parser.add_subparsers()
@@ -13,6 +15,7 @@ parser.add_argument('-testx', '--testx', required=False, default=None, help='tes
 parser.add_argument('-testy', '--testy', required=False, default=None, help='test output')
 parser.add_argument('-w', '--weight', required=False, default=None, help='set -w to load weight')
 parser.add_argument('-t', '--time', required=False, default=None, help='set -t to indicate backend start time')
+parser.add_argument('-id', '--id', required=False, default=None, help='project id')
 
 subparser = subparsers.add_parser('train')
 subparser.set_defaults(func=train_func)
@@ -43,11 +46,16 @@ os.mkdir(log_dir)
 
 error_log_file = os.path.join(log_dir, 'error_log')
 
+id = args.id
+
 try:
     if 'train' in args.func.__name__:
         args.func(args, log_dir)
     else:
         args.func(args, model_result_path)
+    
+    change_status('finish', id)
+
 except:
     exc_type, exc_value, exc_traceback = sys.exc_info()
     lines = traceback.format_exception(exc_type, exc_value, exc_traceback)
@@ -60,3 +68,7 @@ except:
             'error_log_file':error_log_file
             }
         json.dump(info,state_file)
+    
+    change_status('error', id)
+
+

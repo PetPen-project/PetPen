@@ -74,8 +74,13 @@
   //border: 1px solid $metal-iron;
   border-radius: 5px;
   display: flex;
+  align-items: flex-start;
   flex-wrap: wrap;
   justify-content: space-between;
+  .example-col {
+    display: inline-block;
+    width: 480px;
+    min-height: 1px;
   .example-item {
     border: 1px solid $metal-iron;
     width: 460px;
@@ -96,6 +101,7 @@
         object-fit: cover;
       }
     }
+  }
   }
   .example-row {
     &:not(:first-child){

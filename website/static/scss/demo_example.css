@@ -14,9 +14,6 @@ body, html {
     margin-right: auto;
     box-shadow: 0px 0px 20px 1px #bbb; }
 
-body {
-  height: 100vh; }
-
 a {
   text-decoration: none; }
   a:hover {
@@ -255,7 +252,6 @@ a.overview-btn {
 #feature {
   padding: 75px 0; }
 
-/*padding:50px 0;*/
 #history-list {
   position: -webkit-sticky;
   position: sticky;
@@ -264,10 +260,6 @@ a.overview-btn {
   max-height: calc(100vh - 4rem);
   height: calc(100vh - 6rem);
   width: 25%; }
-
-#history-detail {
-  padding: 30px 30px;
-  width: 75%; }
 
 .svg-container {
   display: inline-block;
@@ -396,24 +388,29 @@ a.overview-btn {
   margin: 15px auto;
   border-radius: 5px;
   display: flex;
+  align-items: flex-start;
   flex-wrap: wrap;
   justify-content: space-between; }
-  .example-table .example-item {
-    border: 1px solid #EFEFEF;
-    width: 460px;
-    margin: 8px;
-    padding: 12px; }
-    .example-table .example-item .title {
-      display: inline-block;
-      margin-bottom: 15px; }
-    .example-table .example-item form {
-      display: inline-block;
-      float: right; }
-    .example-table .example-item .description {
-      margin: 10px 0 0 0; }
-      .example-table .example-item .description img {
-        width: 100%;
-        object-fit: cover; }
+  .example-table .example-col {
+    display: inline-block;
+    width: 480px;
+    min-height: 1px; }
+    .example-table .example-col .example-item {
+      border: 1px solid #EFEFEF;
+      width: 460px;
+      margin: 8px;
+      padding: 12px; }
+      .example-table .example-col .example-item .title {
+        display: inline-block;
+        margin-bottom: 15px; }
+      .example-table .example-col .example-item form {
+        display: inline-block;
+        float: right; }
+      .example-table .example-col .example-item .description {
+        margin: 10px 0 0 0; }
+        .example-table .example-col .example-item .description img {
+          width: 100%;
+          object-fit: cover; }
   .example-table .example-row:not(:first-child) {
     border-top: 1px solid #ECF0F1; }
   .example-table .example-row td {
