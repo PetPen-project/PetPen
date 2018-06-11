@@ -687,7 +687,7 @@ def backend_api(request):
             structure_file = op.join(MEDIA_ROOT,project.structure_file)
             # info = update_status(project.state_file)
             # if info['status'] != 'system idle':
-            if project.status not in ['idle','finish']:
+            if project.status not in ['idle','finish','error']:
                 return HttpResponse('waiting project back to idle')
             else:
                 project.status = 'loading'
@@ -733,6 +733,7 @@ def backend_api(request):
             else:
                 os.mkdir(op.join(project_path,save_path,'preprocessed'))
                 shutil.copy2(op.join(op.dirname(structure_file),'preprocessed/result.json'),op.join(project_path,save_path,'preprocessed'))
+            update_status(project.state_file,status='loading',epoch=[0,0],progress=[0,0])
             try:
                 p = push(project.id,['python',script_path,'-m',project_path,'-t',save_path,'train'])
             except Exception as e:

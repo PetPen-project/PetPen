@@ -33,6 +33,7 @@ $(function(){
       }
     });
     $('#trainModel').attr('disabled',true);
+    currentMode = "loading";
   });
   $('#stopTrainModel').click(function(){
     $.ajax({
@@ -90,7 +91,7 @@ function printJSON(data){
     $('#txfStatus').val(data['status']);//status
     $('#txfTime').val(data['time']);//time
     if ('loss' in data && data['loss']['value']!='null'){
-      var lossText = data['loss']['type'] + ':' + data['loss']['value'];//loss
+      var lossText = data['loss']['type'] + ': ' + data['loss']['value'];//loss
     } else{
       var lossText = '--';
     }
@@ -135,28 +136,27 @@ function printJSON(data){
     }
 };
 function initPlot(){
-svg = d3.select("svg");
-chart = nv.models.lineChart()
-  .x(function(d,i){return d[0]})
-  .y(function(d){return d[1]})
-  .color(d3.scale.category10().range())
-  .useInteractiveGuideline(true)
-  .noData('Empty data')
-  ;
-chart.xAxis
-  .axisLabel('Epoch');
-chart.yAxis
-  .tickFormat(d3.format(',.3f'));
-nv.utils.windowResize(chart.update);
+  svg = d3.select("svg");
+  chart = nv.models.lineChart()
+    .x(function(d,i){return d[0]})
+    .y(function(d){return d[1]})
+    .color(d3.scale.category10().range())
+    .useInteractiveGuideline(true)
+    .noData('Empty data')
+    ;
+  chart.xAxis
+    .axisLabel('Epoch');
+  chart.yAxis
+    .tickFormat(d3.format(',.3f'));
+  nv.utils.windowResize(chart.update);
 
-svg.datum([])
-  .call(chart);
-return chart;
+  svg.datum([])
+    .call(chart);
+  return chart;
 };
 function updatePlot(data){
-  //console.log(data.epoch[0]);
   plotdata = svg.datum();
-  if(data.status==wordForTraining){
+  if(data.status==wordForTraining && data.loss.value){
     if (!plotdata[0]){
       plotdata[0] = {'key':'training','values':[[data.epoch[0],data.loss.value]]};
     }else{
