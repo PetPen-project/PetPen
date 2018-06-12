@@ -156,7 +156,7 @@ function initPlot(){
 };
 function updatePlot(data){
   plotdata = svg.datum();
-  if(data.status==wordForTraining && data.loss.value){
+  if(data.status==wordForTraining && typeof(data.loss.value)=='number'){
     if (!plotdata[0]){
       plotdata[0] = {'key':'training','values':[[data.epoch[0],data.loss.value]]};
     }else{

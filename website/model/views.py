@@ -202,6 +202,9 @@ class HistoryView(ListView):
                 context.update({'save_path':self.object.save_path,'status':self.object.status,'executed':self.object.executed})
                 return context
             log_data = pd.read_csv(op.join(self.kwargs['history_path'],'logs/train_log'))
+            if pd.isna(log_data['loss']).any():
+                context.update({'status':'model diverges','message':'NaN loss during training.'})
+                return context
             if self.object.execution_type == 'classification':
                 chartdata_loss = {}
                 chartdata_acc = {}
@@ -224,6 +227,7 @@ class HistoryView(ListView):
                 best_epoch_acc = log_data['val_acc'].idxmin()
                 best_acc_value = log_data['val_acc'][best_epoch_acc]
                 context.update({
+                    'history':self.object,
                     'epochs':log_data.shape[0],
                     'best_epoch_loss':best_epoch_loss,
                     'best_loss_value':best_loss_value,
@@ -255,8 +259,8 @@ class HistoryView(ListView):
             context.update({
                 'history':self.object,
                 'epochs':log_data.shape[0],
-                'best_epoch':best_epoch,
-                'best_val':best_val,
+                'best_epoch_loss':best_epoch,
+                'best_loss_value':best_val,
                 'charttype': charttype,
                 'chartdata': chartdata,
                 'chartcontainer': chartcontainer,
@@ -445,6 +449,8 @@ def api(request):
             if info.get('error_log_file'):
                 with open(info['error_log_file']) as f:
                     info['detail'] = f.read()
+    if info['loss']['value'] and np.isnan(info['loss']['value']):
+        info['loss']['value'] = 'nan'
     return JsonResponse(info)
 
 def plot_api(request):
