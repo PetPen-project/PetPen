@@ -20,18 +20,28 @@ module.exports = function(RED) {
         dataset: {},
       };
       var rec = {};
+      var subflow = {}
+      var input = "in"
+      var output = "out"
+      var subid = "sub"
       for (var ind in obj) {
         if (obj[ind]['type'] == 'Convolution') {
           name = obj[ind]['name'] + "_" + ind + "_" +  timest;
           res.layers[name] = {type: 'Conv1D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: parseInt(obj[i]['kernel']), strides: parseInt(obj[ind]['strides']), activation: obj[ind]['methods']}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
-/*	} else if (obj[ind]['type'].substr(0, 7) == 'subflow') {
-	  console.log("go to subflow")
-	  name = obj[ind]['name'] + "_" + ind + "_" + timest;
-	  res.layers[name] = {type: 'subflow'};
+	} else if (obj[ind]['type'] == 'subflow') {
+	  console.log(obj[ind])
+	  name =  "subreplace";
+	  input = obj[ind]['in'][0]['wires'][0]['id'];
+	  output = obj[ind]['out'][0]['wires'][0]['id'];
 	  rec[obj[ind]['id']] = name;
-	  obj[ind]['name'] = name;*/
+	  obj[ind]['name'] = name;
+	} else if (obj[ind]['type'].substr(0, 8) == 'subflow:') {
+	  name =  obj[ind]['type'] + "_" + ind + "_" + timest;
+	  subid = obj[ind]['id']
+	  rec[obj[ind]['id']] = name;
+	  obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Conv3D') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
           kernels = obj[ind]['kernel'].split(",");
@@ -158,7 +168,7 @@ module.exports = function(RED) {
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Dropout') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'Dropout', params: {rate: parseInt(obj[ind]['rate'])}}; 
+          res.layers[name] = {type: 'Dropout', params: {rate: parseFloat(obj[ind]['rate'])}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Gru') {
@@ -192,21 +202,37 @@ module.exports = function(RED) {
          
 
 	}
-	console.log("now");
+	    console.log(subid)
 	for (var i in obj) {
 		name = obj[i]['name'];
 		if (obj[i]['wires'] == null) {
-//		    console.log(obj[i]['wires']);
+		  if (obj[i]['name'] == 'subreplace') {
+		    input = obj[i]['in'][0]['wires'][0]['id'];
+		    output = obj[i]['out'][0]['wires'][0]['id'];
+		  }
         	} else if (name != ""){
 			tmp = obj[i]['wires'];
             		res_t = []
+			if (tmp == subid)  {
+				res_t.push(rec[input]);
+			} else {
             		for (var ii = 0; ii < tmp.length; ii++) {
                 		for (var jj = 0; jj < tmp[ii].length; jj++) {
+					if (tmp[ii][jj] == subid) {
+						console.log("wrong")
+						res_t.push(rec[output]);
+					} else {
 		            		res_t.push(rec[tmp[ii][jj]]);
+					}
                 		}
             		}
+			}
             		if (res_t.length > 0) {
+				if (obj[i]['id'] == subid) {
+					res.connections[rec[output]] = res_t;
+				} else {
 		    		res.connections[name] = res_t;
+				}
             		}
         	}	
     	}
