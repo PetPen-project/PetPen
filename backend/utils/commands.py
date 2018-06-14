@@ -5,7 +5,7 @@ import json
 from datetime import datetime
 from model import backend_model, load_file
 from utils import save_history
-from utils import Batch_History, Model_state
+from utils import Batch_History, Model_state, RealtimeLogger
 from utils import change_status
 
 from keras.models import load_model
@@ -49,9 +49,12 @@ def train_func(args, log_dir):
     state_file = os.path.join(model_dir, 'state.json')
     #state_file = "/home/plash/petpen/state.json"
     state_callback = Model_state(state_file, model.config)
+
+    # Callback_3 
+    rl_callback = RealtimeLogger(os.path.join(log_dir, 'realtime_logging.txt'))
     
     change_status('running', id)
-    history = model.train(callbacks=[history_callback, state_callback])
+    history = model.train(callbacks=[history_callback, state_callback, rl_callback])
     save_history(os.path.join(log_dir,'train_log'), history, history_callback)
     model_result_path = os.path.dirname(log_dir)
     model.save(os.path.join(model_result_path,'weights.h5'))
