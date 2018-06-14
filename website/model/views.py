@@ -449,7 +449,7 @@ def api(request):
             if info.get('error_log_file'):
                 with open(info['error_log_file']) as f:
                     info['detail'] = f.read()
-    if info['loss']['value'] and np.isnan(info['loss']['value']):
+    elif info['loss']['value'] and np.isnan(info['loss']['value']):
         info['loss']['value'] = 'nan'
     return JsonResponse(info)
 
