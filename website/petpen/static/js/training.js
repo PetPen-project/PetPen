@@ -99,6 +99,8 @@ function printJSON(data){
       $('.txfLoss[name="' + currentMode + '"]').val(lossText);
       setProgessBar('barEpoch', currentMode, data['epoch']);//epoch
       setProgessBar('barProgress', currentMode, data['progress']);//progress
+    }else if(currentMode=='error'){
+      $('#txfError').val(data['detail']);
     }
   }
 
