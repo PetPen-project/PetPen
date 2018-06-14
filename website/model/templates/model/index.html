@@ -38,6 +38,31 @@
     };
     $('document').ready(function(){
       <!--$('editorOpen').on('click.open', function(e) { e.preventDefault(); window.open('{% url "model:manage_editor" %}') });-->
+      if($('.project-container').width()<1050){
+        $('button[name=editorOpen]').html(
+          '<i class="fa fa-edit"></i>edit');
+        $('button[name=editorClose]').html(
+          '<i class="fa fa-window-close"></i>close');
+        $('a[name=projectPage]').html(
+          '<i class="fa fa-bar-chart"></i>execute');
+      }
+      $(window).resize(function(){
+        if($('.project-container').width()<1050){
+          $('button[name=editorOpen]').html(
+            '<i class="fa fa-edit"></i>edit');
+          $('button[name=editorClose]').html(
+            '<i class="fa fa-window-close"></i>close');
+          $('a[name=projectPage]').html(
+            '<i class="fa fa-bar-chart"></i>execute');
+        }else{
+          $('button[name=editorOpen]').html(
+            '<i class="fa fa-edit"></i>open editor');
+          $('button[name=editorClose]').html(
+            '<i class="fa fa-window-close"></i>close editor');
+          $('a[name=projectPage]').html(
+            '<i class="fa fa-bar-chart"></i>execute model');
+        }
+      });
     });
   </script>
 {% endblock %}
@@ -76,17 +101,17 @@
               <th scope="row">{{ project.id }}</th>
               <td>{{ project.title }}</td>
               <td>{{ project.status }}</td>
-              <td>{{ project.modified }}</td>
+              <td>{{ project.modified|date:'Y-m-d H:i' }}</td>
               <td>{{ project.training_counts }}</td>
               <td>
                 <div class="buttons-group">
-                {% if project.status == "idle" %}
+                {% if project.status != "editing" %}
                 <!--<a id="editorOpen" target="_blank" href="{% url "model:manage_editor" %}" class="btn btn-sm btn-outline-primary" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-external-link"></i> open editor</a>-->
-                <button id="editorOpen" class="buttons-sm" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-edit"></i> open editor</button>
+                <button name="editorOpen" class="buttons-sm" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-edit"></i> open editor</button>
                 {% else %}
                 <button class="buttons-sm" onclick="closeProject()"><i class="fa fa-window-close"></i> close editor</button>
                 {% endif %}
-                <a href="{% url "model:project_detail" project.id %}" class="buttons-sm"><i class="fa fa-bar-chart"></i> execute model</a>
+                <a href="{% url "model:project_detail" project.id %}" class="buttons-sm" name="projectPage"><i class="fa fa-bar-chart"></i> execute model</a>
                 </div>
               </td>
               <td>
