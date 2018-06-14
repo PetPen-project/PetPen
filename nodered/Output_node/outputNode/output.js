@@ -20,10 +20,9 @@ module.exports = function(RED) {
         dataset: {},
       };
       var rec = {};
-      var subflow = {}
-      var input = "in"
-      var output = "out"
-      var subid = "sub"
+      var input = null 
+      var output = null 
+      var subid = null 
       for (var ind in obj) {
         if (obj[ind]['type'] == 'Convolution') {
           name = obj[ind]['name'] + "_" + ind + "_" +  timest;
@@ -87,19 +86,6 @@ module.exports = function(RED) {
           datasetname = obj[ind]['datasetname'].split(',');
           res.layers[name] = {type: 'Output', params: {loss: obj[ind]['loss'], optimizer: obj[ind]['optimizer'], epoch: parseInt(obj[ind]['epoch']), batchsize: parseInt(obj[ind]['batchsize']), learningrate: parseFloat(obj[ind]['learningrate'])}};
           res.dataset[name] = datasetname;
-          /*var fs = require('fs')
-          var filename = '';
-          if (fs.existsSync('./file.name')) {
-            filename = fs.readFileSync('./file.name')
-          } else {
-            filename = 'tmp.csv'
-            filepath = 'file.name'
-            fs.writeFile(filepath, filename, (err) => {
-                if (err) throw err;
-                console.log("The name file was succesfully saved!");
-            }); 
-          }
-          res.dataset['output'] = filename;*/
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] === 'Input') {
@@ -178,9 +164,6 @@ module.exports = function(RED) {
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'File') {
 		path = obj[ind]['file'];
-		//var fst = require('fs');
-		//var content = fst.readFileSync(path, 'utf-8')
-		//fst.writeFileSync("./data.csv", content, 'utf8');
 		console.log("myfile");
 		console.log(path);
 	} else if (obj[ind]['type'] == 'Pretrained') {
@@ -237,51 +220,7 @@ module.exports = function(RED) {
         	}	
     	}
 	json = JSON.stringify(res);
-//      fs.writeFileSync('/home/kazami/.node-red/result.json', json, 'utf-8');
         fs.writeFileSync('result.json', json, 'utf-8');
-	var fs = require('fs');
-	var obj = '';
-	if (fs.existsSync('.child.json')) {
-	  obj = fs.readFileSync('child.json', 'utf-8');
-	}
-	/*var kill = function(pid, signal, callback) {
-	  signal = signal || 'SIGKILL';
-	  callback = callback || function() {};
-	  var killTree = true;
-	  if (killTree) {
-	    psTree(pid, function(err, children) {
-	      [pid].concat(
-		  children.map(function (p) {
-		    return p.PID;
-		  })
-		).forEach(function (tpid) {
-		    try { process.kill(tpid, signal)}
-		    catch (ex) {}
-		});
-		callback();
-	    });
-	  } else {
-	    try { process.kill(pid, signal) }
-	    catch (ex) { }
-	    callback();
-	  }
-	};
-	kill(previous_pid);*/
-	console.log(obj)
-	if (obj >= 1) {
-	var exec = require('child_process').exec;
-	var arg1 = "-d . ";
-	var arg2 = "-n demo1";
-	var newproc = exec('python /home/plash/petpen/develop/petpen0.1.py ' + arg1 + ' ' + arg2 + ' ', function(error, stdout, stderr) {
-		if (stdout.length > 1) {
-			console.log('offer', stdout);
-		} else {
-			console.log('don\'t offer');
-		}
-	});
-	console.log(newproc.pid);
-        fs.writeFileSync('pid.json', newproc.pid, 'utf-8');
-      }
       node.send(msg);
     });
   }
