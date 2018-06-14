@@ -105,3 +105,16 @@ class Batch_History(Callback):
         for k, v in logs.items():
             self.history.setdefault(k, []).append(v)
 
+class RealtimeLogger(Callback):
+    def __init__(self, logfile):
+        try:
+            super().__init__()
+        except TypeError: # Python2 compatible
+            super(RealtimeLogger, self).__init__()
+        self.logfile = logfile
+
+    def on_epoch_end(self, epoch, logs=None):
+        logs = logs or {}
+        with open(self.logfile, 'a') as f:
+            f.write(str(epoch) + ',' + str(logs['acc']) + ',' + str(logs['loss']) + '\n')
+
