@@ -23,6 +23,10 @@
   display: flex;
   flex-wrap: wrap; }
 
+.project-container {
+  min-width: 960px;
+  padding: 1rem; }
+
 .history-btn {
   flex-basis: 0;
   flex-grow: 1;
