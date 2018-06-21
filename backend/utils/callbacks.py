@@ -115,6 +115,14 @@ class RealtimeLogger(Callback):
 
     def on_epoch_end(self, epoch, logs=None):
         logs = logs or {}
+        
+        acc = ''
+        loss = ''
+        if 'acc' in logs:
+            acc = logs['acc']
+        if 'loss' in logs:
+            loss = logs['loss']
+
         with open(self.logfile, 'a') as f:
-            f.write(str(epoch) + ',' + str(logs['acc']) + ',' + str(logs['loss']) + '\n')
+            f.write(str(epoch) + ',' + str(acc) + ',' + str(loss) + '\n')
 
