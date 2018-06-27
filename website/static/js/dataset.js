@@ -1,5 +1,4 @@
 $(document).ready(function(){
-  var shared = "#id_shared_testing";
   var modal = $("#dataset-modal");
   $(".filetype-badge").each(function(){
     if ($(this).text() == 'csv'){
@@ -28,11 +27,11 @@ $(document).ready(function(){
   $("a[name=dataset-link]").click(function(){
     $(".dataset-loading").show();
   });
-  $(shared).click(function(){
-    if($(shared).prop("checked")){
-      $("#testing_upload").hide();
-    }else{
-      $("#testing_upload").show();
-    }
+  $("#info-sidebar .close").click(function(){
+    $("#info-sidebar").css("width","0");
   });
 });
+
+function setDeleteId(text){
+  $("#delete-id").val(text);
+};
