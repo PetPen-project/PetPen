@@ -434,6 +434,21 @@ def api(request):
         info = update_status(project.state_file)
     except:
         return HttpResponse('failed parsing status')
+    history = project.history_set.last()
+    logfile_name = op.join(MEDIA_ROOT,op.dirname(project.structure_file),history.save_path,'logs/realtime_logging.txt')
+    if op.exists(logfile_name):
+        # log = {'epoch':[],'acc':[],'loss':[]}
+        log = []
+        with open(logfile_name,'r') as f:
+            for i,line in enumerate(f):
+                log.append(line)
+                # epoch,acc,loss = line.split(',')
+                # log['epoch'].append(epoch)
+                # log['acc'].append(acc)
+                # log['loss'].append(loss)
+    else:
+        log = None
+    info['log'] = log
     info['status'] = project.get_status_display()
     # if info['status'] in ['error','finish training']:
     if project.status in ['error','finish']:
@@ -547,6 +562,9 @@ def manage_nodered(request):
             client.containers.run('noderedforpetpen',stdin_open=True,tty=True,user=os.getuid(),name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':port},remove=True,hostname='petpen',detach=True)
         elif user_container.attrs['HostConfig']['Binds'][0].split(':')[0]!=project_path:
             user_container.stop(timeout=0)
+            editing_project = NN_model.objects.filter(user=request.user,status='editing').exclude(pk=project.id)[0]
+            editing_project.status = 'idle'
+            editing_project.save()
             client.containers.run('noderedforpetpen',stdin_open=True,tty=True,user=os.getuid(),name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':port},remove=True,hostname='petpen',detach=True)
         return HttpResponse('running')
 

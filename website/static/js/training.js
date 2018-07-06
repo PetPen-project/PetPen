@@ -22,6 +22,7 @@ var chart = '';
 
 $(function(){
   $('#trainModel').click(function(){
+    initPlot();
     $.ajax({
       async:false,
       url: "/model/api/backend/",
@@ -158,16 +159,14 @@ function initPlot(){
 };
 function updatePlot(data){
   plotdata = svg.datum();
-  if(data.status==wordForTraining && typeof(data.loss.value)=='number'){
-    if (!plotdata[0]){
-      plotdata[0] = {'key':'training','values':[[data.epoch[0],data.loss.value]]};
-    }else{
-      if(!plotdata[0].values.find(function(item,index,array){
-        return item[0] == data.epoch[0];
-      })){
-        plotdata[0].values.push([data.epoch[0],data.loss.value]);
-      }
-    }
+  if(data.status==wordForTraining && data.log){
+  plotdata[0] = {
+    'key':'training',
+    'values':data.log.map(function(item){
+      var log = item.split(',');
+      return [parseInt(log[0]),parseFloat(log[2])];
+    })
+  };
   }
   //chart.yDomain = [-1,10];//[plotdata[0].values]
   //plotdata.push({'key':'test','values':[[data.loss.value]]});
