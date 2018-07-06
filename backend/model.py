@@ -247,6 +247,7 @@ def deserialize_layer(layer_config, name=None):
                 layer_params['return_sequences'] = True
             else:
                 layer_params['return_sequences'] = False
+    
     elif layer_type.lower() == 'lstm' or layer_type.lower() == 'simplernn':
         if layer_type.lower() == 'lstm':
             layer_type = 'LSTM'
@@ -256,11 +257,21 @@ def deserialize_layer(layer_config, name=None):
                 layer_params['return_sequences'] = True
             else:
                 layer_params['return_sequences'] = False
+    
     elif layer_type.lower() == 'reshape':
         layer_params['target_shape'] = layer_params.pop('shape')
+    
     elif layer_type.lower() == 'merge':
         merge_method = layer_params['method']
         return getattr(keras.layers, merge_method)
+    
+    elif layer_type.lower() == 'zeropadding':
+        dimension = layer_params['dimension']
+        layer_type = 'ZeroPadding' + str(dimension) + 'D'
+        padding = layer_params['padding']
+        padding = padding[0]
+        layer_params = {'padding': padding}
+
     layer = getattr(keras.layers,layer_type)(name = name,**layer_params)
     return layer
 
