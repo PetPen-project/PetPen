@@ -75,6 +75,7 @@ class DatasetListView(ListView):
         form = self.form_class()
         context.update({'form':form})
         if 'delete-dataset' in request.POST:
+            print(request.POST)
             try:
                 dataset = self.model.objects.get(pk=request.POST['delete-dataset'],user=request.user)
                 shutil.rmtree(op.join(MEDIA_ROOT,'datasets/{}/{}'.format(request.user.id,dataset.title)))
@@ -108,7 +109,7 @@ class DatasetListView(ListView):
                 context.update({'error_message':'can\'t get information of dataset with id {}'.format(request.POST['info-dataset'])})
             return self.render_to_response(context)
         elif 'copy-dataset' in request.POST:
-            print(4)
+            pass
         else:
             form = UploadFileForm(request.POST, request.FILES)
             if form.is_valid():
@@ -136,10 +137,10 @@ class DatasetListView(ListView):
                     if newfile.filetype == 'CSV':
                         data = pd.read_csv(newfile.training_output_file.file.name,header=None)
                         newfile.train_samples = data.shape[0]
-                        newfile.output_shape = str(data.shape[1:])
+                        newfile.output_shape = str(data.shape[1:]) if len(data.shape)>2 else str(data.shape[1])
                         data = pd.read_csv(newfile.training_input_file.file.name,header=None)
                         newfile.train_samples = data.shape[0]
-                        newfile.input_shape = str(data.shape[1:])
+                        newfile.input_shape = str(data.shape[1:]) if len(data.shape)>2 else str(data.shape[1])
                         data = pd.read_csv(newfile.testing_output_file.file.name,header=None)
                         newfile.test_samples = data.shape[0]
                     elif newfile.filetype == 'NPY':

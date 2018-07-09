@@ -120,6 +120,17 @@ a.buttons:hover, a.buttons-sm:hover{
     box-shadow: 0px 2px 0px 0px darken(#bedbcc, 5%);
   }
 }
+.buttons-grey {
+  background: $metal-silver;
+  box-shadow: 0px 5px 0px 0px darken($metal-silver, 5%), 0px 0px 15px 0px #bbb;
+  &:active {
+    top: 3px;
+    box-shadow: 0px 2px 0px 0px darken($metal-silver, 5%);
+  }
+  &:disabled {
+    box-shadow: 0px 2px 0px 0px darken(#bedbcc, 5%);
+  }
+}
 .buttons-red {
   background: $red-danger;
   box-shadow: 0px 5px 0px 0px darken($red-danger, 5%), 0px 0px 15px 0px #bbb;

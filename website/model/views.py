@@ -202,6 +202,9 @@ class HistoryView(ListView):
                 context.update({'save_path':self.object.save_path,'status':self.object.status,'executed':self.object.executed})
                 return context
             log_data = pd.read_csv(op.join(self.kwargs['history_path'],'logs/train_log'))
+            if pd.isna(log_data['loss']).any():
+                context.update({'status':'model diverges','message':'NaN loss during training.'})
+                return context
             if self.object.execution_type == 'classification':
                 chartdata_loss = {}
                 chartdata_acc = {}
@@ -224,6 +227,7 @@ class HistoryView(ListView):
                 best_epoch_acc = log_data['val_acc'].idxmin()
                 best_acc_value = log_data['val_acc'][best_epoch_acc]
                 context.update({
+                    'history':self.object,
                     'epochs':log_data.shape[0],
                     'best_epoch_loss':best_epoch_loss,
                     'best_loss_value':best_loss_value,
@@ -255,8 +259,8 @@ class HistoryView(ListView):
             context.update({
                 'history':self.object,
                 'epochs':log_data.shape[0],
-                'best_epoch':best_epoch,
-                'best_val':best_val,
+                'best_epoch_loss':best_epoch,
+                'best_loss_value':best_val,
                 'charttype': charttype,
                 'chartdata': chartdata,
                 'chartcontainer': chartcontainer,
@@ -430,6 +434,21 @@ def api(request):
         info = update_status(project.state_file)
     except:
         return HttpResponse('failed parsing status')
+    history = project.history_set.last()
+    logfile_name = op.join(MEDIA_ROOT,op.dirname(project.structure_file),history.save_path,'logs/realtime_logging.txt')
+    if op.exists(logfile_name):
+        # log = {'epoch':[],'acc':[],'loss':[]}
+        log = []
+        with open(logfile_name,'r') as f:
+            for i,line in enumerate(f):
+                log.append(line)
+                # epoch,acc,loss = line.split(',')
+                # log['epoch'].append(epoch)
+                # log['acc'].append(acc)
+                # log['loss'].append(loss)
+    else:
+        log = None
+    info['log'] = log
     info['status'] = project.get_status_display()
     # if info['status'] in ['error','finish training']:
     if project.status in ['error','finish']:
@@ -445,6 +464,8 @@ def api(request):
             if info.get('error_log_file'):
                 with open(info['error_log_file']) as f:
                     info['detail'] = f.read()
+    if project.status in ['training','finish'] and info['loss']['value'] and np.isnan(info['loss']['value']):
+        info['loss']['value'] = 'nan'
     return JsonResponse(info)
 
 def plot_api(request):
@@ -541,6 +562,9 @@ def manage_nodered(request):
             client.containers.run('noderedforpetpen',stdin_open=True,tty=True,user=os.getuid(),name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':port},remove=True,hostname='petpen',detach=True)
         elif user_container.attrs['HostConfig']['Binds'][0].split(':')[0]!=project_path:
             user_container.stop(timeout=0)
+            editing_project = NN_model.objects.filter(user=request.user,status='editing').exclude(pk=project.id)[0]
+            editing_project.status = 'idle'
+            editing_project.save()
             client.containers.run('noderedforpetpen',stdin_open=True,tty=True,user=os.getuid(),name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':port},remove=True,hostname='petpen',detach=True)
         return HttpResponse('running')
 
@@ -687,11 +711,11 @@ def backend_api(request):
             structure_file = op.join(MEDIA_ROOT,project.structure_file)
             # info = update_status(project.state_file)
             # if info['status'] != 'system idle':
-            if project.status != 'idle':
+            if project.status not in ['idle','finish','error']:
                 return HttpResponse('waiting project back to idle')
             else:
-                # update_status(project.state_file,'loading model')
-                pass
+                project.status = 'loading'
+                project.save()
             with open(structure_file) as f:
                 model_parser = json.load(f)
 
@@ -733,6 +757,7 @@ def backend_api(request):
             else:
                 os.mkdir(op.join(project_path,save_path,'preprocessed'))
                 shutil.copy2(op.join(op.dirname(structure_file),'preprocessed/result.json'),op.join(project_path,save_path,'preprocessed'))
+            update_status(project.state_file,status='loading',epoch=[0,0],progress=[0,0])
             try:
                 p = push(project.id,['python',script_path,'-m',project_path,'-t',save_path,'train'])
             except Exception as e:
@@ -745,6 +770,8 @@ def backend_api(request):
             history.status = 'aborted'
             history.save()
             history_path = op.join(MEDIA_ROOT,op.dirname(project.structure_file),history.save_path)
+            if not op.exists(op.join(history_path,'logs/')):
+                os.mkdir(op.join(history_path,'logs'))
             with open(op.join(history_path,'logs/error_log'),'w') as f:
                 f.write('training process stopped by user.')
         return HttpResponse("response sent from backend")

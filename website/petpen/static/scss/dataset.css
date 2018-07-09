@@ -72,7 +72,8 @@
 .flex-row {
   display: flex;
   flex-flow: row wrap;
-  width: 100%; }
+  width: 100%;
+  min-width: 800px; }
 
 .dataset-container {
   flex: 1; }
@@ -80,12 +81,12 @@
 #info-sidebar {
   height: calc(100vh - 120px);
   width: 320px;
-  padding: 1.5rem;
+  overflow: auto;
   box-shadow: 0 3px 3px rgba(0, 0, 0, 0.3);
   transition: width 0.3s; }
 
-#info-sidebar.show {
-  width: 320px; }
+.sidebar-content {
+  margin: 1.5rem; }
 
 .item-title {
   font-size: 1.75rem;
@@ -94,13 +95,13 @@
 
 .item-name {
   display: inline-block;
-  width: 6rem;
+  width: 100px;
   margin: 0.3rem 0;
   color: #777; }
 
 .item-content {
   display: inline-block;
-  width: 10rem;
+  width: 150px;
   /*align-items: center;*/ }
 
 #dataset-table {
