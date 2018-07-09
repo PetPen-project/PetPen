@@ -20,18 +20,27 @@ module.exports = function(RED) {
         dataset: {},
       };
       var rec = {};
+      var input = null 
+      var output = null 
+      var subid = null 
       for (var ind in obj) {
         if (obj[ind]['type'] == 'Convolution') {
           name = obj[ind]['name'] + "_" + ind + "_" +  timest;
           res.layers[name] = {type: 'Conv1D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: parseInt(obj[i]['kernel']), strides: parseInt(obj[ind]['strides']), activation: obj[ind]['methods']}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
-/*	} else if (obj[ind]['type'].substr(0, 7) == 'subflow') {
-	  console.log("go to subflow")
-	  name = obj[ind]['name'] + "_" + ind + "_" + timest;
-	  res.layers[name] = {type: 'subflow'};
+	} else if (obj[ind]['type'] == 'subflow') {
+	  console.log(obj[ind])
+	  name =  "subreplace";
+	  input = obj[ind]['in'][0]['wires'][0]['id'];
+	  output = obj[ind]['out'][0]['wires'][0]['id'];
 	  rec[obj[ind]['id']] = name;
-	  obj[ind]['name'] = name;*/
+	  obj[ind]['name'] = name;
+	} else if (obj[ind]['type'].substr(0, 8) == 'subflow:') {
+	  name =  obj[ind]['type'] + "_" + ind + "_" + timest;
+	  subid = obj[ind]['id']
+	  rec[obj[ind]['id']] = name;
+	  obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Conv3D') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
           kernels = obj[ind]['kernel'].split(",");
@@ -77,19 +86,6 @@ module.exports = function(RED) {
           datasetname = obj[ind]['datasetname'].split(',');
           res.layers[name] = {type: 'Output', params: {loss: obj[ind]['loss'], optimizer: obj[ind]['optimizer'], epoch: parseInt(obj[ind]['epoch']), batchsize: parseInt(obj[ind]['batchsize']), learningrate: parseFloat(obj[ind]['learningrate'])}};
           res.dataset[name] = datasetname;
-          /*var fs = require('fs')
-          var filename = '';
-          if (fs.existsSync('./file.name')) {
-            filename = fs.readFileSync('./file.name')
-          } else {
-            filename = 'tmp.csv'
-            filepath = 'file.name'
-            fs.writeFile(filepath, filename, (err) => {
-                if (err) throw err;
-                console.log("The name file was succesfully saved!");
-            }); 
-          }
-          res.dataset['output'] = filename;*/
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] === 'Input') {
@@ -168,9 +164,6 @@ module.exports = function(RED) {
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'File') {
 		path = obj[ind]['file'];
-		//var fst = require('fs');
-		//var content = fst.readFileSync(path, 'utf-8')
-		//fst.writeFileSync("./data.csv", content, 'utf8');
 		console.log("myfile");
 		console.log(path);
 	} else if (obj[ind]['type'] == 'Pretrained') {
@@ -192,70 +185,42 @@ module.exports = function(RED) {
          
 
 	}
-	console.log("now");
+	    console.log(subid)
 	for (var i in obj) {
 		name = obj[i]['name'];
 		if (obj[i]['wires'] == null) {
-//		    console.log(obj[i]['wires']);
+		  if (obj[i]['name'] == 'subreplace') {
+		    input = obj[i]['in'][0]['wires'][0]['id'];
+		    output = obj[i]['out'][0]['wires'][0]['id'];
+		  }
         	} else if (name != ""){
 			tmp = obj[i]['wires'];
             		res_t = []
+			if (tmp == subid)  {
+				res_t.push(rec[input]);
+			} else {
             		for (var ii = 0; ii < tmp.length; ii++) {
                 		for (var jj = 0; jj < tmp[ii].length; jj++) {
+					if (tmp[ii][jj] == subid) {
+						console.log("wrong")
+						res_t.push(rec[output]);
+					} else {
 		            		res_t.push(rec[tmp[ii][jj]]);
+					}
                 		}
             		}
+			}
             		if (res_t.length > 0) {
+				if (obj[i]['id'] == subid) {
+					res.connections[rec[output]] = res_t;
+				} else {
 		    		res.connections[name] = res_t;
+				}
             		}
         	}	
     	}
 	json = JSON.stringify(res);
-//      fs.writeFileSync('/home/kazami/.node-red/result.json', json, 'utf-8');
         fs.writeFileSync('result.json', json, 'utf-8');
-	var fs = require('fs');
-	var obj = '';
-	if (fs.existsSync('.child.json')) {
-	  obj = fs.readFileSync('child.json', 'utf-8');
-	}
-	/*var kill = function(pid, signal, callback) {
-	  signal = signal || 'SIGKILL';
-	  callback = callback || function() {};
-	  var killTree = true;
-	  if (killTree) {
-	    psTree(pid, function(err, children) {
-	      [pid].concat(
-		  children.map(function (p) {
-		    return p.PID;
-		  })
-		).forEach(function (tpid) {
-		    try { process.kill(tpid, signal)}
-		    catch (ex) {}
-		});
-		callback();
-	    });
-	  } else {
-	    try { process.kill(pid, signal) }
-	    catch (ex) { }
-	    callback();
-	  }
-	};
-	kill(previous_pid);*/
-	console.log(obj)
-	if (obj >= 1) {
-	var exec = require('child_process').exec;
-	var arg1 = "-d . ";
-	var arg2 = "-n demo1";
-	var newproc = exec('python /home/plash/petpen/develop/petpen0.1.py ' + arg1 + ' ' + arg2 + ' ', function(error, stdout, stderr) {
-		if (stdout.length > 1) {
-			console.log('offer', stdout);
-		} else {
-			console.log('don\'t offer');
-		}
-	});
-	console.log(newproc.pid);
-        fs.writeFileSync('pid.json', newproc.pid, 'utf-8');
-      }
       node.send(msg);
     });
   }
