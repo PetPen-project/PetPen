@@ -23,12 +23,13 @@
         }
       });
     };
-    function closeProject(){
+    function closeProject(title){
       $.ajax({
         url: "{% url "model:manage_editor" %}",
         method: "GET",
         data:{
-          action: "close"
+          action: "close",
+          target: title
         }
       });
     };
@@ -109,7 +110,7 @@
                 <!--<a id="editorOpen" target="_blank" href="{% url "model:manage_editor" %}" class="btn btn-sm btn-outline-primary" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-external-link"></i> open editor</a>-->
                 <button name="editorOpen" class="buttons-sm" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-edit"></i> open editor</button>
                 {% else %}
-                <button class="buttons-sm" onclick="closeProject()"><i class="fa fa-window-close"></i> close editor</button>
+                <button class="buttons-sm" onclick="closeProject(&#39;{{project.title}}&#39;)"><i class="fa fa-window-close"></i> close editor</button>
                 {% endif %}
                 <a href="{% url "model:project_detail" project.id %}" class="buttons-sm" name="projectPage"><i class="fa fa-bar-chart"></i> execute model</a>
                 </div>

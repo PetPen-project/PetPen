@@ -547,6 +547,10 @@ def manage_nodered(request):
             project.status = 'idle'
             project.save()
             user_container.stop(timeout=0)
+        elif request.GET.get('target',''):
+            project = NN_model.objects.filter(user=request.user).get(title=request.GET.get('target'))
+            project.status = 'idle'
+            project.save()
         return HttpResponse('Editor closed.')
     elif action == 'open':
         try:
@@ -650,8 +654,13 @@ def backend_api(request):
                     import pprint
                     pprint.pprint(structure['dataset'])
                     dataset = [v['valid_x'] for v in structure['dataset'].values() if 'valid_x' in v.keys()][0]
+                predict_dir = op.join(MEDIA_ROOT,op.dirname(project.structure_file),'result')
+                if op.exists(predict_dir):
+                    shutil.rmtree(predict_dir)
+                    os.mkdir(predict_dir)
 
-                    # p = push(project.id,['python',script_path,'-m',history_dir,'-t',save_path,'-testx',dataset,'-w',op.join(history_dir,'weights.h5'),'predict'])
+                # p = push(project.id,['python',script_path,'-m',op.join(MEDIA_ROOT,op.dirname(project.structure_file)),'-testx',op.join(predict_dir,'input.npy'),'-w',op.join(history_dir,'weights.h5'),'predict'])
+                # p = push(project.id,['python',script_path,'-m',history_dir,'-t',save_path,'-testx',dataset,'-w',op.join(history_dir,'weights.h5'),'predict'])
                 # prediction = Prediction(history=history,created=executed,expired=executed+timezone.timedelta(days=7))
                 # prediction.save()
                 # if not op.exists(prediction.path()): os.mkdir(prediction.path())
@@ -690,6 +699,10 @@ def backend_api(request):
                         np.save(op.join(predict_dir,'input.npy'), data_value)
                         if len(data_value.shape) == 3 and data_value.shape[2] in [1,3,4]:
                             plt.imsave(op.join(predict_dir,'input.png'),data_value,format='png')
+                    elif ext == '.npy':
+                        with open(op.join(predict_dir,'input'+ext),'wb') as f:
+                            for chunk in dataset.chunks():
+                                f.write(chunk)
                 except Exception as err:
                     if not op.exists(predict_dir):
                         os.mkdir(predict_dir)
