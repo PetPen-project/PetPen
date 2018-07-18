@@ -5,7 +5,7 @@
         defaults: {
             name: {value:"batchnorm"},
             type: {value:"BatchNormalization"},
-	    axis: {value: ""},
+            axis: {value: ""},
         },
         inputs:1,
         outputs:1,
@@ -23,7 +23,7 @@
     </div>
     <div class="form-row">
         <label for="node-input-type"><i class="icon-tag"></i> Type</label>
-        <input type="text" id="node-input-type" placeholder="Type">
+        <input type="text" id="node-input-type" placeholder="Type" readonly>
     </div>
     <div class="form-row">
         <label for="node-input-type"><i class="icon-tag"></i> Axis</label>
@@ -31,7 +31,7 @@
     </div>
 </script>
  
-<script type="text/x-red" data-help-name="Hello World">
-    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+<script type="text/x-red" data-help-name="BatchNormalization">
+    <p>A node that Normalizes the activations of the previous layer at each batch.<br/>
     </p>
 </script>
