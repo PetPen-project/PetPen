@@ -24,19 +24,23 @@
     </div>
     <div class="form-row">
         <label for="node-input-type"><i class="icon-tag"></i> Type</label>
-        <input type="text" id="node-input-type" placeholder="Type">
-    </div>
-    <div class="form-row">
-        <label for="node-input-padding"><i class="icon-tag"></i> Padding</label>
-        <input type="text" id="node-input-padding" placeholder="Padding">
+        <input type="text" id="node-input-type" placeholder="Type" readonly>
     </div>
     <div class="form-row">
         <label for="node-input-dimension"><i class="icon-tag"></i> Dimension</label>
         <input type="text" id="node-input-dimension" placeholder="Dimension">
     </div>
+    <div class="form-row">
+        <label for="node-input-padding"><i class="icon-tag"></i> Padding</label>
+        <input type="text" id="node-input-padding" placeholder="Padding">
+    </div>
 </script>
  
-<script type="text/x-red" data-help-name="Hello World">
-    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+<script type="text/x-red" data-help-name="ZeroPadding">
+    <p>A node that adds zeros to the data.<br/>
+    <br/>
+    <li>If padding value is single int, the same symmetric padding is applied to all dimensions.</li>
+    <li>If multiple ints: interpreted as different symmetric padding values for each dimension.</li>
+    <li>If multiple array of 2 ints: interpreted as (left_dim1_pad, right_dim1_pad), (left_dim2_pad, right_dim2_pad), ...</li>
     </p>
 </script>
