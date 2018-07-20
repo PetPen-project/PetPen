@@ -8,8 +8,8 @@ module.exports = function(RED) {
       console.log("test for new")
       var date = new Date();
       var timest = date.getTime();
-      if (fs.existsSync('flows_ubuntu.json')) {
-        var obj = JSON.parse(fs.readFileSync('flows_ubuntu.json', 'utf-8'));
+      if (fs.existsSync('flows_petpen.json')) {
+        var obj = JSON.parse(fs.readFileSync('flows_petpen.json', 'utf-8'));
       } else {
         console.log("flow not exist");
         return;

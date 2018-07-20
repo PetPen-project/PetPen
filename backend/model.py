@@ -269,7 +269,6 @@ def deserialize_layer(layer_config, name=None):
         dimension = layer_params['dimension']
         layer_type = 'ZeroPadding' + str(dimension) + 'D'
         padding = layer_params['padding']
-        padding = padding[0]
         layer_params = {'padding': padding}
 
     layer = getattr(keras.layers,layer_type)(name = name,**layer_params)
