@@ -27,7 +27,7 @@ module.exports = function(RED) {
         console.log(obj[ind]);
         if (obj[ind]['type'] == 'Convolution') {
           name = obj[ind]['name'] + "_" + ind + "_" +  timest;
-          res.layers[name] = {type: 'Conv1D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: parseInt(obj[i]['kernel']), strides: parseInt(obj[ind]['strides']), activation: obj[ind]['methods']}};
+          res.layers[name] = {type: 'Conv1D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: parseInt(obj[i]['kernel']), strides: parseInt(obj[ind]['strides']), activation: obj[ind]['methods'], padding: obj[ind]['padding']}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'subflow') {
@@ -65,7 +65,7 @@ module.exports = function(RED) {
           for (var i = 0; i < stride_num.length; i++) {
             stride_num[i] = parseInt(stride_num[i]);
           }
-          res.layers[name] = {type: 'Conv2D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: kernels, strides: parseInt(stride_num), activation: obj[ind]['activation']}};
+          res.layers[name] = {type: 'Conv2D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: kernels, strides: parseInt(stride_num), activation: obj[ind]['activation'], padding: obj[ind]['padding']}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'ConvolutionLSTM_2D') {
