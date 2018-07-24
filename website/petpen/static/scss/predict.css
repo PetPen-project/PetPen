@@ -14,14 +14,14 @@ body, html {
     margin-right: auto;
     box-shadow: 0px 0px 20px 1px #bbb; }
 
-body {
-  height: 100vh; }
-
 a {
   text-decoration: none; }
   a:hover {
     text-decoration: underline;
     color: #0366d6; }
+
+#site-navbar {
+  z-index: 200; }
 
 .bg-blue {
   background: linear-gradient(141deg, #0fb8ad 0%, #1fc8db 51%, #2cb5e8 75%); }
@@ -37,7 +37,7 @@ a.buttons, .buttons {
   color: white;
   background: #468966;
   position: relative;
-  top: 10px;
+  top: 0px;
   margin-bottom: 20px;
   padding: 12px;
   font-size: 16px;
@@ -45,10 +45,10 @@ a.buttons, .buttons {
   box-shadow: 0px 10px 0px 0px #3d7859, 0px 0px 20px 0px #bbb;
   transition: all 0.2s; }
   a.buttons:active, .buttons:active {
-    top: 15px;
+    top: 5px;
     box-shadow: 0px 5px 0px 0px #3d7859; }
   a.buttons:disabled, .buttons:disabled {
-    top: 3px;
+    top: 5px;
     background: #bedbcc;
     box-shadow: none;
     box-shadow: 0px 2px 0px 0px #aed2bf; }
@@ -80,6 +80,15 @@ a.buttons:hover, a.buttons-sm:hover {
   .buttons-sm:disabled {
     top: 3px;
     opacity: .65;
+    box-shadow: 0px 2px 0px 0px #aed2bf; }
+
+.buttons-grey {
+  background: #BFBFBF;
+  box-shadow: 0px 5px 0px 0px #b2b2b2, 0px 0px 15px 0px #bbb; }
+  .buttons-grey:active {
+    top: 3px;
+    box-shadow: 0px 2px 0px 0px #b2b2b2; }
+  .buttons-grey:disabled {
     box-shadow: 0px 2px 0px 0px #aed2bf; }
 
 .buttons-red {
@@ -252,7 +261,6 @@ a.overview-btn {
 #feature {
   padding: 75px 0; }
 
-/*padding:50px 0;*/
 #history-list {
   position: -webkit-sticky;
   position: sticky;
@@ -261,10 +269,6 @@ a.overview-btn {
   max-height: calc(100vh - 4rem);
   height: calc(100vh - 6rem);
   width: 25%; }
-
-#history-detail {
-  padding: 30px 30px;
-  width: 75%; }
 
 .svg-container {
   display: inline-block;

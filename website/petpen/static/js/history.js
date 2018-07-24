@@ -12,18 +12,15 @@ function setDataset(dataset){
     $('#prediction-file').attr('disabled',true);
   }
 };
-function runEvaluation(project_id){
-  //$.ajax({
-    //async: false,
-    //type: 'post',
-    //url: '/model/api/backend/',
-    //data:{
-      //csrfmiddlewaretoken: window.CSRF_TOKEN,
-      //command: 'evaluate',
-      //dataset: '',
-      //project: project_id
-    //}
-  //});
+function runPrediction(){
+  var dataset = $('#evaluate-dataset').val();
+  if (dataset=='custom'){
+    if($('#prediction-file')[0].files.length==0){
+      alert('need to upload file before running prediction!');
+      return false;
+    }
+  }
+  return true;
 };
 $(function(){
   $("a[id^='loadHistory']").on('click',function(){
