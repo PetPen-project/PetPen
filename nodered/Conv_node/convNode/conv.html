@@ -3,12 +3,13 @@
         category: 'Convolution Layers',
         color: '#ffaaaa',
         defaults: {
-            name: {value:"conv"},
-            type: {value:"Convolution"},
-            filters: {value: ""},
-            kernel: {value: ""},
-            strides: {value: ""},
-            activation: {value: ""},
+          name: {value:"conv"},
+          type: {value:"Convolution"},
+          filters: {value: ""},
+          kernel: {value: ""},
+          strides: {value: ""},
+          activation: {value: ""},
+          padding: {value: "valid"},
         },
         inputs:1,
         outputs:1,
@@ -59,7 +60,7 @@
       </select>
     </div>
 </script>
- 
+
 <script type="text/x-red" data-help-name="Convolution">
     <p>A 1D convolution layer (e.g. temporal convolution).<br/>
     </p>

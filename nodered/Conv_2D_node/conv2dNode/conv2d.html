@@ -3,12 +3,13 @@
         category: 'Convolution Layers',
         color: '#ffaaaa',
         defaults: {
-            name: {value:"conv2d"},
-            type: {value:"Convolution_2D"},
-            filters: {value: ""},
-            kernel: {value: ""},
-            strides: {value: ""},
-            activation: {value: ""},
+          name: {value:"conv2d"},
+          type: {value:"Convolution_2D"},
+          filters: {value: ""},
+          kernel: {value: ""},
+          strides: {value: ""},
+          activation: {value: ""},
+          padding: {value: "valid"},
         },
         inputs:1,
         outputs:1,
@@ -59,7 +60,7 @@
         </select>
     </div>
 </script>
- 
+
 <script type="text/x-red" data-help-name="Convolution_2D">
     <p>A 2D convolution layer (e.g. spatial convolution over images).<br/>
       The input of this layer has the shape (height, width, channels).

@@ -3,17 +3,17 @@
         category: 'Recurrent Layers',
         color: '#ffaaaa',
         defaults: {
-            name: {value:"convlstm2d"},
-            type: {value:"ConvolutionLSTM_2D"},
-	    filters: {value: ""},
-	    kernel: {value: ""},
-	    strides: {value: ""},
-	    activation: {value: ""},
-	    padding: {value: ""},
-	    recurrent_activation: {value: ""},
-	    return_sequence: {value: ""},
-	    dropout: {value: ""},
-	    recurrent_dropout: {value: ""},
+          name: {value:"convlstm2d"},
+          type: {value:"ConvolutionLSTM_2D"},
+          filters: {value: ""},
+          kernel: {value: ""},
+          strides: {value: ""},
+          activation: {value: ""},
+          padding: {value: "valid"},
+          recurrent_activation: {value: ""},
+          return_sequence: {value: ""},
+          dropout: {value: ""},
+          recurrent_dropout: {value: ""},
         },
         inputs:1,
         outputs:1,
@@ -45,11 +45,11 @@
     	</select>
     </div>
     <div class="form-row">
-        <label for="node-input-padding"><i class="icon-tag"></i> Padding</label>
-    	<select id="node-input-padding">
-  		<option value="valid">Valid</option>
-  		<option value="same">Same</option>
-    	</select>
+      <label for="node-input-padding"><i class="icon-tag"></i> Padding</label>
+      <select id="node-input-padding">
+        <option selected="selected" value="valid">Valid</option>
+        <option value="same">Same</option>
+      </select>
     </div>
     <div class="form-row">
       <label for="node-input-recurrent_activation"><i class="icon-tag"></i> Recurrent_Activation</label>

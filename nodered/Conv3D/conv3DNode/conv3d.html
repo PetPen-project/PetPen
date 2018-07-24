@@ -3,13 +3,13 @@
         category: 'Convolution Layers',
         color: '#ffaaaa',
         defaults: {
-            name: {value:"conv3d"},
-            type: {value:"Conv3D"},
-            filters: {value: ""},
-            kernel: {value: ""},
-            strides: {value: "0"},
-            padding: {value: "0"},
-            activation: {value: ""},
+          name: {value:"conv3d"},
+          type: {value:"Conv3D"},
+          filters: {value: ""},
+          kernel: {value: ""},
+          strides: {value: ""},
+          padding: {value: "valid"},
+          activation: {value: ""},
         },
         inputs:1,
         outputs:1,
@@ -60,6 +60,7 @@
         <input type="text" id="node-input-strides" placeholder="Strides">
     </div>
 </script>
+
 <script type="text/javascript"> 
     function blurFunction(gy) {
 	console.log(gy.value);
