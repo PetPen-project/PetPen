@@ -19,7 +19,7 @@
         outputs:1,
         icon: "face.png",
         label: function() {
-            return this.name||"Convolution";
+            return this.name||"ConvolutionLSTM";
         }
     });
 </script>
@@ -94,14 +94,14 @@
         <input type="text" id="node-input-topic" placeholder="Topic">
     </div>
 </script>
-<script type="text/javascript"> 
+<script type="text/javascript">
     function blurFunctiong(gy) {
 	if (gy.value == "") {
 	gy.style.background = "red";
 	}
     }
 </script>
- 
+
 <script type="text/x-red" data-help-name="ConvolutionLSTM_2D">
     <p>A LSTM layer for handling spatiotemporal data.<br/>
     </p>

@@ -11,7 +11,7 @@
         outputs:1,
         icon: "face.png",
         label: function() {
-            return this.name||"Output";
+            return this.name||"Reshape";
         }
     });
 </script>
@@ -30,7 +30,7 @@
         <input type="text" id="node-input-shape" onchange="blurFunction(this)" placeholder="Shape">
     </div>
 </script>
- 
+
 <script type="text/x-red" data-help-name="Reshape">
     <p>A node that reshapes an output to a certain shape.<br/>
     </p>

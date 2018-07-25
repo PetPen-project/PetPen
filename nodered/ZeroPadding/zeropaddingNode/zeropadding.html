@@ -3,16 +3,16 @@
         category: 'Convolutional Layers',
         color: '#ffaaaa',
         defaults: {
-            name: {value:"zeropadding"},
-            type: {value:"ZeroPadding"},
-	    padding: {value: ""},
-	    dimension: {value: ""},
+          name: {value:"zeropadding"},
+          type: {value:"ZeroPadding"},
+          padding: {value: ""},
+          dimension: {value: ""},
         },
         inputs:1,
         outputs:1,
         icon: "face.png",
         label: function() {
-            return this.name||"Output";
+            return this.name||"ZeroPadding";
         }
     });
 </script>
@@ -35,7 +35,7 @@
         <input type="text" id="node-input-padding" placeholder="Padding">
     </div>
 </script>
- 
+
 <script type="text/x-red" data-help-name="ZeroPadding">
     <p>A node that adds zeros to the data.<br/>
     <br/>

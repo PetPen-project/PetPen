@@ -12,7 +12,7 @@
         outputs:1,
         icon: "face.png",
         label: function() {
-            return this.name||"Output";
+            return this.name||"Dense";
         }
     });
 </script>
@@ -42,7 +42,7 @@
         <input type="text" id="node-input-units" onchange="blurFunction(this)" placeholder="Units">
     </div>
 </script>
- 
+
 <script type="text/x-red" data-help-name="Dense">
     <p>A fully connected neural network layer.<br/>
     </p>
