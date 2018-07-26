@@ -22,7 +22,7 @@ module.exports = function(RED) {
       var rec = {};
       var input = null 
       var output = null 
-      var subid = null 
+      var subid = null; 
       for (var ind in obj) {
         if (obj[ind]['type'] == 'Convolution') {
           name = obj[ind]['name'] + "_" + ind + "_" +  timest;
@@ -37,6 +37,8 @@ module.exports = function(RED) {
 	  rec[obj[ind]['id']] = name;
 	  obj[ind]['name'] = name;
 	} else if (obj[ind]['type'].substr(0, 8) == 'subflow:') {
+
+		console.log("subflow.....")
 	  name =  obj[ind]['type'] + "_" + ind + "_" + timest;
 	  subid = obj[ind]['id']
 	  rec[obj[ind]['id']] = name;
@@ -185,7 +187,7 @@ module.exports = function(RED) {
          
 
 	}
-	    console.log(subid)
+	console.log(subid)    
 	for (var i in obj) {
 		name = obj[i]['name'];
 		if (obj[i]['wires'] == null) {
@@ -196,22 +198,19 @@ module.exports = function(RED) {
         	} else if (name != ""){
 			tmp = obj[i]['wires'];
             		res_t = []
-			if (tmp == subid)  {
-				res_t.push(rec[input]);
-			} else {
             		for (var ii = 0; ii < tmp.length; ii++) {
                 		for (var jj = 0; jj < tmp[ii].length; jj++) {
 					if (tmp[ii][jj] == subid) {
-						console.log("wrong")
-						res_t.push(rec[output]);
+						res_t.push(rec[input]);
 					} else {
 		            		res_t.push(rec[tmp[ii][jj]]);
 					}
                 		}
             		}
-			}
             		if (res_t.length > 0) {
 				if (obj[i]['id'] == subid) {
+					console.log("is this....")
+					console.log(obj[i])
 					res.connections[rec[output]] = res_t;
 				} else {
 		    		res.connections[name] = res_t;
