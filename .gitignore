@@ -5,6 +5,5 @@ __pycache__
 db.sqlite3
 website/node_modules/
 website/petpen/setting_configs.py
-website/static/scss/*.map
-website/static/css/
-website/petpen/static/*
+website/static/*
+website/petpen/static/*.map

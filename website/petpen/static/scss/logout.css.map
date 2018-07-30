@@ -1,0 +1,9 @@
+{
+	"version": 3,
+	"file": "../../home/plash/petpen/develop/website/petpen/static/scss/logout.css",
+	"sources": [
+		"../../home/plash/petpen/develop/website/petpen/static/scss/logout.scss"
+	],
+	"names": [],
+	"mappings": "AAAA,AAAA,eAAe,CAAC;EACd,MAAM,EAAE,SAAS;EACjB,UAAU,EAAE,MAAM,GACnB;;AACD,AAAA,EAAE,CAAC;EACD,aAAa,EAAE,IAAI,GACpB"
+}
