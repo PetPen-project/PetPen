@@ -140,7 +140,7 @@ def index(request):
 @login_required
 def project_detail(request, project_id):
     '''
-    run nodered of this project
+    view and run training job of this project
     '''
     try:
         project = NN_model.objects.filter(user=request.user).get(id=project_id)
@@ -297,6 +297,11 @@ class HistoryView(ListView):
             self.object = None
         elif request.POST.get('action') == 'download':
             return self.generateAttachFile()
+        elif request.POST.get('action') == 'restore':
+            project_path = op.join(MEDIA_ROOT,op.dirname(self.object.project.structure_file))
+            if op.exists(op.join(project_path,self.object.save_path,'flows_petpen.json')):
+                shutil.copy2(op.join(project_path,self.object.save_path,'flows_petpen.json'),project_path)
+            shutil.copy2(op.join(project_path,self.object.save_path,'result.json'),project_path)
         context = self.get_context_data()
         return self.render_to_response(context)
 
@@ -718,7 +723,7 @@ def backend_api(request):
                     return HttpResponseRedirect(reverse('model:predict',kwargs={'project_id':project.id,'history_path':history.save_path}))
                 p = push(project.id,['python',script_path,'-m',op.join(MEDIA_ROOT,op.dirname(project.structure_file)),'-testx',op.join(predict_dir,'input.npy'),'-w',op.join(history_dir,'weights.h5'),'predict'])
             return HttpResponseRedirect(reverse('model:predict',kwargs={'project_id':project.id,'history_path':history.save_path}))
-        if request.POST['command'] == 'train':
+        elif request.POST['command'] == 'train':
             history_name = request.POST.get('name') or save_path
             logger.debug('start training on model {}, save path: {}'.format(project,save_path))
             structure_file = op.join(MEDIA_ROOT,project.structure_file)
@@ -743,11 +748,11 @@ def backend_api(request):
             history = History(project=project,name=history_name,executed=executed,save_path=save_path,status='running',execution_type=problem)
             history.save()
             project.training_counts += 1
-            project.status = 'loading'
-            project.save()
             project_path = op.dirname(structure_file)
+            flow_file = op.join(project_path,'flows_petpen.json')
             os.mkdir(op.join(project_path,save_path))
             shutil.copy2(structure_file,op.join(project_path,save_path))
+            shutil.copy2(flow_file,op.join(project_path,save_path))
             #----- file path transformation -----
             prcs = preprocess_structure(structure_file,NN_model.objects.filter(user=request.user),Dataset.objects.filter(user=request.user))
             print(prcs)

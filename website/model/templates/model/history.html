@@ -6,6 +6,7 @@
 
 {% block head %}
   <link rel="stylesheet" href="{% sass_src "scss/project_view.scss" %}">
+  <link rel="stylesheet" href="{% sass_src "scss/history.scss" %}">
   <script>
     window.CSRF_TOKEN = "{{csrf_token}}";
   </script>
@@ -27,6 +28,10 @@
       </li>
     </ul>
   </div>
+  <div id="action_msg">
+    <div id="msg_content">
+    </div>
+  </div>
   <div class="pagecontainer">
     {% if histories %}
     <div id="sidebar" data-children=".item">
@@ -38,8 +43,9 @@
               {% csrf_token %}
               <input type="hidden" name="history" value="{{history.id}}">
               <div class="history-btns">
-                <button class="history-btn" type="submit" name="action" value="download" {% if history.status != "success" %}disabled{% endif %}><i class="fa fa-download"></i></button>
-                <button class="history-btn" type="submit" name="action" value="delete"><i class="fa fa-trash"></i></button>
+                <button class="history-btn" data-toggle="tooltip" title="click to restore the model structure" type="submit" name="action" value="restore"><i class="fa fa-history"></i></button>
+                <button class="history-btn" data-toggle="tooltip" title="click to download model weights" type="submit" name="action" value="download" {% if history.status != "success" %}disabled{% endif %}><i class="fa fa-download"></i></button>
+                <button class="history-btn" data-toggle="tooltip" title="click to delete this training history" type="submit" name="action" value="delete"><i class="fa fa-trash"></i></button>
               </div>
             </form>
           </div>
@@ -113,7 +119,7 @@
     {% else %}
     <div class="page-center">
       <br>
-      <h3>Oh no! This project doesn't have any training history yet!</h3>
+      <h3>Sorry! This project doesn't have any training history yet!</h3>
     </div>
     {% endif %}
   </div>

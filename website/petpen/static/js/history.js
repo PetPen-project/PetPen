@@ -40,6 +40,7 @@ $(function(){
     });
   });
   $("form[name=historyActionForm]").submit(function(e){
+    var action = $(document.activeElement).val();
     if ($(document.activeElement).val()=='delete'){
       e.preventDefault();
       $.post($(this).attr('action'), $(this).serialize()+'&action=delete', function(data){
@@ -51,6 +52,14 @@ $(function(){
         <!--$(document).html($(data));-->
       }).fail(function(data){alert(data);
       });
+      $('#msg_content').text('one training history deleted.');
+      $('#action_msg').fadeIn().delay(3000).fadeOut(1000);
+    } else if ($(document.activeElement).val()=='restore'){
+      e.preventDefault();
+      $.post($(this).attr('action'), $(this).serialize()+'&action=restore', function(data){
+      });
+      $('#msg_content').text('neural network structure restored');
+      $('#action_msg').fadeIn().delay(2000).fadeOut(1000);
     }
   });
 
