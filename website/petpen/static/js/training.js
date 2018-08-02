@@ -61,6 +61,7 @@ $(function(){
   });
 });
 function getStatus(data){
+  console.log(data);
   switch(data['status']){
     case wordForIdle: currentMode = 'idle'; break;
     case wordForTraining: currentMode = 'training'; break;

@@ -40,7 +40,7 @@ def examples(request):
         newModel = NN_model(title=project.title,user=request.user,state_file=model_dir+"state.json",structure_file=model_dir+"result.json")
         newModel.save()
         shutil.copytree(op.join(MEDIA_ROOT,"models/{}/{}/".format(17,project.title)),op.join(MEDIA_ROOT,model_dir))
-        context['info'] = 'The example project {} is copied into your account.'
+        context['info'] = 'The example project {} is copied into your account.'.format(project.title)
     return render(request, 'petpen/example.html', context)
 
 @login_required

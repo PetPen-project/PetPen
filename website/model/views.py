@@ -440,19 +440,22 @@ def api(request):
     except:
         return HttpResponse('failed parsing status')
     history = project.history_set.last()
-    logfile_name = op.join(MEDIA_ROOT,op.dirname(project.structure_file),history.save_path,'logs/realtime_logging.txt')
-    if op.exists(logfile_name):
-        # log = {'epoch':[],'acc':[],'loss':[]}
-        log = []
-        with open(logfile_name,'r') as f:
-            for i,line in enumerate(f):
-                log.append(line)
-                # epoch,acc,loss = line.split(',')
-                # log['epoch'].append(epoch)
-                # log['acc'].append(acc)
-                # log['loss'].append(loss)
-    else:
+    if not history:
         log = None
+    else:
+        logfile_name = op.join(MEDIA_ROOT,op.dirname(project.structure_file),history.save_path,'logs/realtime_logging.txt')
+        if op.exists(logfile_name):
+            # log = {'epoch':[],'acc':[],'loss':[]}
+            log = []
+            with open(logfile_name,'r') as f:
+                for i,line in enumerate(f):
+                    log.append(line)
+                    # epoch,acc,loss = line.split(',')
+                    # log['epoch'].append(epoch)
+                    # log['acc'].append(acc)
+                    # log['loss'].append(loss)
+        else:
+            log = None
     info['log'] = log
     info['status'] = project.get_status_display()
     # if info['status'] in ['error','finish training']:
