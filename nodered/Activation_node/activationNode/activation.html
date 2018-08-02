@@ -1,0 +1,43 @@
+<script type="text/javascript">
+  RED.nodes.registerType('Activation',{
+    category: 'Core Layers',
+    color: '#ffaaaa',
+    defaults: {
+      name: {value:"activation"},
+      activation: {value: ""},
+    },
+    inputs:1,
+    outputs:1,
+    icon: "face.png",
+    label: function() {
+        return this.name||"Activation";
+    }
+  });
+</script>
+
+<script type="text/x-red" data-template-name="Activation">
+  <div class="form-row">
+    <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+    <input type="text" id="node-input-name" placeholder="Name">
+  </div>
+  <div class="form-row">
+    <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+    <input type="text" id="node-input-type" placeholder="Type" readonly>
+  </div>
+  <div class="form-row">
+    <label for="node-input-activation"><i class="icon-tag"></i> Activation</label>
+    <select id="node-input-activation">
+      <option value="" selected="selected">None</option>
+      <option value="softmax">Softmax</option>
+      <option value="sigmoid">Sigmoid</option>
+      <option value="tanh">Tanh</option>
+      <option value="relu">Relu</option>
+      <option value="softplu">Softplus</option>
+    </select>
+  </div>
+</script>
+
+<script type="text/x-red" data-help-name="Activation">
+    <p>A fully neural network layer that applies activation function to data.<br/>
+    </p>
+</script>

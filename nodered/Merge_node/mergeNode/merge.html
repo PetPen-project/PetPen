@@ -3,16 +3,16 @@
         category: 'Layer',
         color: '#ffaaaa',
         defaults: {
-            name: {value:"merge"},
-            type: {value:"Merge"},
-	    method: {value: ""},
-	    axis: {value: ""},
+          name: {value:"merge"},
+          type: {value:"Merge"},
+          method: {value: ""},
+          axis: {value: ""},
         },
         inputs:1,
         outputs:1,
         icon: "face.png",
         label: function() {
-            return this.name||"Output";
+            return this.name||"Merge";
         }
     });
 </script>
@@ -42,8 +42,8 @@
         <input type="text" id="node-input-axis" placeholder="Axis">
     </div>
 </script>
- 
-<script type="text/x-red" data-help-name="Hello World">
-    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+
+<script type="text/x-red" data-help-name="Merge">
+    <p>A node that joins multiple neural network nodes into a single output by the chosen method.<br/>
     </p>
 </script>
