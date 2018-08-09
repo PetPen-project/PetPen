@@ -1,9 +1,9 @@
 .upload-dataset-form {
   display: none;
   position: fixed;
-  top: 55px;
+  top: 0;
   left: 0;
-  padding-top: 20px;
+  padding-top: 75px;
   width: 100%;
   height: calc(100vh);
   z-index: 99;
@@ -28,10 +28,38 @@
   font-weight: bold;
   cursor: pointer; }
 
-.dataset-loading {
+#upload-progress {
   display: none;
   position: fixed;
-  bottom: 0; }
+  top: 0;
+  padding-top: calc(40vh);
+  left: 0;
+  width: 100%;
+  height: calc(100vh);
+  z-index: 99;
+  background-color: black;
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
+  text-align: center; }
+  #upload-progress .barProgress {
+    width: 0%;
+    background: #4CAF50; }
+
+#dataset-processing {
+  display: none;
+  position: fixed;
+  top: 0;
+  padding-top: calc(40vh);
+  left: 0;
+  width: 100%;
+  height: calc(100vh);
+  z-index: 99;
+  background-color: black;
+  /* Fallback color */
+  background-color: rgba(0, 0, 0, 0.4);
+  /* Black w/ opacity */
+  text-align: center; }
 
 .headerbar {
   height: 4rem;

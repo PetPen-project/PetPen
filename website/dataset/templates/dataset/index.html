@@ -96,7 +96,7 @@
   <!-- Upload form.-->
   <div class="upload-dataset-form" id="dataset-modal">
     <div class="form-content">
-      <form action="{% url "dataset:index" %}" method="post" enctype="multipart/form-data">
+      <form action="{% url "dataset:index" %}" method="post" enctype="multipart/form-data" id="dataUploadForm">
         {% csrf_token %}
         <p>Dataset title: {{ form.title }}</p>
 
@@ -142,8 +142,19 @@
       </div>
     </div>
   </div>
-    <div class="dataset-loading">
-      <h2><i class="fa fa-hourglass"></i> Loading dataset...</h2>
+  <div id="upload-progress">
+    <div class="form-content">
+      <!--<h2><i class="fa fa-hourglass"></i> Upoading dataset...</h2>-->
+      <h2>Upoading dataset...</h2>
+      <div class="progress-bar progress-bar-striped progress-bar-animated barProgress">
+        <span id="percent">0%</span>
+      </div>
+    </div>
+  </div>
+  <div id="dataset-processing">
+    <div class="form-content">
+      <h3>Please wait while we process your datset...</h3>
+      <i class="-fa fa-spin"></i>
     </div>
   </div>
 {% endblock %}

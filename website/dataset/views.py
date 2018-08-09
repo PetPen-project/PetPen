@@ -70,6 +70,7 @@ class DatasetListView(ListView):
         return self.render_to_response(context)
 
     def post(self, request, *args, **kwargs):
+        print(request.POST)
         self.object_list = self.get_queryset(request)
         context = self.get_context_data()
         form = self.form_class()
@@ -192,7 +193,7 @@ class DatasetDetailView(DetailView):
         try:
             obj = queryset.get(pk=self.kwargs['dataset_id'])
         except queryset.model.DoesNotExist:
-            raise Http404(_("No %(verbose_name)s found matching the query") %
+            raise Http404(("No %(verbose_name)s found matching the query") %
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
@@ -203,10 +204,12 @@ class DatasetDetailView(DetailView):
             context_object_name = self.get_context_object_name(self.object)
             if context_object_name:
                 context[context_object_name] = self.object
-            training_dataset = self.open_file(str(self.object.training_input_file))
-            context['train_sample_size'] = training_dataset.shape[0]
-            testing_dataset = self.open_file(str(self.object.testing_input_file))
-            context['test_sample_size'] = testing_dataset.shape[0]
+            # training_dataset = self.open_file(str(self.object.training_input_file))
+            # context['train_sample_size'] = training_dataset.shape[0]
+            # testing_dataset = self.open_file(str(self.object.testing_input_file))
+            # context['test_sample_size'] = testing_dataset.shape[0]
+            context['train_sample_size'] = self.object.train_samples
+            context['test_sample_size'] = self.object.test_samples
             context['train_input_size'] = os.stat(op.join(MEDIA_ROOT,str(self.object.training_input_file))).st_size
             context['train_output_size'] = os.stat(op.join(MEDIA_ROOT,str(self.object.training_output_file))).st_size
             context['test_input_size'] = os.stat(op.join(MEDIA_ROOT,str(self.object.testing_input_file))).st_size
@@ -237,16 +240,25 @@ class DatasetUpdateView(UpdateView):
         return redirect('dataset:dataset_detail', dataset_id = dataset.id)
 
 @login_required
-def dataset_detail(request, dataset_id):
+def dataset_view(request, dataset_id):
     context = {}
     dataset = get_object_or_404(Dataset, pk=dataset_id)
-    training_dataset = pd.read_csv(os.path.join(MEDIA_ROOT,str(dataset.training_input_file)),header=None)
-    context['train_sample_size'] = training_dataset.shape[0]
-    testing_dataset = pd.read_csv(os.path.join(MEDIA_ROOT,str(dataset.testing_input_file)),header=None)
-    context['test_sample_size'] = testing_dataset.shape[0]
-    context['train_input_size'] = os.stat(os.path.join(MEDIA_ROOT,str(dataset.training_input_file))).st_size
-    context['train_output_size'] = os.stat(os.path.join(MEDIA_ROOT,str(dataset.training_output_file))).st_size
-    context['test_input_size'] = os.stat(os.path.join(MEDIA_ROOT,str(dataset.testing_input_file))).st_size
-    context['test_output_size'] = os.stat(os.path.join(MEDIA_ROOT,str(dataset.testing_output_file))).st_size
-    return render(request,'dataset/dataset.html',context)
+    print(request.GET)
+    dataset_type = request.GET.get('type')
+    if dataset_type == 'tri':
+        dataset_filefield = dataset.training_input_file
+    elif dataset_type == 'tro':
+        dataset_filefield = dataset.training_output_file
+    elif dataset_type == 'tsi':
+        dataset_filefield = dataset.testing_input_file
+    elif dataset_type == 'tso':
+        dataset_filefield = dataset.testing_output_file
+    dataset_path = op.join(MEDIA_ROOT,dataset_filefield.name)
+    dataset_ext = op.splitext(dataset_filefield.name)[1]
+    if dataset_ext == '.pickle':
+        dataset_content = pd.read_pickle(dataset_path)
+    # response = HttpResponse(dataset_filefield.readlines() ,content_type='text/plain')
+    from IPython.display import display, HTML
+    response = HttpResponse(display(dataset_content) ,content_type='text/plain')
+    return response
 

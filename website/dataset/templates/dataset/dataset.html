@@ -26,46 +26,48 @@ $(function(){
 {% block content %}
 <div class="container-fluid mt-3">
   <div class="row justify-content-center">
-  <div class="col-lg-6">
-  <div class="card">
-    <h4 class="card-header">
-      <span id="hide-title" style="display:none;"></span>
-      <input id="dataset-title" type="text" style="border:0 none; cursor:text;background:none;" value="{{dataset.title}}">
-      <button class="btn btn-sm btn-info" id="rename-dataset"><i class="fa fa-pencil"></i> rename</button>
-      <button class="close btn btn-info"><i class="fa fa-trash"></i></button>
-    </h4>
-    <div class="card-body">
-      <table class="table">
-        <thead>
-          <tr>
-            <th></th>
-            <th>sample size</th>
-            <th>input file size</th>
-            <th></th>
-            <th>output file size</th>
-            <th></th>
-          </tr>
-          <tr>
-            <th>training</th>
-            <td>{{train_sample_size}}</td>
-            <td>{{train_input_size}}</td>
-            <td><button>update</button></td>
-            <td>{{train_output_size}}</td>
-            <td><button>update</button></td>
-          </tr>
-          <tr>
-            <th>test</th>
-            <td>{{test_sample_size}}</td>
-            <td>{{test_input_size}}</td>
-            <td><button>update</button></td>
-            <td>{{test_output_size}}</td>
-            <td><button>update</button></td>
-          </tr>
-        </thead>
-      </table>
+    <div class="col-lg-6">
+      <div class="card">
+        <h4 class="card-header">
+          <span id="hide-title" style="display:none;"></span>
+          <input id="dataset-title" type="text" style="border:0 none; cursor:text;background:none;" value="{{dataset.title}}">
+          <button class="btn btn-sm btn-info" id="rename-dataset"><i class="fa fa-pencil"></i> rename</button>
+          <button class="close btn btn-info"><i class="fa fa-trash"></i></button>
+        </h4>
+        <div class="card-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th></th>
+                <th>sample size</th>
+                <th>input file size</th>
+                <th></th>
+                <th>output file size</th>
+                <th></th>
+              </tr>
+              <tr>
+                <th>training</th>
+                <td>{{train_sample_size}}</td>
+                <td>{{train_input_size|filesizeformat}}</td>
+                <td><button>update</button></td>
+                <td>{{train_output_size|filesizeformat}}</td>
+                <td><button>update</button></td>
+              </tr>
+              <tr>
+                <th>test</th>
+                <td>{{test_sample_size}}</td>
+                <td>{{test_input_size|filesizeformat}}</td>
+                <td><button>update</button></td>
+                <td>{{test_output_size|filesizeformat}}</td>
+                <td><button>update</button></td>
+              </tr>
+            </thead>
+          </table>
+        </div>
+      </div>
     </div>
-  </div>
-  </div>
+    <div class="dataset-view">
+    </div>
   </div>
 </div>
 {% endblock %}

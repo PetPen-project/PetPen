@@ -30,6 +30,42 @@ $(document).ready(function(){
   $("#info-sidebar .close").click(function(){
     $("#info-sidebar").css("width","0");
   });
+  $('#dataUploadForm').submit(function(e){
+    e.preventDefault();
+    var data = new FormData($('#dataUploadForm')[0]);
+    $.ajax({
+      processData: false,
+      contentType: false,
+      data: data,
+      type: $('#dataUploadForm').attr('method'),
+      url: $('#dataUploadForm').attr('action'),
+      xhr: function(){
+        $('#upload-progress').css('display','block');
+        $('#percent').text('0%');
+        var xhr = new window.XMLHttpRequest();
+        //Upload progress
+        xhr.upload.addEventListener("progress", function(e){
+          if (e.lengthComputable) {
+            var percentComplete = e.loaded / e.total;
+            //Do something with upload progress
+            $('.barProgress').css ('width', (percentComplete)*100+'%');
+            $('#percent').text(Math.floor((percentComplete)*100)+'%');
+          }
+        }, false);
+        xhr.addEventListener("loadend", function(e){
+          $('upload-progress').css('display','none');
+          $('dataset-processing').css('display','block');
+        }, false);
+        return xhr;
+      },
+      success: function(response){
+        location.reload();
+      },
+      error: function(response){
+        alert(response['message']);
+      }
+    });
+  })
 });
 
 function setDeleteId(text){
