@@ -56,7 +56,7 @@
       {% elif history %}
         {% include_chart_jscss %}
         <span class="time-text">training time:  {{history.executed}}</span>
-        <form class="evaluation-form" enctype="multipart/form-data" action="{% url "model:backend_api"%}" method="post">
+        <form class="evaluation-form" enctype="multipart/form-data" action="{% url "model:backend_api" %}" method="post">
           {% csrf_token %}
           Run prediction
           <select id="evaluate-dataset" onchange="setDataset(this)">
@@ -75,29 +75,31 @@
             <input id="prediction-file" style="display:none;" name="file" type="file"/>
             upload
           </label>
-          <button class="buttons-sm" type="submit">start <i class="fa fa-play"></i></button>
+          <button class="buttons-sm" type="submit" onclick="return runPrediction();">start <i class="fa fa-play"></i></button>
         </form>
-        {% if chartcontainer_acc %}
-        {% load_chart charttype_acc chartdata_acc chartcontainer_acc extra %}
-        <div name="history-plot" class="text-center my-3">
-          <h1>Accuracy</h1>
-          {% include_container chartcontainer_acc 400 '100%' %}
+        <div class="history-plot">
+          {% if chartcontainer_acc %}
+          {% load_chart charttype_acc chartdata_acc chartcontainer_acc extra %}
+          <div class="text-center my-3">
+            <h1>Accuracy</h1>
+            {% include_container chartcontainer_acc 400 600 %}
+          </div>
+          {% endif %}
+          {% if chartcontainer_loss %}
+          {% load_chart charttype_loss chartdata_loss chartcontainer_loss extra %}
+          <div class="text-center my-3">
+            <h1>loss</h1>
+            {% include_container chartcontainer_loss 400 600 %}
+          </div>
+          {% endif %}
+          {% if chartcontainer %}
+          {% load_chart charttype chartdata chartcontainer extra %}
+          <div class="text-center my-3">
+            <h1>loss</h1>
+            {% include_container chartcontainer 400 600 %}
+          </div>
+          {% endif %}
         </div>
-        {% endif %}
-        {% if chartcontainer_loss %}
-        {% load_chart charttype_loss chartdata_loss chartcontainer_loss extra %}
-        <div name="history-plot" class="text-center my-3">
-          <h1>loss</h1>
-          {% include_container chartcontainer_loss 400 '100%' %}
-        </div>
-        {% endif %}
-        {% if chartcontainer %}
-        {% load_chart charttype chartdata chartcontainer extra %}
-        <div name="history-plot" class="text-center my-3">
-          <h1>loss</h1>
-          {% include_container chartcontainer 400 '100%' %}
-        </div>
-        {% endif %}
         <div class="alert alert-dark" role="alert">evaluation type: {{history.execution_type}}</div>
         <div class="alert alert-dark" role="alert">epochs: {{epochs}}</div>
         <div class="alert alert-dark" role="alert">best validation loss: {{best_loss_value}} at epoch {{best_epoch_loss}}</div>

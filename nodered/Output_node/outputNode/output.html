@@ -1,23 +1,23 @@
 <script type="text/javascript">
     RED.nodes.registerType('Output',{
-        category: 'Core Layers',
-        color: '#ffaaaa',
-        defaults: {
-            name: {value:"Output"},
-	    loss: {value:""},
-	    learningrate: {value:""},
-	    optimizer: {value: ""},
-	    epoch: {value: ""},
-            batchsize: {value: ""},
-            type: {value:"Output"},
-            datasetname: {value: "gg"},
-        },
-        inputs:1,
-        outputs:1,
-        icon: "face.png",
-        label: function() {
-            return this.name||"Output";
-        }
+      category: 'Core Layers',
+      color: '#ffaaaa',
+      defaults: {
+        name: {value:"Output"},
+        loss: {value:""},
+        learningrate: {value:""},
+        optimizer: {value: ""},
+        epoch: {value: ""},
+        batchsize: {value: ""},
+        type: {value:"Output"},
+        datasetname: {value: ""},
+      },
+      inputs:1,
+      outputs:1,
+      icon: "face.png",
+      label: function() {
+          return this.name||"Output";
+      }
     });
 </script>
 
@@ -27,26 +27,30 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
+        <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+        <input type="text" id="node-input-type" placeholder="Type" readonly>
+    </div>
+    <div class="form-row">
         <label for="node-input-loss"><i class="icon-tag"></i> Loss</label>
         <select id="node-input-loss" onchange="blurFunction(this)">
-                <option value="mean_squared_error">mean_squared_error</option>
-                <option value="mean_absolute_error">mean_absolute_error</option>
-                <option value="mean_absolute_percentage_error">mean_absolute_percentage_error</option>
-                <option value="mean_squared_logarithmic_error">mean_squared_logarithmic_error</option>
-                <option value="categorical_crossentropy">categorical_crossentropy</option>
-                <option value="binary_crossentropy">binary_crossentropy</option>
-		<option value="sparse_categorical_crossentropy">sparse_categorical_crossentropy</option>
+          <option value="mean_squared_error">mean_squared_error</option>
+          <option value="mean_absolute_error">mean_absolute_error</option>
+          <option value="mean_absolute_percentage_error">mean_absolute_percentage_error</option>
+          <option value="mean_squared_logarithmic_error">mean_squared_logarithmic_error</option>
+          <option value="categorical_crossentropy">categorical_crossentropy</option>
+          <option value="binary_crossentropy">binary_crossentropy</option>
+          <option value="sparse_categorical_crossentropy">sparse_categorical_crossentropy</option>
         </select>
     </div>
     <div class="form-row">
         <label for="node-input-optimizer"><i class="icon-tag"></i> Optimizer</label>
         <select id="node-input-optimizer" onchange="blurFunction(this)">
-                <option value="SGD">SGD</option>
-                <option value="RMSprop">RMSprop</option>
-                <option value="Adagrad">Adagrad</option>
-                <option value="Adam">Adam</option>
-                <option value="Adadelta>Adadelta</option>
-                <option value="Adamax">Adamax</option>
+          <option value="SGD">SGD</option>
+          <option value="RMSprop">RMSprop</option>
+          <option value="Adagrad">Adagrad</option>
+          <option value="Adam">Adam</option>
+          <option value="Adadelta>Adadelta</option>
+          <option value="Adamax">Adamax</option>
         </select>
     </div>
     <div class="form-row">
@@ -55,23 +59,19 @@
     </div>
     <div class="form-row">
         <label for="node-input-learningrate"><i class="icon-tag"></i> Learning rate</label>
-	<input type="text" id="node-input-learningrate" onchange="blurFunction(this)" placeholder="learningrate">
+        <input type="text" id="node-input-learningrate" onchange="blurFunction(this)" placeholder="learningrate">
     </div>
     <div class="form-row">
         <label for="node-input-batchsize"><i class="icon-tag"></i> Batch size</label>
         <input type="text" id="node-input-batchsize" onchange="blurFunction(this)" placeholder="Batch size">
     </div>
     <div class="form-row">
-        <label for="node-input-type"><i class="icon-tag"></i> Type</label>
-        <input type="text" id="node-input-type" placeholder="Type">
-    </div>
-    <div class="form-row">
-        <label for="node-input-datasetname"><i class="icon-tag"></i> Datasetname</label>
+        <label for="node-input-datasetname"><i class="icon-tag"></i> Dataset name</label>
         <input type="text" id="node-input-datasetname" placeholder="Datasetname">
     </div>
 </script>
  
-<script type="text/x-red" data-help-name="Hello World">
-    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+<script type="text/x-red" data-help-name="Output">
+    <p>This node indicates the output of the model. Hyperparameters are set in this node.<br/>
     </p>
 </script>

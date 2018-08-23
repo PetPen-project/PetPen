@@ -11,19 +11,28 @@
         outputs:1,
         icon: "face.png",
         label: function() {
-            return this.name||"Output";
+            return this.name||"Dropout";
         }
     });
 </script>
 
 <script type="text/x-red" data-template-name="Dropout">
     <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+        <input type="text" id="node-input-type" placeholder="Type" readonly>
+    </div>
+    <div class="form-row">
         <label for="node-input-rate"><i class="icon-tag"></i> Rate</label>
         <input type="text" id="node-input-rate" placeholder="Rate">
     </div>
 </script>
  
-<script type="text/x-red" data-help-name="Hello World">
-    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+<script type="text/x-red" data-help-name="Dropout">
+    <p>A node that applies dropout to the input.<br/>
+      A given <code>rate</code> of input units are set to 0 at each update during training time, which helps prevent overfitting.
     </p>
 </script>

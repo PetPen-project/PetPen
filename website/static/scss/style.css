@@ -82,6 +82,15 @@ a.buttons:hover, a.buttons-sm:hover {
     opacity: .65;
     box-shadow: 0px 2px 0px 0px #aed2bf; }
 
+.buttons-grey {
+  background: #BFBFBF;
+  box-shadow: 0px 5px 0px 0px #b2b2b2, 0px 0px 15px 0px #bbb; }
+  .buttons-grey:active {
+    top: 3px;
+    box-shadow: 0px 2px 0px 0px #b2b2b2; }
+  .buttons-grey:disabled {
+    box-shadow: 0px 2px 0px 0px #aed2bf; }
+
 .buttons-red {
   background: #dc3545;
   box-shadow: 0px 5px 0px 0px #d32535, 0px 0px 15px 0px #bbb; }

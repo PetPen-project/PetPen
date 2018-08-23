@@ -36,8 +36,7 @@
               <div id="btn-group">
                 <button class="action-btn" data-toggle="tooltip" title="click to show dataset properties on the sidebar" value="{{dataset.id}}" type="submit" name="info-dataset"><i class="fa fa-info"></i></button>
                 <button class="action-btn" data-toggle="tooltip" title="click to download this dataset as single zip file" value="{{dataset.id}}" type="submit" name="download-dataset"><i class="fa fa-download"></i></button>
-                <!--<button class="action-btn" data-toggle="tooltip" title="click to copy this dataset into your account" value="{{dataset.id}}" type="submit" name="copy-dataset"><i class="fa fa-copy"></i></button>-->
-                <button class="action-btn" data-toggle="tooltip" title="click to delete this dataset" value="{{dataset.id}}" type="submit" name="delete-dataset"><i class="fa fa-times"></i></button>
+                <button class="action-btn" data-toggle="modal" data-target="#confirmDelete" onclick="setDeleteId({{dataset.id}})" title="click to delete this dataset" value="{{dataset.id}}" type="button" name="delete-dataset"><i class="fa fa-times"></i></button>
               </div>
             </li>
             {% endfor %}
@@ -48,7 +47,23 @@
         {% endif %}
       </div>
     </div>
-    <div id="info-sidebar">
+    <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteTitle" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <form method="post" action="{% url "dataset:index" %}">
+              {% csrf_token %}
+            <h5>Confirm dataset deletion:</h5>
+            <button type="button" class="buttons-sm buttons-grey" data-dismiss="modal">Cancel</button>
+            <input type="hidden" id="delete-id" name="delete-dataset" value="">
+            <button type="submit" class="buttons-sm">Yes</button>
+            </form>
+          </div>
+        </div>
+      </div>
+  </div>
+  <div id="info-sidebar">
+    <div class="sidebar-content">
       <div class="close"><i class="fa fa-times"></i></div>
       {% if information %}
         <div class="item-title">{{information.title}}</div>
@@ -66,6 +81,10 @@
         <div class="item-content">{{information.train_samples}}</div>
         <span class="item-name">testing samples</span>
         <div class="item-content">{{information.test_samples}}</div>
+        <span class="item-name">input shape</span>
+        <div class="item-content">{{information.input_shape}}</div>
+        <span class="item-name">output shape</span>
+        <div class="item-content">{{information.output_shape}}</div>
         <span class="item-name">created</span>
         <div class="item-content">{{information.added|date:"M d, Y"}}</div>
       {% else %}
@@ -74,18 +93,18 @@
       {% endif %}
     </div>
   </div>
-    <!-- Upload form.-->
-    <div class="upload-dataset-form" id="dataset-modal">
-      <div class="form-content">
-        <form action="{% url "dataset:index" %}" method="post" enctype="multipart/form-data">
-          {% csrf_token %}
-          <p>Dataset title: {{ form.title }}</p>
+  <!-- Upload form.-->
+  <div class="upload-dataset-form" id="dataset-modal">
+    <div class="form-content">
+      <form action="{% url "dataset:index" %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <p>Dataset title: {{ form.title }}</p>
 
-          <p>{{ form.non_field_errors }}</p>
-          
-          <div id="training_upload" class="row">
-            <div id="training-input" class="col border border-dark mx-2 my-2">
-              <p>{{ form.training_input_file.label_tag }} {{ form.training_input_file.help_text }}</p>
+        <p>{{ form.non_field_errors }}</p>
+        
+        <div id="training_upload" class="row">
+          <div id="training-input" class="col border border-dark mx-2 my-2">
+            <p>{{ form.training_input_file.label_tag }} {{ form.training_input_file.help_text }}</p>
             <span>{{ form.training_input_file.errors }} {{ form.training_input_file }}</span>
           </div>
           <div id="training-output" class="col border border-dark mx-2 my-2">
@@ -123,7 +142,8 @@
       </div>
     </div>
   </div>
-  <div class="dataset-loading">
-    <h2><i class="fa fa-hourglass"></i> Loading dataset...</h2>
+    <div class="dataset-loading">
+      <h2><i class="fa fa-hourglass"></i> Loading dataset...</h2>
+    </div>
   </div>
 {% endblock %}

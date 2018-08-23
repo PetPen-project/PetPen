@@ -1,9 +1,11 @@
 {% extends 'nav.html' %}
 {% load static %}
+{% load sass_tags %}
+
 {% block title %}model index{% endblock %}
 
 {% block head %}
-  <link rel="stylesheet" href="{% static "css/project_index.css" %}">
+  <link rel="stylesheet" href="{% sass_src "scss/project_view.scss" %}">
   <script>
     function setDeleteId(text){
       $("#delete-id").val(text);
@@ -21,12 +23,13 @@
         }
       });
     };
-    function closeProject(){
+    function closeProject(title){
       $.ajax({
         url: "{% url "model:manage_editor" %}",
         method: "GET",
         data:{
-          action: "close"
+          action: "close",
+          target: title
         }
       });
     };
@@ -36,6 +39,31 @@
     };
     $('document').ready(function(){
       <!--$('editorOpen').on('click.open', function(e) { e.preventDefault(); window.open('{% url "model:manage_editor" %}') });-->
+      if($('.project-container').width()<1050){
+        $('button[name=editorOpen]').html(
+          '<i class="fa fa-edit"></i>edit');
+        $('button[name=editorClose]').html(
+          '<i class="fa fa-window-close"></i>close');
+        $('a[name=projectPage]').html(
+          '<i class="fa fa-bar-chart"></i>execute');
+      }
+      $(window).resize(function(){
+        if($('.project-container').width()<1050){
+          $('button[name=editorOpen]').html(
+            '<i class="fa fa-edit"></i>edit');
+          $('button[name=editorClose]').html(
+            '<i class="fa fa-window-close"></i>close');
+          $('a[name=projectPage]').html(
+            '<i class="fa fa-bar-chart"></i>execute');
+        }else{
+          $('button[name=editorOpen]').html(
+            '<i class="fa fa-edit"></i>open editor');
+          $('button[name=editorClose]').html(
+            '<i class="fa fa-window-close"></i>close editor');
+          $('a[name=projectPage]').html(
+            '<i class="fa fa-bar-chart"></i>execute model');
+        }
+      });
     });
   </script>
 {% endblock %}
@@ -74,17 +102,17 @@
               <th scope="row">{{ project.id }}</th>
               <td>{{ project.title }}</td>
               <td>{{ project.status }}</td>
-              <td>{{ project.modified }}</td>
+              <td>{{ project.modified|date:'Y-m-d H:i' }}</td>
               <td>{{ project.training_counts }}</td>
               <td>
                 <div class="buttons-group">
-                {% if project.status == "idle" %}
+                {% if project.status != "editing" %}
                 <!--<a id="editorOpen" target="_blank" href="{% url "model:manage_editor" %}" class="btn btn-sm btn-outline-primary" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-external-link"></i> open editor</a>-->
-                <button id="editorOpen" class="buttons-sm" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-edit"></i> open editor</button>
+                <button name="editorOpen" class="buttons-sm" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-edit"></i> open editor</button>
                 {% else %}
-                <button class="buttons-sm" onclick="closeProject()"><i class="fa fa-window-close"></i> close editor</button>
+                <button class="buttons-sm" onclick="closeProject(&#39;{{project.title}}&#39;)"><i class="fa fa-window-close"></i> close editor</button>
                 {% endif %}
-                <a href="{% url "model:project_detail" project.id %}" class="buttons-sm"><i class="fa fa-bar-chart"></i> execute model</a>
+                <a href="{% url "model:project_detail" project.id %}" class="buttons-sm" name="projectPage"><i class="fa fa-bar-chart"></i> execute model</a>
                 </div>
               </td>
               <td>
@@ -109,9 +137,9 @@
               <h5>Confirm project deletion:</h5>
             <!--</div>-->
             <!--<div class="modal-footer">-->
-              <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+              <button type="button" class="buttons-sm buttons-grey" data-dismiss="modal">Cancel</button>
               <input type="hidden" id="delete-id" name="delete-project" value="">
-              <button type="submit" class="btn btn-primary">Yes</button>
+              <button type="submit" class="buttons-sm">Yes</button>
               </form>
             </div>
           </div>
@@ -134,7 +162,7 @@
                   <label for="projectTitle">Project title:</label>
                   <input type="text" class="form-control" id="projectTitle" placeholder="Enter title" name="title" onchange="copyTextValue(this);"> 
                 </div>
-                <button type="submit" class="btn btn-primary">create</button>
+                <button type="submit" class="buttons-sm">create</button>
               </form>
             </div>
           </div>

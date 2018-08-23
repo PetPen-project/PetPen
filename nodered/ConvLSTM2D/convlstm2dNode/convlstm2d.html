@@ -3,53 +3,63 @@
         category: 'Recurrent Layers',
         color: '#ffaaaa',
         defaults: {
-            name: {value:"convlstm2d"},
-            type: {value:"ConvolutionLSTM_2D"},
-	    filters: {value: ""},
-	    kernel: {value: ""},
-	    strides: {value: ""},
-	    activation: {value: ""},
-	    padding: {value: ""},
-	    recurrent_activation: {value: ""},
-	    return_sequence: {value: ""},
-	    dropout: {value: ""},
-	    recurrent_dropout: {value: ""},
+          name: {value:"convlstm2d"},
+          type: {value:"ConvolutionLSTM_2D"},
+          filters: {value: ""},
+          kernel: {value: ""},
+          strides: {value: ""},
+          activation: {value: ""},
+          padding: {value: "valid"},
+          recurrent_activation: {value: ""},
+          return_sequence: {value: ""},
+          dropout: {value: ""},
+          recurrent_dropout: {value: ""},
         },
         inputs:1,
         outputs:1,
         icon: "face.png",
         label: function() {
-            return this.name||"Convolution";
+            return this.name||"ConvolutionLSTM";
         }
     });
 </script>
 
 <script type="text/x-red" data-template-name="ConvolutionLSTM_2D">
     <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+        <input type="text" id="node-input-type" placeholder="Type" readonly>
+    </div>
+    <div class="form-row">
         <label for="node-input-activation"><i class="icon-tag"></i> Activation</label>
-    	<select id="node-input-activation" onchange="blurFunction(this)">
-  		<option value="softmax">Softmax</option>
-  		<option value="sigmoid">Sigmoid</option>
-  		<option value="tanh">Tanh</option>
-  		<option value="relu">Relu</option>
-  		<option value="softplus">Softplus</option>
+    	<select id="node-input-activation">
+          <option value="" selected="selected">None</option>
+          <option value="softmax">Softmax</option>
+          <option value="sigmoid">Sigmoid</option>
+          <option value="tanh">Tanh</option>
+          <option value="relu">Relu</option>
+          <option value="softplus">Softplus</option>
     	</select>
     </div>
     <div class="form-row">
-        <label for="node-input-padding"><i class="icon-tag"></i> Padding</label>
-    	<select id="node-input-padding">
-  		<option value="valid">Valid</option>
-  		<option value="same">Same</option>
-    	</select>
+      <label for="node-input-padding"><i class="icon-tag"></i> Padding</label>
+      <select id="node-input-padding">
+        <option selected="selected" value="valid">Valid</option>
+        <option value="same">Same</option>
+      </select>
     </div>
     <div class="form-row">
-        <label for="node-input-recurrent_activation"><i class="icon-tag"></i> Recurrent_Activation</label>
+      <label for="node-input-recurrent_activation"><i class="icon-tag"></i> Recurrent_Activation</label>
     	<select id="node-input-recurrent_activation">
-  		<option value="softmax">Softmax</option>
-  		<option value="sigmoid">Sigmoid</option>
-  		<option value="tanh">Tanh</option>
-  		<option value="relu">Relu</option>
-  		<option value="softplus">Softplus</option>
+        <option value="" selected="selected">None</option>
+        <option value="softmax">Softmax</option>
+        <option value="sigmoid">Sigmoid</option>
+        <option value="tanh">Tanh</option>
+        <option value="relu">Relu</option>
+        <option value="softplus">Softplus</option>
     	</select>
     </div>
     <div class="form-row">
@@ -84,15 +94,15 @@
         <input type="text" id="node-input-topic" placeholder="Topic">
     </div>
 </script>
-<script type="text/javascript"> 
+<script type="text/javascript">
     function blurFunctiong(gy) {
 	if (gy.value == "") {
 	gy.style.background = "red";
 	}
     }
 </script>
- 
-<script type="text/x-red" data-help-name="Hello World">
-    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+
+<script type="text/x-red" data-help-name="ConvolutionLSTM_2D">
+    <p>A LSTM layer for handling spatiotemporal data.<br/>
     </p>
 </script>

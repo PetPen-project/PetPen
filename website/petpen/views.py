@@ -76,6 +76,6 @@ def examples_dataset(request):
             )
         newDataset.save()
         # shutil.copytree(op.join(MEDIA_ROOT,"models/{}/{}/".format(17,project.title)),op.join(MEDIA_ROOT,model_dir))
-        context['info'] = 'The example dataset {} is copied into your account.'
+        context['info'] = 'The example dataset {} is copied into your account.'.format(dataset.title)
     return render(request, 'petpen/example_dataset.html', context)
 

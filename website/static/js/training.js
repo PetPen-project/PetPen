@@ -22,6 +22,7 @@ var chart = '';
 
 $(function(){
   $('#trainModel').click(function(){
+    initPlot();
     $.ajax({
       async:false,
       url: "/model/api/backend/",
@@ -33,6 +34,7 @@ $(function(){
       }
     });
     $('#trainModel').attr('disabled',true);
+    currentMode = "loading";
   });
   $('#stopTrainModel').click(function(){
     $.ajax({
@@ -90,7 +92,7 @@ function printJSON(data){
     $('#txfStatus').val(data['status']);//status
     $('#txfTime').val(data['time']);//time
     if ('loss' in data && data['loss']['value']!='null'){
-      var lossText = data['loss']['type'] + ':' + data['loss']['value'];//loss
+      var lossText = data['loss']['type'] + ': ' + data['loss']['value'];//loss
     } else{
       var lossText = '--';
     }
@@ -98,6 +100,8 @@ function printJSON(data){
       $('.txfLoss[name="' + currentMode + '"]').val(lossText);
       setProgessBar('barEpoch', currentMode, data['epoch']);//epoch
       setProgessBar('barProgress', currentMode, data['progress']);//progress
+    }else if(currentMode=='error'){
+      $('#txfError').val(data['detail']);
     }
   }
 
@@ -135,37 +139,34 @@ function printJSON(data){
     }
 };
 function initPlot(){
-svg = d3.select("svg");
-chart = nv.models.lineChart()
-  .x(function(d,i){return d[0]})
-  .y(function(d){return d[1]})
-  .color(d3.scale.category10().range())
-  .useInteractiveGuideline(true)
-  .noData('Empty data')
-  ;
-chart.xAxis
-  .axisLabel('Epoch');
-chart.yAxis
-  .tickFormat(d3.format(',.3f'));
-nv.utils.windowResize(chart.update);
+  svg = d3.select("svg");
+  chart = nv.models.lineChart()
+    .x(function(d,i){return d[0]})
+    .y(function(d){return d[1]})
+    .color(d3.scale.category10().range())
+    .useInteractiveGuideline(true)
+    .noData('Empty data')
+    ;
+  chart.xAxis
+    .axisLabel('Epoch');
+  chart.yAxis
+    .tickFormat(d3.format(',.3f'));
+  nv.utils.windowResize(chart.update);
 
-svg.datum([])
-  .call(chart);
-return chart;
+  svg.datum([])
+    .call(chart);
+  return chart;
 };
 function updatePlot(data){
-  //console.log(data.epoch[0]);
   plotdata = svg.datum();
-  if(data.status==wordForTraining){
-    if (!plotdata[0]){
-      plotdata[0] = {'key':'training','values':[[data.epoch[0],data.loss.value]]};
-    }else{
-      if(!plotdata[0].values.find(function(item,index,array){
-        return item[0] == data.epoch[0];
-      })){
-        plotdata[0].values.push([data.epoch[0],data.loss.value]);
-      }
-    }
+  if(data.status==wordForTraining && data.log){
+  plotdata[0] = {
+    'key':'training',
+    'values':data.log.map(function(item){
+      var log = item.split(',');
+      return [parseInt(log[0]),parseFloat(log[2])];
+    })
+  };
   }
   //chart.yDomain = [-1,10];//[plotdata[0].values]
   //plotdata.push({'key':'test','values':[[data.loss.value]]});

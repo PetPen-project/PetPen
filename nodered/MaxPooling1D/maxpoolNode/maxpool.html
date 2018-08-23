@@ -4,45 +4,46 @@
         color: '#ffaaaa',
         defaults: {
             name: {value:"maxpooling1d"},
-	    units: {value: ""},
+            units: {value: ""},
             type: {value:"MaxPooling1D"},
-	    activation: {value: ""},
+            activation: {value: ""},
         },
         inputs:1,
         outputs:1,
         icon: "face.png",
         label: function() {
-            return this.name||"Output";
+            return this.name||"MaxPooling1D";
         }
     });
 </script>
 
-<script type="text/x-red" data-template-name="Dense">
+<script type="text/x-red" data-template-name="MaxPooling1D">
     <div class="form-row">
         <label for="node-input-name"><i class="icon-tag"></i> Name</label>
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
     <div class="form-row">
         <label for="node-input-type"><i class="icon-tag"></i> Type</label>
-        <input type="text" id="node-input-type" placeholder="Type">
+        <input type="text" id="node-input-type" placeholder="Type" readonly>
     </div>
     <div class="form-row">
-        <label for="node-input-activation"><i class="icon-tag"></i> Activation</label>
-        <select id="node-input-activation">
-                <option value="softmax">Softmax</option>
-                <option value="sigmoid">Sigmoid</option>
-		<option value="tanh">Tanh</option>
-		<option value="relu">Relu</option>
-		<option value="softplu">Softplus</option>
+        <label for="node-input-padding"><i class="icon-tag"></i> Padding</label>
+        <select id="node-input-padding">
+                <option selected="selected" value="valid">valid</option>
+                <option value="same">same</option>
         </select>
     </div>
     <div class="form-row">
-        <label for="node-input-units"><i class="icon-tag"></i> Units</label>
-        <input type="text" id="node-input-units" placeholder="Units">
+        <label for="node-input-poolsize"><i class="icon-tag"></i> Pool_size</label>
+        <input type="text" id="node-input-poolsize" onchange="blurFunction(this)" placeholder="Poolsize">
+    </div>
+    <div class="form-row">
+        <label for="node-input-strides"><i class="icon-tag"></i> Strides</label>
+        <input type="text" id="node-input-strides" placeholder="Strides">
     </div>
 </script>
  
-<script type="text/x-red" data-help-name="Hello World">
-    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+<script type="text/x-red" data-help-name="MaxPooling1D">
+    <p>A node that applies max pooling operation for temporal data.<br/>
     </p>
 </script>

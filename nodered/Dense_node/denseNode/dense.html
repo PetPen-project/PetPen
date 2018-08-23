@@ -4,15 +4,15 @@
         color: '#ffaaaa',
         defaults: {
             name: {value:"dense"},
-	    units: {value: ""},
+            units: {value: ""},
             type: {value:"Dense"},
-	    activation: {value: ""},
+            activation: {value: ""},
         },
         inputs:1,
         outputs:1,
         icon: "face.png",
         label: function() {
-            return this.name||"Output";
+            return this.name||"Dense";
         }
     });
 </script>
@@ -24,16 +24,17 @@
     </div>
     <div class="form-row">
         <label for="node-input-type"><i class="icon-tag"></i> Type</label>
-        <input type="text" id="node-input-type" placeholder="Type">
+        <input type="text" id="node-input-type" placeholder="Type" readonly>
     </div>
     <div class="form-row">
         <label for="node-input-activation"><i class="icon-tag"></i> Activation</label>
-        <select id="node-input-activation" onchange="blurFunction(this)" >
-                <option value="softmax">Softmax</option>
-                <option value="sigmoid">Sigmoid</option>
-		<option value="tanh">Tanh</option>
-		<option value="relu">Relu</option>
-		<option value="softplu">Softplus</option>
+        <select id="node-input-activation">
+          <option value="" selected="selected">None</option>
+          <option value="softmax">Softmax</option>
+          <option value="sigmoid">Sigmoid</option>
+          <option value="tanh">Tanh</option>
+          <option value="relu">Relu</option>
+          <option value="softplu">Softplus</option>
         </select>
     </div>
     <div class="form-row">
@@ -41,8 +42,8 @@
         <input type="text" id="node-input-units" onchange="blurFunction(this)" placeholder="Units">
     </div>
 </script>
- 
-<script type="text/x-red" data-help-name="Hello World">
-    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+
+<script type="text/x-red" data-help-name="Dense">
+    <p>A fully connected neural network layer.<br/>
     </p>
 </script>

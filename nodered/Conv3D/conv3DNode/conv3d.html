@@ -3,40 +3,49 @@
         category: 'Convolution Layers',
         color: '#ffaaaa',
         defaults: {
-            name: {value:"conv3d"},
-            type: {value:"Conv3D"},
-	    filters: {value: ""},
-	    kernel: {value: ""},
-	    strides: {value: "0"},
-	    padding: {value: "0"},
-	    activation: {value: ""},
+          name: {value:"conv3d"},
+          type: {value:"Conv3D"},
+          filters: {value: ""},
+          kernel: {value: ""},
+          strides: {value: ""},
+          padding: {value: "valid"},
+          activation: {value: ""},
         },
         inputs:1,
         outputs:1,
         icon: "face.png",
         label: function() {
-            return this.name||"Convolution";
+            return this.name||"Convolution3D";
         }
     });
 </script>
 
 <script type="text/x-red" data-template-name="Conv3D">
     <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
         <label for="node-input-activation"><i class="icon-tag"></i> Activation</label>
-    	<select id="node-input-activation" onchange="blurFunction(this)">
-  		<option value="softmax">Softmax</option>
-  		<option value="sigmoid">Sigmoid</option>
-  		<option value="tanh">Tanh</option>
-  		<option value="relu">Relu</option>
-  		<option value="softplus">Softplus</option>
+    	<select id="node-input-activation">
+        <option value="" selected="selected">None</option>
+        <option value="softmax">Softmax</option>
+        <option value="sigmoid">Sigmoid</option>
+        <option value="tanh">Tanh</option>
+        <option value="relu">Relu</option>
+        <option value="softplus">Softplus</option>
     	</select>
     </div>
     <div class="form-row">
-        <label for="node-input-padding"><i class="icon-tag"></i> Padding</label>
+        <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+        <input type="text" id="node-input-type" placeholder="Type" readonly>
+    </div>
+    <div class="form-row">
+      <label for="node-input-padding"><i class="icon-tag"></i> Padding</label>
     	<select id="node-input-padding">
-  		<option value="valid">Valid</option>
-  		<option value="same">Same</option>
-	</select>
+        <option selected="selected" value="valid">Valid</option>
+        <option value="same">Same</option>
+      </select>
     </div>
     <div class="form-row">
         <label for="node-input-filters"><i class="icon-tag"></i> Filters</label>
@@ -51,6 +60,7 @@
         <input type="text" id="node-input-strides" placeholder="Strides">
     </div>
 </script>
+
 <script type="text/javascript"> 
     function blurFunction(gy) {
 	console.log(gy.value);
@@ -61,7 +71,8 @@
 	}
     }
 </script>
-<script type="text/x-red" data-help-name="Hello World">
-    <p>A node that increments every time a new message is received and sends Hello World in return.<br/>
+<script type="text/x-red" data-help-name="Conv3D">
+    <p>A 3D convolution layer (e.g. spatial convolution over volumes).<br/>
+      The input of this layer if of shape (spatial_dim1, spatial_dim2, spatial_dim3, channels).
     </p>
 </script>
