@@ -469,9 +469,11 @@ def api(request):
             project.status = 'idle'
             project.save()
         elif project.status == 'error':
-            if info.get('error_log_file'):
-                with open(info['error_log_file']) as f:
-                    info['detail'] = f.read()
+            # if info.get('error_log_file'):
+                # with open(info['error_log_file']) as f:
+                    # info['detail'] = f.read()
+            with open(op.join(MEDIA_ROOT,op.dirname(project.structure_file),history.save_path,'logs/error_log')) as f:
+                info['detail'] = f.read()
     if project.status in ['training','finish'] and info['loss']['value'] and np.isnan(info['loss']['value']):
         info['loss']['value'] = 'nan'
     return JsonResponse(info)

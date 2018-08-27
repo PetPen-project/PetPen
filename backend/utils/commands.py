@@ -77,9 +77,9 @@ def validate_func(args, log_dir):
     with open(model_path) as f:
         model_parser = json.load(f)
 
-    for key in model_parser['layers']:
-        if 'output' in key:
-            loss = model_parser['layers'][key]['params']['loss']
+    for key,value in model_parser['layers'].items():
+        if value['type'] == 'Output':
+            loss = value['params']['loss']
 
     if 'entropy' in loss:
         problem = 'classification'
@@ -124,9 +124,9 @@ def predict_func(args, log_dir):
     with open(model_path) as f:
         model_parser = json.load(f)
 
-    for key in model_parser['layers']:
-        if 'output' in key:
-            loss = model_parser['layers'][key]['params']['loss']
+    for key,value in model_parser['layers'].items():
+        if value['type'] == 'Output':
+            loss = value['params']['loss']
 
     if 'entropy' in loss:
         problem = 'classification'
