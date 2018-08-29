@@ -201,7 +201,6 @@ module.exports = function(RED) {
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'File') {
-<<<<<<< HEAD
 		path = obj[ind]['file'];
 		console.log("myfile");
 		console.log(path);
@@ -320,64 +319,6 @@ module.exports = function(RED) {
     	}
 	json = JSON.stringify(res);
         fs.writeFileSync('result.json', json, 'utf-8');
-=======
-          path = obj[ind]['file'];
-          console.log("myfile");
-          console.log(path);
-        } else if (obj[ind]['type'] == 'Pretrained') {
-          name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'Pretrained', params: {project_name: obj[ind]['source'], nodes: obj[ind]['pretrainedoutput'], weight_file: obj[ind]['weightfile'], trainable: obj[ind]['trainable']}};
-          rec[obj[ind]['id']] =name;
-          obj[ind]['name'] = name;
-        } else if (obj[ind]['type'] == 'Flatten') {
-          name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'Flatten', params: {}};                      
-          rec[obj[ind]['id']] =name;            
-          obj[ind]['name'] = name; 
-        } else if (obj[ind]['type'] == 'BatchNormalization') {
-          name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'BatchNormalization', params: {axis: obj[ind]['axis']}};
-          rec[obj[ind]['id']] = name;
-          obj[ind]['name']= name;
-        }
-      }
-	    console.log(subid);
-      for (var i in obj) {
-        name = obj[i]['name'];
-        if (obj[i]['wires'] == null) {
-          if (obj[i]['name'] == 'subreplace') {
-            input = obj[i]['in'][0]['wires'][0]['id'];
-            output = obj[i]['out'][0]['wires'][0]['id'];
-          }
-        } else if (name != ""){
-          tmp = obj[i]['wires'];
-          res_t = []
-          if (tmp == subid) {
-            res_t.push(rec[input]);
-          } else {
-            for (var ii = 0; ii < tmp.length; ii++) {
-              for (var jj = 0; jj < tmp[ii].length; jj++) {
-                if (tmp[ii][jj] == subid) {
-                  console.log("wrong")
-                  res_t.push(rec[output]);
-                } else {
-                  res_t.push(rec[tmp[ii][jj]]);
-                }
-              }
-            }
-          }
-          if (res_t.length > 0) {
-            if (obj[i]['id'] == subid) {
-              res.connections[rec[output]] = res_t;
-            } else {
-              res.connections[name] = res_t;
-            }
-          }
-        }	
-      }
-      json = JSON.stringify(res);
-      fs.writeFileSync('result.json', json, 'utf-8');
->>>>>>> 48ddf8acc649cf4c29a37a550eddf170322b28dc
       node.send(msg);
     });
   }
