@@ -4,14 +4,14 @@ module.exports = function(RED) {
     var node = this;
     this.on('input', function(msg) {
     function iterationCopy(src) {
-  	let target = {};
-  	for (let prop in src) {
-    		if (src.hasOwnProperty(prop)) {
-      		target[prop] = src[prop];
-    	}
+  	target = {};
+  	for (prop in src) {
+    	  if (src.hasOwnProperty(prop)) {
+      	    target[prop] = src[prop];
+    	  }
   	}
   	return target;
-	}
+    }
       var fs = require('fs');
       var date = new Date();
       var timest = date.getTime();
@@ -239,7 +239,6 @@ module.exports = function(RED) {
 		    console.log(obj[x])
 		tmp = null
 		tmp = JSON.parse(JSON.stringify(obj[x]))
-		/*tmp = iterationCopy(obj[x])*/
 		tmp['id'] = Math.random().toString(36).substr(2, 9) 
 	        name = tmp['name'] + "_" + timest;
 		tmp['name'] = name
