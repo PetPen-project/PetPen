@@ -2,9 +2,29 @@ from django import forms
 
 from .formatChecker import ExtFileField
 
-content_types = ['.csv','.pickle','.pkl','.npy']
+content_types = ['.csv','.pickle','.pkl','.npy','.zip']
 class UploadFileForm(forms.Form):
     title = forms.CharField(max_length=50)
+    # training_input_img = ExtFileField(
+        # help_text='(in zip format)',
+        # label='training input images',
+        # content_types=['.zip'],
+    # )
+    # testing_input_img = ExtFileField(
+        # help_text='(in zip format)',
+        # label='testing input images',
+        # content_types=['.zip'],
+    # )
+    # training_output_img = ExtFileField(
+        # help_text='(in zip format)',
+        # label='training output images',
+        # content_types=['.zip'],
+    # )
+    # testing_output_img = ExtFileField(
+        # help_text='(in zip format)',
+        # label='testing output images',
+        # content_types=['.zip'],
+    # )
     training_input_file = ExtFileField(
         help_text='select a csv/pickle file',
         label='training input data',
