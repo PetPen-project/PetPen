@@ -1,0 +1,37 @@
+<script type="text/javascript">
+    RED.nodes.registerType('Loop',{
+        category: 'Core Layers',
+        color: '#ffaaaa',
+        defaults: {
+            name: {value:"loop"},
+            type: {value:"Loop"},
+            iter: {value: ""},
+        },
+        inputs:1,
+        outputs:1,
+        icon: "face.png",
+        label: function() {
+            return this.name||"Loop";
+        }
+    });
+</script>
+
+<script type="text/x-red" data-template-name="Loop">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+    <div class="form-row">
+        <label for="node-input-type"><i class="icon-tag"></i> Type</label>
+        <input type="text" id="node-input-type" placeholder="Type" readonly>
+    </div>
+    <div class="form-row">
+        <label for="node-input-iter"><i class="icon-tag"></i> Iters</label>
+        <input type="text" id="node-input-iter" onchange="blurFunction(this)" placeholder="Iter">
+    </div>
+</script>
+
+<script type="text/x-red" data-help-name="Loop">
+    <p>A fully connected neural network layer.<br/>
+    </p>
+</script>
