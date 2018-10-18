@@ -16,6 +16,7 @@ parser.add_argument('-testy', '--testy', required=False, default=None, help='tes
 parser.add_argument('-w', '--weight', required=False, default=None, help='set -w to load weight')
 parser.add_argument('-t', '--time', required=False, default=None, help='set -t to indicate backend start time')
 parser.add_argument('-id', '--id', required=False, default=None, help='project id')
+parser.add_argument('-header', '--header', required=False, default=False, help='whether to parse the csv header')
 
 subparser = subparsers.add_parser('train')
 subparser.set_defaults(func=train_func)

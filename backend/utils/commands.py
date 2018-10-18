@@ -19,6 +19,7 @@ def build_model(args):
     trainy = args.trainy
     testx = args.testx
     testy = args.testy
+    csv_header = args.header
 
     weight_file = args.weight
 
@@ -31,7 +32,7 @@ def build_model(args):
         # if os.path.exists(weight_file):
         model = load_model(weight_file)
     else:
-        model = backend_model(model_path, trainx, trainy, testx, testy)
+        model = backend_model(model_path, trainx, trainy, testx, testy, csv_header)
 
     model.summary()
 
@@ -62,10 +63,11 @@ def train_func(args, log_dir):
 def validate_func(args, log_dir):
     # Required: testx, testy, model_dir, weight
     id = args.id
+    csv_header = args.header
     change_status('loading', id)
 
-    test_data = load_file(args.testx)
-    test_target = load_file(args.testy)
+    test_data = load_file(args.testx, csv_header)
+    test_target = load_file(args.testy, csv_header)
     model = load_model(args.weight)
     
     change_status('executing', id)
@@ -77,9 +79,9 @@ def validate_func(args, log_dir):
     with open(model_path) as f:
         model_parser = json.load(f)
 
-    for key in model_parser['layers']:
-        if 'output' in key:
-            loss = model_parser['layers'][key]['params']['loss']
+    for key,value in model_parser['layers'].items():
+        if value['type'] == 'Output':
+            loss = value['params']['loss']
 
     if 'entropy' in loss:
         problem = 'classification'
@@ -110,9 +112,11 @@ def validate_func(args, log_dir):
 def predict_func(args, log_dir):
     # Required: testx, model_dir, weight
     id = args.id
+    csv_header = args.header
+    
     change_status('loading', id)
 
-    test_data = load_file(args.testx)
+    test_data = load_file(args.testx, csv_header)
     model = load_model(args.weight)
     
     change_status('executing', id)
@@ -124,9 +128,9 @@ def predict_func(args, log_dir):
     with open(model_path) as f:
         model_parser = json.load(f)
 
-    for key in model_parser['layers']:
-        if 'output' in key:
-            loss = model_parser['layers'][key]['params']['loss']
+    for key,value in model_parser['layers'].items():
+        if value['type'] == 'Output':
+            loss = value['params']['loss']
 
     if 'entropy' in loss:
         problem = 'classification'
