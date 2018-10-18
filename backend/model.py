@@ -1,4 +1,4 @@
-from keras.models import Model, load_model
+rom keras.models import Model, load_model
 from keras.utils.np_utils import to_categorical
 from keras.utils import plot_model
 from keras.optimizers import *
@@ -7,8 +7,11 @@ import numpy as np
 import pandas as pd
 import json, os, pickle, re
 
-def load_csv(data):
-    result = pd.read_csv(data, header=None).values
+def load_csv(data, header):
+    if header:
+        result = pd.read_csv(data).values
+    else:
+        result = pd.read_csv(data, header=None).values
     return np.array(result)
 
 def load_pkl(data):
@@ -22,16 +25,17 @@ def load_npy(data):
     result = np.load(data)
     return result
 
-def load_file(f):
+def load_file(f, header=False):
     if '.csv' in f:
-        return load_csv(f)
+        return load_csv(f, header)
     elif '.pkl' in f or '.pickle' in f:
         return load_pkl(f)
     elif 'npy' in f:
         return load_npy(f)
 
 class backend_model():
-    def __init__(self, model_path, trainx, trainy, testx, testy):
+    def __init__(self, model_path, trainx, trainy, testx, testy, csv_header):
+        self.csv_header = csv_header
         self.load_dataset(trainx, trainy, testx, testy)
         self.model, self.config, self.inputs, self.outputs = self.get_model(model_path)
         self.loss = self.config.get('loss') or None
@@ -61,7 +65,7 @@ class backend_model():
         if train_input or train_output or test_input or test_output:
             self.get_data_from_json = False
             if '.csv' in train_input:
-                self.train_x, self.train_y, self.valid_x, self.valid_y = load_csv(train_input), load_csv(train_output), load_csv(test_input), load_csv(test_output)
+                self.train_x, self.train_y, self.valid_x, self.valid_y = load_csv(train_input, self.csv_header), load_csv(train_output, self.csv_header), load_csv(test_input, self.csv_header), load_csv(test_output, self.csv_header)
             elif '.pkl' in train_input or '.pickle' in train_input:
                 self.train_x, self.train_y, self.valid_x, self.valid_y = load_pkl(train_input), load_pkl(train_output), load_pkl(test_input), load_pkl(test_output)
         else:
@@ -123,8 +127,8 @@ class backend_model():
         inputs = list(filter(lambda layer_name: layers[layer_name]['type']=='Input', layers))
         if self.get_data_from_json:
             for i in inputs:
-                self.train_x.append(load_file(dataset[i]['train_x']))
-                self.valid_x.append(load_file(dataset[i]['valid_x']))
+                self.train_x.append(load_file(dataset[i]['train_x'], self.csv_header))
+                self.valid_x.append(load_file(dataset[i]['valid_x'], self.csv_header))
 
         # Prepared for return values
         input_names = inputs
@@ -186,8 +190,8 @@ class backend_model():
                         config = layer_params
                         output_names.append(conn_out)
                         if self.get_data_from_json:
-                            self.train_y.append(load_file(dataset[conn_out]['train_y']))
-                            self.valid_y.append(load_file(dataset[conn_out]['valid_y']))
+                            self.train_y.append(load_file(dataset[conn_out]['train_y'], csv_header))
+                            self.valid_y.append(load_file(dataset[conn_out]['valid_y'], csv_header))
 
                     elif layer_type.lower() == 'pretrained':
                         pretrained_model = load_pretrained_model(layer_params)
