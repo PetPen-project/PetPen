@@ -1,4 +1,4 @@
-rom keras.models import Model, load_model
+from keras.models import Model, load_model
 from keras.utils.np_utils import to_categorical
 from keras.utils import plot_model
 from keras.optimizers import *
