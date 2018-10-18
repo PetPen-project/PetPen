@@ -1,0 +1,14 @@
+{
+    "name": "Loop_node",
+    "version": "0.0.1",
+    "description": "A loop node",
+    "dependencies": {},
+    "keywords": [
+        "node-red"
+    ],
+    "node-red": {
+        "nodes": {
+            "loop_sample": "loopNode/loop.js"
+        }
+    }
+}
