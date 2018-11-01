@@ -190,8 +190,8 @@ class backend_model():
                         config = layer_params
                         output_names.append(conn_out)
                         if self.get_data_from_json:
-                            self.train_y.append(load_file(dataset[conn_out]['train_y'], csv_header))
-                            self.valid_y.append(load_file(dataset[conn_out]['valid_y'], csv_header))
+                            self.train_y.append(load_file(dataset[conn_out]['train_y'], self.csv_header))
+                            self.valid_y.append(load_file(dataset[conn_out]['valid_y'], self.csv_header))
 
                     elif layer_type.lower() == 'pretrained':
                         pretrained_model = load_pretrained_model(layer_params)
