@@ -29,8 +29,8 @@ module.exports = function(RED) {
       var rec = {};
       var input = null 
       var output = null 
-      var subids = {}; 
-      var subflows_object = {}
+      var subflow_ids = {}; 
+      var subflows_type = {}
       for (var ind in obj) {
         if (obj[ind]['type'] == 'Convolution') {
           name = obj[ind]['name'] + "_" + ind + "_" +  timest;
@@ -41,8 +41,8 @@ module.exports = function(RED) {
 	  name =  "subreplace" + ind + "_" + timest;
 	  input = obj[ind]['in'][0]['wires'][0]['id'];
 	  output = obj[ind]['out'][0]['wires'][0]['id'];
-	  subflows_object[obj[ind]['id']] = [input, output]
-	  subids[obj[ind]['id']] = {}
+	  subflows_type[obj[ind]['id']] = [input, output]
+	  subflow_ids[obj[ind]['id']] = {}
 	  rec[obj[ind]['id']] = name;
 	  obj[ind]['name'] = name;
 	} else if (obj[ind]['type'].substr(0, 8) == 'subflow:') {
@@ -50,7 +50,7 @@ module.exports = function(RED) {
 		console.log("subflow.....")
 	  name =  obj[ind]['type'] + "_" + ind + "_" + timest;
 	  scope = obj[ind]['type'].substr(8, 21)
-	  subids[scope][obj[ind]['id']] = obj[ind]['type'].substr(8)
+	  subflow_ids[scope][obj[ind]['id']] = obj[ind]['type'].substr(8)
 	  rec[obj[ind]['id']] = name;
 	  obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Conv3D') {
@@ -222,84 +222,94 @@ module.exports = function(RED) {
 	flow_in = false
 	console.log("before parse result")
 	console.log("subflow id...")
-	console.log(subids)    
+	console.log(subflow_ids)    
 	console.log("subflow object...")
-	console.log(subflows_object)
+	console.log(subflows_type)
 	console.log("start parse....")
 	prev = null
-	for (var key in subflows_object) {
+	for (var key in subflows_type) {
 	  console.log("first....")
           console.log(key)
 	  var num = 0;
-	  for (var subid_key in subids[key]) {
+	  for (var subflow_id_key in subflow_ids[key]) {
 	    console.log("second....")
-	    console.log(subid_key)
+	    console.log(subflow_id_key)
 	    if (num != 0) {
 	      console.log(num)
-	      console.log(subid_key)
+	      console.log(subflow_id_key)
 	      var terminate = false
-	      var sec = null;
+	      var subflow_new_type = null;
               var timest2 = date.getTime();
 	      while (terminate == false) {
 	        console.log("third....")
 	      	for (var x in obj) {
-	          if (flow_in == false && obj[x]['id'] == subflows_object[key][0]) {
+	          if (flow_in == false && obj[x]['id'] == subflows_type[key][0] /*find input*/) {
 		    console.log("input")
 		    console.log(obj[x])
-		    tmp = null
-		    tmp = JSON.parse(JSON.stringify(obj[x]))
-		    tmp['id'] = Math.random().toString(36).substr(2, 9) 
-	            name = tmp['name'] + "_" + Math.random().toString(36).substr(2, 9);
-		    console.log(name)
-		    tmp['name'] = name
-	            res.layers[name] = iterationCopy(res.layers[obj[x]['name']]);
-	            rec[tmp['id']] = name;
+		    subflow_new_object = null
+		    subflow_new_object = JSON.parse(JSON.stringify(obj[x]))
+		    subflow_new_object['id'] = Math.random().toString(36).substr(2, 9) 
+	            subflow_new_name = subflow_new_object['name'] + "_" + Math.random().toString(36).substr(2, 9);
+		    console.log(subflow_new_name)
+		    subflow_new_object['name'] = subflow_new_name
+		    //update res tale
+	            res.layers[subflow_new_name] = iterationCopy(res.layers[obj[x]['name']]);
+		    //update record table
+	            rec[subflow_new_object['id']] = subflow_new_name;
 		    len = obj.length
-		    obj.push(tmp)
-		    sec = Math.random().toString(36).substr(2, 9)	
-		    subids[key][subid_key] = sec 
-		    subflows_object[sec] = []
-		    subflows_object[sec].push(tmp['id'])
+		    //update obj table
+		    obj.push(subflow_new_object)
+		    //update subflows_type and subflow_ids
+		    subflow_new_type = Math.random().toString(36).substr(2, 9)	
+		    subflow_ids[key][subflow_id_key] = subflow_new_type 
+		    subflows_type[subflow_new_type] = []
+		    subflows_type[subflow_new_type].push(subflow_new_object['id'])
 		    prev = len 
 		    flow_in = true
 		    break;
-	    } else if (flow_in == true && prev != null && obj[prev]['wires'][0][0] == obj[x]['id'] && obj[x]['id'] == subflows_object[key][1]) {
+	    } else if (flow_in == true && prev != null && obj[prev]['wires'][0][0] == obj[x]['id'] && obj[x]['id'] == subflows_type[key][1]) {
 		    console.log("output");
 		    console.log(obj[x])
-		tmp = null
-		tmp = JSON.parse(JSON.stringify(obj[x]))
-		tmp['id'] = Math.random().toString(36).substr(2, 9) 
-	        name = tmp['name'] + "_" + Math.random().toString(36).substr(2, 9);
-		tmp['name'] = name
-	        res.layers[name] = iterationCopy(res.layers[obj[x]['name']]);
-	        rec[tmp['id']] = name;
-		  obj.push(tmp)
-		  subflows_object[sec][1] = tmp['id']
-		  sec = null;
-		obj[prev]['wires'][0][0] = tmp['id']
-		  flow_in = false
-		  terminate = true
+		    subflow_new_object = null
+		    subflow_new_object = JSON.parse(JSON.stringify(obj[x]))
+		    subflow_new_object['id'] = Math.random().toString(36).substr(2, 9) 
+	            subflow_new_name = subflow_new_object['name'] + "_" + Math.random().toString(36).substr(2, 9);
+		    subflow_new_object['name'] = subflow_new_name 
+		    //udpate res table
+	            res.layers[subflow_new_name] = iterationCopy(res.layers[obj[x]['name']]);
+		    //update record table
+	            rec[subflow_new_object['id']] = subflow_new_name;
+		    //update obj table
+		    obj.push(subflow_new_object)
+		    //update subflows_type and subflow_ids
+		    subflows_type[subflow_new_type][1] = subflow_new_object['id']
+		    subflow_new_type = null;
+		    obj[prev]['wires'][0][0] = subflow_new_object['id']
+		    flow_in = false
+		    terminate = true
 		    break;
 	    } else if (prev != null && prev != null && flow_in == true && obj[prev]['wires'][0][0] == obj[x]['id']) {
 		    console.log("continue")
 		    console.log(obj[x])
 		    console.log(prev)
-		tmp = null
-		tmp = JSON.parse(JSON.stringify(obj[x]))
-		tmp['id'] = Math.random().toString(36).substr(2, 9) 
-	        name = tmp['name'] + "_" + Math.random().toString(36).substr(2, 9);
-		tmp['name'] = name
-	        res.layers[name] = iterationCopy(res.layers[obj[x]['name']]);
-	        rec[tmp['id']] = name;
-		len = obj.length
-		obj.push(tmp)
-	json_obj = JSON.stringify(obj);
-        fs.writeFileSync('object1.json', json_obj, 'utf-8');
-		obj[prev]['wires'][0][0] = tmp['id']
-	json_obj = JSON.stringify(obj);
-        fs.writeFileSync('object2.json', json_obj, 'utf-8');
+		    subflow_new_object = null
+		    subflow_new_object = JSON.parse(JSON.stringify(obj[x]))
+		    subflow_new_object['id'] = Math.random().toString(36).substr(2, 9) 
+	            subflow_new_name = subflow_new_object['name'] + "_" + Math.random().toString(36).substr(2, 9);
+		    subflow_new_object['name'] = subflow_new_name
+		    //update res table
+	            res.layers[subflow_new_name] = iterationCopy(res.layers[obj[x]['name']]);
+		    //update rec table
+	            rec[subflow_new_object['id']] = subflow_new_name;
+		    len = obj.length
+		    obj.push(subflow_new_object)
+	            json_obj = JSON.stringify(obj);
+                    fs.writeFileSync('object1.json', json_obj, 'utf-8');
+		    obj[prev]['wires'][0][0] = subflow_new_object['id']
+	            json_obj = JSON.stringify(obj);
+                    fs.writeFileSync('object2.json', json_obj, 'utf-8');
 		    console.log(obj[prev])
-		  prev = len
+		    prev = len
 		    break;
 	    }
 	    }
@@ -311,9 +321,9 @@ module.exports = function(RED) {
 	}
  	console.log("parse result")
 	console.log(res.layers)
-	console.log(subids)    
+	console.log(subflow_ids)    
 	console.log("subflows")
-	console.log(subflows_object)
+	console.log(subflows_type)
 	console.log("parse finish...")
 	    
 	for (var i in obj) {
@@ -330,12 +340,12 @@ module.exports = function(RED) {
             		for (var ii = 0; ii < tmp.length; ii++) {
                 		for (var jj = 0; jj < tmp[ii].length; jj++) {
 					var found = false;
-					for (var domain in subids) {
-					  if (tmp[ii][jj] in subids[domain]) {
-						console.log(typeof(subids[domain][tmp[ii][jj]]))
-						input_node = subflows_object[subids[domain][tmp[ii][jj]]]
-						console.log(subflows_object)
-						console.log(subids[tmp[ii][jj]])
+					for (var domain in subflow_ids) {
+					  if (tmp[ii][jj] in subflow_ids[domain]) {
+						console.log(typeof(subflow_ids[domain][tmp[ii][jj]]))
+						input_node = subflows_type[subflow_ids[domain][tmp[ii][jj]]]
+						console.log(subflows_type)
+						console.log(subflow_ids[tmp[ii][jj]])
 						console.log(rec[input_node[0]]);
 						res_t.push(rec[input_node[0]]);
 						found = true;
@@ -348,11 +358,11 @@ module.exports = function(RED) {
             		}
             		if (res_t.length > 0) {
 				var found = false;
-				for (var domain in subids) {
-				  if (obj[i]['id'] in subids[domain]) {
+				for (var domain in subflow_ids) {
+				  if (obj[i]['id'] in subflow_ids[domain]) {
 					console.log("is this....")
 					console.log(obj[i])
-					output_node = subflows_object[subids[domain][obj[i]['id']]][1]
+					output_node = subflows_type[subflow_ids[domain][obj[i]['id']]][1]
 					res.connections[rec[output_node]] = res_t;
 					found = true;
 				  }
