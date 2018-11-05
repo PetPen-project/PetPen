@@ -221,49 +221,61 @@ module.exports = function(RED) {
 	}
 	flow_in = false
 	console.log("before parse result")
+	console.log("subflow id...")
 	console.log(subids)    
+	console.log("subflow object...")
 	console.log(subflows_object)
+	console.log("start parse....")
 	prev = null
 	for (var key in subflows_object) {
-		console.log(key)
+	  console.log("first....")
+          console.log(key)
 	  var num = 0;
 	  for (var subid_key in subids[key]) {
-	  if (num != 0) {
-		  console.log(num)
+	    console.log("second....")
 	    console.log(subid_key)
-	    var terminate = false
-	    while (terminate == false) {
-	    for (var x in obj) {
-	      if (flow_in == false && obj[x]['id'] == subflows_object[key][0]) {
-		      console.log("input")
+	    if (num != 0) {
+	      console.log(num)
+	      console.log(subid_key)
+	      var terminate = false
+	      var sec = null;
+              var timest2 = date.getTime();
+	      while (terminate == false) {
+	        console.log("third....")
+	      	for (var x in obj) {
+	          if (flow_in == false && obj[x]['id'] == subflows_object[key][0]) {
+		    console.log("input")
 		    console.log(obj[x])
-		tmp = null
-		tmp = JSON.parse(JSON.stringify(obj[x]))
-		tmp['id'] = Math.random().toString(36).substr(2, 9) 
-	        name = tmp['name'] + "_" + timest;
-		tmp['name'] = name
-	        res.layers[name] = iterationCopy(res.layers[obj[x]['name']]);
-	        rec[tmp['id']] = name;
-		      len = obj.length
-		  obj.push(tmp)
-		  subids[key][subid_key] = "sec"
-		  subflows_object['sec'] = []
-		  subflows_object.sec.push(tmp['id'])
-		  prev = len 
-		  flow_in = true
-		      break;
+		    tmp = null
+		    tmp = JSON.parse(JSON.stringify(obj[x]))
+		    tmp['id'] = Math.random().toString(36).substr(2, 9) 
+	            name = tmp['name'] + "_" + Math.random().toString(36).substr(2, 9);
+		    console.log(name)
+		    tmp['name'] = name
+	            res.layers[name] = iterationCopy(res.layers[obj[x]['name']]);
+	            rec[tmp['id']] = name;
+		    len = obj.length
+		    obj.push(tmp)
+		    sec = Math.random().toString(36).substr(2, 9)	
+		    subids[key][subid_key] = sec 
+		    subflows_object[sec] = []
+		    subflows_object[sec].push(tmp['id'])
+		    prev = len 
+		    flow_in = true
+		    break;
 	    } else if (flow_in == true && prev != null && obj[prev]['wires'][0][0] == obj[x]['id'] && obj[x]['id'] == subflows_object[key][1]) {
 		    console.log("output");
 		    console.log(obj[x])
 		tmp = null
 		tmp = JSON.parse(JSON.stringify(obj[x]))
-		  tmp['id'] = Math.random().toString(36).substr(2, 9) 
-	        name = tmp['name'] + "_" + timest;
+		tmp['id'] = Math.random().toString(36).substr(2, 9) 
+	        name = tmp['name'] + "_" + Math.random().toString(36).substr(2, 9);
 		tmp['name'] = name
 	        res.layers[name] = iterationCopy(res.layers[obj[x]['name']]);
 	        rec[tmp['id']] = name;
 		  obj.push(tmp)
-		  subflows_object['sec'][1] = tmp['id']
+		  subflows_object[sec][1] = tmp['id']
+		  sec = null;
 		obj[prev]['wires'][0][0] = tmp['id']
 		  flow_in = false
 		  terminate = true
@@ -275,7 +287,7 @@ module.exports = function(RED) {
 		tmp = null
 		tmp = JSON.parse(JSON.stringify(obj[x]))
 		tmp['id'] = Math.random().toString(36).substr(2, 9) 
-	        name = tmp['name'] + "_" + timest;
+	        name = tmp['name'] + "_" + Math.random().toString(36).substr(2, 9);
 		tmp['name'] = name
 	        res.layers[name] = iterationCopy(res.layers[obj[x]['name']]);
 	        rec[tmp['id']] = name;
@@ -298,8 +310,11 @@ module.exports = function(RED) {
 	}
 	}
  	console.log("parse result")
+	console.log(res.layers)
 	console.log(subids)    
+	console.log("subflows")
 	console.log(subflows_object)
+	console.log("parse finish...")
 	    
 	for (var i in obj) {
 		name = obj[i]['name'];
