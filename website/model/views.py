@@ -126,13 +126,6 @@ def index(request):
     elif request.method == 'GET':
         form = NN_modelForm()
     projects = NN_model.objects.filter(user_id = request.user.id)
-    # for project in projects:
-        # status = update_status(project.state_file)['status']
-        # if status == 'start training model' or status == 'start testing':
-            # project.status = 'running'
-        # else:
-            # project.status = 'idle'
-        # project.save()
     context['projects'] = projects
     context['form'] = form
     return render(request, 'model/index.html', context)
@@ -469,11 +462,9 @@ def api(request):
             project.status = 'idle'
             project.save()
         elif project.status == 'error':
-            # if info.get('error_log_file'):
-                # with open(info['error_log_file']) as f:
-                    # info['detail'] = f.read()
-            with open(op.join(MEDIA_ROOT,op.dirname(project.structure_file),history.save_path,'logs/error_log')) as f:
-                info['detail'] = f.read()
+            if info.get('error_log_file'):
+                with open(info['error_log_file']) as f:
+                    info['detail'] = f.read()
     if project.status in ['training','finish'] and info['loss']['value'] and np.isnan(info['loss']['value']):
         info['loss']['value'] = 'nan'
     return JsonResponse(info)
@@ -494,12 +485,6 @@ def plot_api(request):
         return HttpResponse('')
     latest_excution = os.path.join(file_path,max([f for f in os.listdir(file_path) if re.match(r'\d{6}_\d{6}',f)]),'logs')
     script, div = bokeh_plot(latest_excution)
-    # with open('/home/plash/petpen/state.json','r+') as f:
-        # info = json.load(f)
-        # info['status'] = 'system idle'
-        # f.seek(0)
-        # json.dump(info,f)
-        # f.truncate()
 
     return HttpResponse(json.dumps({"script":script, "div":div}), content_type="application/json")
 
@@ -583,13 +568,17 @@ def manage_nodered(request):
         return HttpResponse('running')
 
 def preprocess_structure(file_path,projects,datasets):
+    '''
+    parse model structure file and preprocess project and dataset file path to result.json
+    return a dictionary including status
+    '''
+    result = {}
     if not op.exists(file_path):
         update_status(op.join(op.dirname(file_path),'state.json'),'error: missing model structure')
-        return 'file missing'
+        return {'status': 'file missing'}
     with open(file_path,'r') as f:
         structure = json.load(f)
         import pprint
-        pprint.pprint(structure)
         inputs = [k for (k,v) in structure['layers'].items() if v['type']=='Input']
         outputs = [k for (k,v) in structure['layers'].items() if v['type']=='Output']
         dataset_setting = structure['dataset']
@@ -598,10 +587,9 @@ def preprocess_structure(file_path,projects,datasets):
             if i not in dataset_setting:
                 missing_dataset.append(i)
             else:
-                try:
+                try:        
                     dataset = datasets.get(title=dataset_setting[i][0])
                 except:
-                    logger.error('Failed to load dataset', exc_info=True)
                     missing_dataset.append(i)
                     continue
                 dataset_setting[i] = {
@@ -614,8 +602,8 @@ def preprocess_structure(file_path,projects,datasets):
             else:
                 try:
                     dataset = datasets.get(title=dataset_setting[o][0])
+                    result['has_label'] = dataset.has_label
                 except:
-                    logger.error('Failed to load dataset', exc_info=True)
                     missing_dataset.append(o)
                     continue
                 dataset_setting[o] = {
@@ -637,13 +625,16 @@ def preprocess_structure(file_path,projects,datasets):
     pprint.pprint(structure)
     if missing_dataset:
         print(missing_dataset)
-        return missing_dataset
+        result['status'] = 'missing dataset'
+        result['layers'] = missing_dataset
+        return result
     preprocessed_dir = op.join(op.dirname(file_path),'preprocessed')
     if not op.exists(preprocessed_dir):
         os.makedirs(preprocessed_dir)
     with open(op.join(preprocessed_dir,'result.json'),'w') as pre_f:
         json.dump(structure,pre_f)
-    return 'successed'
+    result['status'] = 'successed'
+    return result
 
 def backend_api(request):
     if request.method == "POST":
@@ -732,8 +723,6 @@ def backend_api(request):
             history_name = request.POST.get('name') or save_path
             logger.debug('start training on model {}, save path: {}'.format(project,save_path))
             structure_file = op.join(MEDIA_ROOT,project.structure_file)
-            # info = update_status(project.state_file)
-            # if info['status'] != 'system idle':
             if project.status not in ['idle','finish','error']:
                 return HttpResponse('waiting project back to idle')
             else:
@@ -761,17 +750,17 @@ def backend_api(request):
             #----- file path transformation -----
             prcs = preprocess_structure(structure_file,NN_model.objects.filter(user=request.user),Dataset.objects.filter(user=request.user))
             print(prcs)
-            if prcs != 'successed':
+            if prcs['status'] != 'successed':
                 os.makedirs(op.join(project_path,save_path,'logs/'))
                 history.status = 'aborted'
+                history.save()
                 project.status = 'error'
                 project.save()
-                history.save()
-                if prcs != 'file missing':
+                if prcs['status'] != 'file missing':
                     # update_status(project.state_file,status='error',detail='structure assignment error found on nodes {}'.format(', '.join(prcs)))
                     with open(op.join(project_path,save_path,'logs/error_log'),'w') as f:
                         f.write('Structure assignment error found on nodes {}'.format(', '.join(prcs)))
-                    return JsonResponse({'missing':prcs})
+                    return JsonResponse({'missing':prcs['status']})
                 else:
                     # update_status(project.state_file,status='error',detail='please depoly your model structure before running')
                     with open(op.join(project_path,save_path,'logs/error_log'),'w') as f:
@@ -780,9 +769,17 @@ def backend_api(request):
             else:
                 os.mkdir(op.join(project_path,save_path,'preprocessed'))
                 shutil.copy2(op.join(op.dirname(structure_file),'preprocessed/result.json'),op.join(project_path,save_path,'preprocessed'))
+            with open(op.join(history_dir,'preprocessed/result.json'),'r') as f:
+                structure = json.load(f)
+                import pprint
+                pprint.pprint(structure['dataset'])
+            dataset = [v['train_x'] for v in structure['dataset'].values() if 'train_x' in v.keys()][0]
             update_status(project.state_file,status='loading',epoch=[0,0],progress=[0,0])
             try:
-                p = push(project.id,['python',script_path,'-m',project_path,'-t',save_path,'train'])
+                if prcs['has_label']:
+                    p = push(project.id,['python',script_path,'-m',project_path,'-t',save_path,'-header','True','train'])
+                else:
+                    p = push(project.id,['python',script_path,'-m',project_path,'-t',save_path,'train'])
             except Exception as e:
                 logger.error('Failed to run the backend', exc_info=True)
         elif request.POST['command'] == 'stop':

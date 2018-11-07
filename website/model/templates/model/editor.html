@@ -16,7 +16,6 @@
     };
     $('document').ready(function(){
       setTimeout("$('#nodered').css('display','block');$('#nodered-frame').attr('src','http://www.petpen.org/editor/{{port}}/');", 3300);
-      <!--setTimeout("$('#nodered').css('display','block');$('#nodered-frame').attr('src','http://140.109.18.114:{{port}}');", 3300);-->
       
       window.onbeforeunload = function(){
         $.ajax({

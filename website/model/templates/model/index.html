@@ -5,7 +5,7 @@
 {% block title %}model index{% endblock %}
 
 {% block head %}
-  <link rel="stylesheet" href="{% sass_src "scss/project_view.scss" %}">
+  <link rel="stylesheet" href="{% sass_src "scss/p-index.scss" %}">
   <script>
     function setDeleteId(text){
       $("#delete-id").val(text);
@@ -19,6 +19,7 @@
           target: title
         },
         success: function(data){
+          document.location.reload(true);
           window.open("{% url "model:manage_editor" %}");
         }
       });
@@ -30,6 +31,9 @@
         data:{
           action: "close",
           target: title
+        },
+        success: function(data){
+          document.location.reload(true);
         }
       });
     };
@@ -40,28 +44,34 @@
     $('document').ready(function(){
       <!--$('editorOpen').on('click.open', function(e) { e.preventDefault(); window.open('{% url "model:manage_editor" %}') });-->
       if($('.project-container').width()<1050){
+        $('a[name=editorOpen]').html(
+          '<i class="fa fa-edit"></i> editing');
         $('button[name=editorOpen]').html(
-          '<i class="fa fa-edit"></i>edit');
+          '<i class="fa fa-external-link-alt"></i> edit');
         $('button[name=editorClose]').html(
           '<i class="fa fa-window-close"></i>close');
         $('a[name=projectPage]').html(
-          '<i class="fa fa-bar-chart"></i>execute');
+          'execute');
       }
       $(window).resize(function(){
         if($('.project-container').width()<1050){
+          $('a[name=editorOpen]').html(
+            'editing');
           $('button[name=editorOpen]').html(
-            '<i class="fa fa-edit"></i>edit');
+            '<i class="fa fa-external-link-alt"></i> edit');
           $('button[name=editorClose]').html(
             '<i class="fa fa-window-close"></i>close');
           $('a[name=projectPage]').html(
-            '<i class="fa fa-bar-chart"></i>execute');
+            'execute');
         }else{
+          $('a[name=editorOpen]').html(
+            '<i class="fa fa-edit"></i> editing');
           $('button[name=editorOpen]').html(
-            '<i class="fa fa-edit"></i>open editor');
+            '<i class="fa fa-external-link-alt"></i> open editor');
           $('button[name=editorClose]').html(
             '<i class="fa fa-window-close"></i>close editor');
           $('a[name=projectPage]').html(
-            '<i class="fa fa-bar-chart"></i>execute model');
+            '<i class="fa fa-chart-line"></i> execute model');
         }
       });
     });
@@ -105,12 +115,13 @@
               <td>{{ project.modified|date:'Y-m-d H:i' }}</td>
               <td>{{ project.training_counts }}</td>
               <td>
-                <div class="buttons-group">
+                <div name="p-command" class="buttons-group">
                 {% if project.status != "editing" %}
-                <!--<a id="editorOpen" target="_blank" href="{% url "model:manage_editor" %}" class="btn btn-sm btn-outline-primary" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-external-link"></i> open editor</a>-->
-                <button name="editorOpen" class="buttons-sm" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-edit"></i> open editor</button>
+                  <!--<a id="editorOpen" target="_blank" href="{% url "model:manage_editor" %}" class="btn btn-sm btn-outline-primary" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-external-link"></i> open editor</a>-->
+                  <button name="editorOpen" class="buttons-sm" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-external-link-alt"></i> open editor</button>
                 {% else %}
-                <button class="buttons-sm" onclick="closeProject(&#39;{{project.title}}&#39;)"><i class="fa fa-window-close"></i> close editor</button>
+                <a name="editorOpen" class="buttons-sm" href={% url "model:manage_editor" %} target="_blank"><i class="fa fa-edit"></i> editing</a>
+                  <!--<button class="buttons-sm" onclick="closeProject(&#39;{{project.title}}&#39;)"><i class="fa fa-window-close"></i> close editor</button>-->
                 {% endif %}
                 <a href="{% url "model:project_detail" project.id %}" class="buttons-sm" name="projectPage"><i class="fa fa-bar-chart"></i> execute model</a>
                 </div>
