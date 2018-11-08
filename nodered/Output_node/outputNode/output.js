@@ -34,7 +34,7 @@ module.exports = function(RED) {
       for (var ind in obj) {
         if (obj[ind]['type'] == 'Convolution') {
           name = obj[ind]['name'] + "_" + ind + "_" +  timest;
-          res.layers[name] = {type: 'Conv1D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: parseInt(obj[i]['kernel']), strides: parseInt(obj[ind]['strides']), activation: obj[ind]['methods']}};
+          res.layers[name] = {name: name, type: 'Conv1D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: parseInt(obj[i]['kernel']), strides: parseInt(obj[ind]['strides']), activation: obj[ind]['methods']}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
 	} else if (obj[ind]['type'] == 'subflow') {
@@ -63,7 +63,7 @@ module.exports = function(RED) {
           for (var i = 0; i < stride_num.length; i++) {
             stride_num[i] = parseInt(stride_num[i]);
           }
-          res.layers[name] = {type: 'Conv3D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: kernels, strides: stride_num, padding: obj[ind]['padding'], activation: obj[ind]['activation']}};
+          res.layers[name] = {name:name, type: 'Conv3D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: kernels, strides: stride_num, padding: obj[ind]['padding'], activation: obj[ind]['activation']}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Convolution_2D') {
@@ -76,7 +76,7 @@ module.exports = function(RED) {
           for (var i = 0; i < stride_num.length; i++) {
             stride_num[i] = parseInt(stride_num[i]);
           }
-          res.layers[name] = {type: 'Conv2D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: kernels, strides: parseInt(stride_num), activation: obj[ind]['activation'], padding: obj[ind]['padding']}};
+          res.layers[name] = {name: name, type: 'Conv2D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: kernels, strides: parseInt(stride_num), activation: obj[ind]['activation'], padding: obj[ind]['padding']}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'ConvolutionLSTM_2D') {
@@ -89,13 +89,13 @@ module.exports = function(RED) {
           for (var i = 0; i < stride_num.length; i++) {
             stride_num[i] = parseInt(stride_num[i]);
           }
-          res.layers[name] = {type: 'ConvLSTM2D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: kernels, strides: parseInt(stride_num), activation: obj[ind]['activation'], padding: obj[ind]['padding'], recurrent_activation: obj[ind]['recurrent_activation'], return_sequence: obj[ind]['return_sequence'], dropout: parseFloat(obj[ind]['dropout']), recurrent_dropout: parseFloat(obj[ind]['recurrent_dropout'])}};
+          res.layers[name] = {name: name, type: 'ConvLSTM2D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: kernels, strides: parseInt(stride_num), activation: obj[ind]['activation'], padding: obj[ind]['padding'], recurrent_activation: obj[ind]['recurrent_activation'], return_sequence: obj[ind]['return_sequence'], dropout: parseFloat(obj[ind]['dropout']), recurrent_dropout: parseFloat(obj[ind]['recurrent_dropout'])}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Output') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
           datasetname = obj[ind]['datasetname'].split(',');
-          res.layers[name] = {type: 'Output', params: {loss: obj[ind]['loss'], optimizer: obj[ind]['optimizer'], epoch: parseInt(obj[ind]['epoch']), batchsize: parseInt(obj[ind]['batchsize']), learningrate: parseFloat(obj[ind]['learningrate'])}};
+          res.layers[name] = {name: name, type: 'Output', params: {loss: obj[ind]['loss'], optimizer: obj[ind]['optimizer'], epoch: parseInt(obj[ind]['epoch']), batchsize: parseInt(obj[ind]['batchsize']), learningrate: parseFloat(obj[ind]['learningrate'])}};
           res.dataset[name] = datasetname;
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
@@ -106,18 +106,18 @@ module.exports = function(RED) {
           for (var ii = 0; ii < shapes.length; ii++) {
             shapes[ii] = parseInt(shapes[ii]);
           }
-          res.layers[name] = {type: 'Input', params: {shape: shapes}}; 
+          res.layers[name] = {name: name, type: 'Input', params: {shape: shapes}}; 
           res.dataset[name] = features;
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Dense') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'Dense', params: {units: parseInt(obj[ind]['units']), activation: obj[ind]['activation']}}; 
+          res.layers[name] = {name: name, type: 'Dense', params: {units: parseInt(obj[ind]['units']), activation: obj[ind]['activation']}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Activation') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'Activation', params: {activation: obj[ind]['activation']}}; 
+          res.layers[name] = {name: name, type: 'Activation', params: {activation: obj[ind]['activation']}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'ZeroPadding') {
@@ -140,7 +140,7 @@ module.exports = function(RED) {
               padding[i] = [nums[i],nums[i]];
             }
           }
-          res.layers[name] = {type: 'ZeroPadding', params: {padding: padding, dimension: dimension}}; 
+          res.layers[name] = {name: name, type: 'ZeroPadding', params: {padding: padding, dimension: dimension}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Reshape') {
@@ -149,7 +149,7 @@ module.exports = function(RED) {
           for (var i = 0; i < shapes.length; i++) {
             shapes[i] = parseInt(shapes[i]);
           }
-          res.layers[name] = {type: 'Reshape', params: {shape: shapes}}; 
+          res.layers[name] = {name: name, type: 'Reshape', params: {shape: shapes}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'MaxPooling2D') {
@@ -162,7 +162,7 @@ module.exports = function(RED) {
           for (var i = 0; i < strides_arr.length; i++) {
             strides_arr[i] = parseInt(strides_arr[i]);
           }
-          res.layers[name] = {type: 'MaxPooling2D', params: {strides: strides_arr, pool_size: pool_size_arr, padding: obj[ind]['padding']}};
+          res.layers[name] = {name: name, type: 'MaxPooling2D', params: {strides: strides_arr, pool_size: pool_size_arr, padding: obj[ind]['padding']}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
 
@@ -170,49 +170,49 @@ module.exports = function(RED) {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
           pool_size = parseInt(obj[ind]['poolsize']);
           strides = parseInt(obj[ind]['strides']);
-          res.layers[name] = {type: 'MaxPooling1D', params: {strides: strides, pool_size: pool_size, padding: obj[ind]['padding']}};
+          res.layers[name] = {name: name, type: 'MaxPooling1D', params: {strides: strides, pool_size: pool_size, padding: obj[ind]['padding']}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Merge') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'Merge', params: {method: obj[ind]['method'], axis: obj[ind]['axis']}}; 
+          res.layers[name] = {name: name, type: 'Merge', params: {method: obj[ind]['method'], axis: obj[ind]['axis']}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'SimpleRNN') {
           name = obj[ind]['name'] + "_" + ind;
-          res.layers[name] = {type: 'SimpleRNN', params: {units: parseInt(obj[ind]['units']), activation: obj[ind]['activation']}}; 
+          res.layers[name] = {name: name, type: 'SimpleRNN', params: {units: parseInt(obj[ind]['units']), activation: obj[ind]['activation']}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Lstm') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'Lstm', params: {units: parseInt(obj[ind]['units']), activation: obj[ind]['activation'], return_sequence: obj[ind]['return_sequence']}}; 
+          res.layers[name] = {name: name, type: 'Lstm', params: {units: parseInt(obj[ind]['units']), activation: obj[ind]['activation'], return_sequence: obj[ind]['return_sequence']}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Dropout') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'Dropout', params: {rate: parseFloat(obj[ind]['rate'])}}; 
+          res.layers[name] = {name: name, type: 'Dropout', params: {rate: parseFloat(obj[ind]['rate'])}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'Gru') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
-          res.layers[name] = {type: 'Gru', params: {units: parseInt(obj[ind]['units']), activation: obj[ind]['activation']}}; 
+          res.layers[name] = {name: name, type: 'Gru', params: {units: parseInt(obj[ind]['units']), activation: obj[ind]['activation']}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'File') {
 		path = obj[ind]['file'];
 	} else if (obj[ind]['type'] == 'Pretrained') {
 		name = obj[ind]['name'] + "_" + ind + "_" + timest;
-		res.layers[name] = {type: 'Pretrained', params: {project_name: obj[ind]['source'], nodes: obj[ind]['pretrainedoutput'], weight_file: obj[ind]['weightfile'], trainable: obj[ind]['trainable']}};
+		res.layers[name] = {name: name, type: 'Pretrained', params: {project_name: obj[ind]['source'], nodes: obj[ind]['pretrainedoutput'], weight_file: obj[ind]['weightfile'], trainable: obj[ind]['trainable']}};
 		rec[obj[ind]['id']] =name;
 		obj[ind]['name'] = name;
  	} else if (obj[ind]['type'] == 'Flatten') {
 	    name = obj[ind]['name'] + "_" + ind + "_" + timest;
-	    res.layers[name] = {type: 'Flatten', params: {}};                      
+	    res.layers[name] = {name: name, type: 'Flatten', params: {}};                      
 	    rec[obj[ind]['id']] =name;            
 	    obj[ind]['name'] = name; 
 	} else if (obj[ind]['type'] == 'BatchNormalization') {
 	    name = obj[ind]['name'] + "_" + ind + "_" + timest;
-	    res.layers[name] = {type: 'BatchNormalization', params: {axis: obj[ind]['axis']}};
+	    res.layers[name] = {name: name, type: 'BatchNormalization', params: {axis: obj[ind]['axis']}};
 	    rec[obj[ind]['id']] = name;
 	    obj[ind]['name']= name;
 	}
@@ -254,6 +254,7 @@ module.exports = function(RED) {
 		    subflow_new_object['name'] = subflow_new_name
 		    //update res tale
 	            res.layers[subflow_new_name] = iterationCopy(res.layers[obj[x]['name']]);
+		    res.layers[subflow_new_name]['name'] = subflow_new_name
 		    //update record table
 	            rec[subflow_new_object['id']] = subflow_new_name;
 		    len = obj.length
@@ -277,6 +278,7 @@ module.exports = function(RED) {
 		    subflow_new_object['name'] = subflow_new_name 
 		    //udpate res table
 	            res.layers[subflow_new_name] = iterationCopy(res.layers[obj[x]['name']]);
+		    res.layers[subflow_new_name]['name'] = subflow_new_name
 		    //update record table
 	            rec[subflow_new_object['id']] = subflow_new_name;
 		    //update obj table
@@ -299,6 +301,7 @@ module.exports = function(RED) {
 		    subflow_new_object['name'] = subflow_new_name
 		    //update res table
 	            res.layers[subflow_new_name] = iterationCopy(res.layers[obj[x]['name']]);
+		    res.layers[subflow_new_name]['name'] = subflow_new_name
 		    //update rec table
 	            rec[subflow_new_object['id']] = subflow_new_name;
 		    len = obj.length
