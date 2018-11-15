@@ -37,6 +37,12 @@ module.exports = function(RED) {
           res.layers[name] = {name: name, type: 'Conv1D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: parseInt(obj[i]['kernel']), strides: parseInt(obj[ind]['strides']), activation: obj[ind]['methods']}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
+	} else if (obj[ind]['type'] == 'Loop') {
+	  name = obj[ind]['name'] + "_" + ind + "_" + timest;
+	  res.layers[name] = {name: name, type: 'Loop', params: {
+	  iters: parseInt(obj[ind]['iter'])};
+	  rec[obj[ind]['id']] = name;
+	  obj[ind]['name'] = name;
 	} else if (obj[ind]['type'] == 'subflow') {
 	  name =  "subreplace" + ind + "_" + timest;
 	  input = obj[ind]['in'][0]['wires'][0]['id'];
