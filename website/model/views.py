@@ -687,7 +687,10 @@ def backend_api(request):
                         np.save(op.join(predict_dir,'input.npy'), data_value)
                     elif ext == '.csv':
                         # data_value = pd.read_csv(op.join(predict_dir,'input'+ext),header = None).values
-                        data_value = pd.read_csv(dataset,header = None).values
+                        if request.POST.get('header') == 'YES':
+                            data_value = pd.read_csv(dataset).values
+                        else:
+                            data_value = pd.read_csv(dataset,header = None).values
                         np.save(op.join(predict_dir,'input.npy'), data_value)
                         if len(data_value.shape) == 3 and data_value.shape[2] in [1,3,4]:
                             plt.imsave(op.join(predict_dir,'input.png'),data_value,format='png')

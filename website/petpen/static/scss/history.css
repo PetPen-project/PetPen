@@ -82,5 +82,7 @@
 .evaluation-form {
   float: right;
   display: inline-block; }
+  .evaluation-form p {
+    font-size: 20px; }
 
 /*# sourceMappingURL=../../../../../../../../static/scss/history.css.map */
