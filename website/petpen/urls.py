@@ -17,7 +17,7 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.contrib.auth import views as auth_views
 from rest_framework import routers, serializers, viewsets
-from .views import main, examples, examples_dataset
+from .views import *
 from user.views import UserCreateView, activate
 
 # Serializers define the API representation.
@@ -41,6 +41,7 @@ urlpatterns = [
     url(r'^$', main,name='main'),
     url(r'^examples/$', examples,name='examples'),
     url(r'^examples/dataset/$', examples_dataset,name='examples_dataset'),
+    url(r'^features/$', feature_list,name='features'),
     url(r'^model/', include(('model.urls','model'),namespace='model')),
     url(r'^dataset/', include(('dataset.urls','dataset'),namespace='dataset')),
     url(r'^accounts/', include('django.contrib.auth.urls')),

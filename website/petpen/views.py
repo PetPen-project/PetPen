@@ -79,3 +79,7 @@ def examples_dataset(request):
         context['info'] = 'The example dataset {} is copied into your account.'.format(dataset.title)
     return render(request, 'petpen/example_dataset.html', context)
 
+@login_required
+def feature_list(request):
+    context = {}
+    return render(request, 'petpen/feature_list.html', context)

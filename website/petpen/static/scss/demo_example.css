@@ -469,4 +469,19 @@ a.overview-btn {
     width: 60%;
     max-width: 800px; }
 
+.title-div {
+  height: 200px;
+  background-color: #def9ea;
+  color: #FFF;
+  font-size: 45px;
+  padding-top: 50px;
+  padding-left: 250px; }
+
+.main-table {
+  border: 1px solid black;
+  width: 100%; }
+  .main-table th, .main-table td {
+    border: 1px solid black;
+    text-align: center; }
+
 /*# sourceMappingURL=../../../../../../../../static/scss/demo_example.css.map */

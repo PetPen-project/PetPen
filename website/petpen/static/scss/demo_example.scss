@@ -162,3 +162,19 @@
         max-width: 800px;
     }
 }
+.title-div {
+  height: 200px;
+  background-color: $green-macha;
+  color: #FFF;
+  font-size: 45px;
+  padding-top: 50px;
+  padding-left: 250px;
+}
+.main-table {
+  border: 1px solid black;
+  width: 100%;
+  th, td {
+    border: 1px solid black;
+    text-align: center;
+  }
+}
