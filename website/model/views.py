@@ -602,7 +602,7 @@ def preprocess_structure(file_path,projects,datasets):
             else:
                 try:
                     dataset = datasets.get(title=dataset_setting[o][0])
-                    result['has_label'] = dataset.has_label
+                    result['has_labels'] = dataset.has_labels
                 except:
                     missing_dataset.append(o)
                     continue
@@ -746,10 +746,11 @@ def backend_api(request):
             history.save()
             project.training_counts += 1
             project_path = op.dirname(structure_file)
+            history_dir = op.join(project_path,save_path)
             flow_file = op.join(project_path,'flows_petpen.json')
             os.mkdir(op.join(project_path,save_path))
-            shutil.copy2(structure_file,op.join(project_path,save_path))
-            shutil.copy2(flow_file,op.join(project_path,save_path))
+            shutil.copy2(structure_file,history_dir)
+            shutil.copy2(flow_file,history_dir)
             #----- file path transformation -----
             prcs = preprocess_structure(structure_file,NN_model.objects.filter(user=request.user),Dataset.objects.filter(user=request.user))
             print(prcs)
@@ -761,16 +762,16 @@ def backend_api(request):
                 project.save()
                 if prcs['status'] != 'file missing':
                     # update_status(project.state_file,status='error',detail='structure assignment error found on nodes {}'.format(', '.join(prcs)))
-                    with open(op.join(project_path,save_path,'logs/error_log'),'w') as f:
-                        f.write('Structure assignment error found on nodes {}'.format(', '.join(prcs)))
+                    with open(op.join(history_dir,'logs/error_log'),'w') as f:
+                        f.write('Structure assignment error found on nodes {}\n{}'.format(', '.join(prcs['layers']),(prcs['status'])))
                     return JsonResponse({'missing':prcs['status']})
                 else:
                     # update_status(project.state_file,status='error',detail='please depoly your model structure before running')
-                    with open(op.join(project_path,save_path,'logs/error_log'),'w') as f:
+                    with open(op.join(history_dir,'logs/error_log'),'w') as f:
                         f.write('No deployed neural network found. Finish your neural network editing before running experiments.')
                     return JsonResponse({'missing':'no structure file'})
             else:
-                os.mkdir(op.join(project_path,save_path,'preprocessed'))
+                os.mkdir(op.join(history_dir,'preprocessed'))
                 shutil.copy2(op.join(op.dirname(structure_file),'preprocessed/result.json'),op.join(project_path,save_path,'preprocessed'))
             with open(op.join(history_dir,'preprocessed/result.json'),'r') as f:
                 structure = json.load(f)
@@ -779,7 +780,7 @@ def backend_api(request):
             dataset = [v['train_x'] for v in structure['dataset'].values() if 'train_x' in v.keys()][0]
             update_status(project.state_file,status='loading',epoch=[0,0],progress=[0,0])
             try:
-                if prcs['has_label']:
+                if prcs['has_labels']:
                     p = push(project.id,['python',script_path,'-m',project_path,'-t',save_path,'-header','True','train'])
                 else:
                     p = push(project.id,['python',script_path,'-m',project_path,'-t',save_path,'train'])

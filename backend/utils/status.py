@@ -2,7 +2,8 @@ import json
 import requests
 import sys
 import os
-sys.path.append(os.path.join(os.path.abspath(__file__),"../../../website"))
+sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),"../../website"))
+print(sys.path)
 from petpen.setting_configs import ALLOWED_HOSTS,PORT,AUTH
 
 def change_status(status, id, test=False):
