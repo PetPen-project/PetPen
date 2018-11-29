@@ -64,23 +64,30 @@
         <span class="time-text">training time:  {{history.executed}}</span>
         <form class="evaluation-form" enctype="multipart/form-data" action="{% url "model:backend_api" %}" method="post">
           {% csrf_token %}
-          Run prediction
-          <select id="evaluate-dataset" onchange="setDataset(this)">
-            <option value="custom">by uploading dataset</option>
-            <option value="test">using test dataset</option>
-          </select>
+          <p id="pred-desc">Run prediction:</p>
+          <!--<select id="evaluate-dataset" onchange="setDataset(this)">-->
+            <!--<option value="custom">by uploading dataset</option>-->
+            <!--<option value="test">using test dataset</option>-->
+          <!--</select>-->
+          <span class="form-op">
+            <label id="pred-name" for="">no file chosen</label>
+            <label class="buttons-sm" id="pred-label" for="prediction-file" style="display:inline-block;">
+              <input id="prediction-file" style="display:none;" name="file" type="file"/>
+              upload
+            </label>
+          </span>
+          <label id="header-type" for="header">
+            <input type="checkbox" name="header" value="YES"/>
+            contains header
+          </label>
           <input type="hidden" name="command" value="predict"/>
           <input type="hidden" name="project" value="{{history.project.id}}"/>
           <input type="hidden" name="history" value="{{history.id}}"/>
           <input type="hidden" name="dataset" value="custom"/>
-          <!--<label class="buttons-sm disabled" id="pred-label" for="prediction-file">-->
-            <!--<input id="prediction-file" disabled style="display:none;" name="file" type="file"/>-->
+          <!--<label class="buttons-sm" id="pred-label" for="prediction-file">-->
+            <!--<input id="prediction-file" style="display:none;" name="file" type="file"/>-->
             <!--upload-->
           <!--</label>-->
-          <label class="buttons-sm" id="pred-label" for="prediction-file">
-            <input id="prediction-file" style="display:none;" name="file" type="file"/>
-            upload
-          </label>
           <button class="buttons-sm" type="submit" onclick="return runPrediction();">start <i class="fa fa-play"></i></button>
         </form>
         <div class="history-plot">

@@ -42,5 +42,4 @@ class Dataset(models.Model):
     description = models.TextField(default='')
     filetype = models.CharField(max_length=3, choices=FILE_CHOICES, default='CSV')
     is_image = models.BooleanField(default=False)
-    feature_labels = models.TextField(default="")
-    target_labels = models.TextField(default="")
+    has_labels = models.BooleanField(default=False)

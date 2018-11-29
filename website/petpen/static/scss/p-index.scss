@@ -1,0 +1,12 @@
+@import "colors.scss";
+.project-container {
+    min-width: 960px;
+    padding: 1rem;
+}
+div.buttons-group {
+    max-width: 300px;
+    button, a{
+        flex: 1;
+        text-align: center;
+    }
+}

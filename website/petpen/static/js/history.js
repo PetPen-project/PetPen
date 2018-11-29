@@ -25,7 +25,6 @@ function runPrediction(){
 $(function(){
   $("a[id^='loadHistory']").on('click',function(){
     var link = $(this);
-    console.log(window.location.pathname);
     $.ajax({
       type: 'post',
       url: window.location.pathname,
@@ -39,6 +38,16 @@ $(function(){
       }
     });
   });
+  $('div#history-detail').on("change","input#prediction-file",function(){
+    $('label#pred-name').text($("input#prediction-file").val().split('/').pop().split('\\').pop());
+  });
+  //$('div#history-detail').on('click',"input[name=header]",function(){
+    //if (this.value=='NO'){
+      //this.value = 'YES';
+    //} else {
+      //this.value = 'NO';
+    //}
+  //});
   $("form[name=historyActionForm]").submit(function(e){
     var action = $(document.activeElement).val();
     if ($(document.activeElement).val()=='delete'){
@@ -46,10 +55,7 @@ $(function(){
       $.post($(this).attr('action'), $(this).serialize()+'&action=delete', function(data){
         console.log($(':focus').parents('.item')[0]);
         $(':focus').parents('.item')[0].remove();
-        //$('#history-detail').html($(data).find('#history-detail').children());
         reloadHistory(data);
-        <!--location.reload();-->
-        <!--$(document).html($(data));-->
       }).fail(function(data){alert(data);
       });
       $('#msg_content').text('one training history deleted.');

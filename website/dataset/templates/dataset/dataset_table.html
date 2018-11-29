@@ -1,0 +1,46 @@
+<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css'>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<!-- Latest compiled and minified CSS -->
+<link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.css">
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
+<script src='https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js'></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script> 
+<!-- Latest compiled and minified JavaScript -->
+<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/bootstrap-table.min.js"></script>
+
+<!-- Latest compiled and minified Locales -->
+<!--<script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.12.1/locale/bootstrap-table-zh-CN.min.js"></script>-->
+<script>
+var $table = $('#table');
+var data = {{data|safe}};
+function getHeight() {
+  return $(window).height();
+}
+$(function () {
+  $('#table').bootstrapTable({
+		height: getHeight(),
+		data: data,
+    columns:{{columns|safe}},
+  });
+  setTimeout(() => {
+    $table.bootstrapTable('resetView');
+  }, 200);
+	$(window).resize(() => {
+		$table.bootstrapTable('resetView', {
+			height: getHeight()
+		});
+	});
+});
+</script>
+<div id="toolbar"></div>
+<table id='table'
+       data-toolbar="#toolbar"
+       data-striped="true"
+			 data-pagination="true"
+       data-page-size="25"
+			 data-page-list="[25,50,100,ALL]">
+  <tr>
+    <td></td>
+  </tr>
+</table>
