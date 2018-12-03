@@ -1,0 +1,232 @@
+{% extends 'nav.html' %}
+{% load static %}
+{% load sass_tags %}
+{% block title %}supported feature lists{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% sass_src "scss/demo_example.scss" %}">
+{% endblock %}
+
+{% block content %}
+  <div class="title-div">
+    Feature lists in PetPen
+  </div>
+  <div class="main-content">
+    <p>Current supported neural network features:</p>
+    <!--<table class="main-table">-->
+      <!--<tr>-->
+        <!--<th>class</th>-->
+        <!--<th>detail</th>-->
+      <!--</tr>-->
+      <!--<tr>-->
+        <!--<td>Dense</td>-->
+        <!--<td>Activation</td>-->
+      <!--</tr>-->
+      <!--<tr>-->
+        <!--<td>Convolution</td>-->
+        <!--<td>Conv1D, Conv2D, Conv3D, Activation</td>-->
+      <!--</tr>-->
+      <!--<tr>-->
+        <!--<td>Recurrent</td>-->
+        <!--<td>SimpleRNN, LSTMConvLSTM, GRU</td>-->
+      <!--</tr>-->
+      <!--<tr>-->
+        <!--<td>Pooling</td>-->
+        <!--<td>MaxPooling1D, MaxPooling2D, AvergePooling1D, AveragePooling2D</td>-->
+      <!--</tr>-->
+      <!--<tr>-->
+        <!--<td>ZeroPadding</td>-->
+        <!--<td></td>-->
+      <!--</tr>-->
+    <!--</table>-->
+    <table class="main-table">
+      <tr>
+        <th></th>
+        <th>VGG</th>
+        <th>Resnet</th>
+        <th>GoogLenet</th>
+        <th>Time series regression</th>
+        <th>spatiotemporal sequence forecasting</th>
+        <th>Flow recognition</th>
+        <th>S&P500</th>
+        <th>PM2.5</th>
+      </tr>
+      <tr>
+        <td>Dense</td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+      </tr>
+      <tr>
+        <td>Dropout</td>
+        <td></td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Reshape</td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+      </tr>
+      <tr>
+        <td>Flatten</td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>AvgPooling2D</td>
+        <td></td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>MaxPooling1D</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>MaxPooling2D</td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Batch Normalization</td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Convolution3D</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Convolution2D</td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ConvLSTM2D</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>LSTM</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+      </tr>
+      <tr>
+        <td>SimpleRNN</td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Merge - concatenate</td>
+        <td></td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Merge - add</td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>ZeroPadding</td>
+        <td></td>
+        <td><i class="fa fa-check"></i></td>
+        <td><i class="fa fa-check"></i></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+  </div>
+{% endblock %}
