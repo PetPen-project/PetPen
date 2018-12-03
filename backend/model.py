@@ -170,13 +170,13 @@ class backend_model():
                     layer_config = layers[conn_out]
 
                     layer_type, layer_params = layers[conn_out]['type'], layers[conn_out].get('params',{})
-
+                    layer_name_attr = layers[conn_out]['name']
 
                     # Merge layers (didn't check)
                     if layer_type.lower() == 'merge':
                         inbound_node_names = merge_nodes[conn_out]
                         if set(inbound_node_names).issubset(created_layers.keys()):
-                            layer = deserialize_layer(layer_config, name=conn_out)
+                            layer = deserialize_layer(layer_config, name=layer_name_attr)
                             inbound_nodes = [created_layers[node] for node in inbound_node_names]
                             created_layers[conn_out] = layer(inbound_nodes)
                             next_layers.append(conn_out)
@@ -199,7 +199,7 @@ class backend_model():
                         next_layers.append(conn_out)
 
                     else:
-                        layer = deserialize_layer(layer_config, name=conn_out)
+                        layer = deserialize_layer(layer_config, name=layer_name_attr)
                         inbound_node = created_layers[conn_in]
                         created_layers[conn_out] = layer(inbound_node)
                         next_layers.append(conn_out)
