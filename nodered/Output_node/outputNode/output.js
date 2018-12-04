@@ -40,7 +40,7 @@ module.exports = function(RED) {
 	} else if (obj[ind]['type'] == 'Loop') {
 	  name = obj[ind]['name'] + "_" + ind + "_" + timest;
 	  res.layers[name] = {name: name, type: 'Loop', params: {
-	  iters: parseInt(obj[ind]['iter'])};
+	  iters: parseInt(obj[ind]['iter'])}};
 	  rec[obj[ind]['id']] = name;
 	  obj[ind]['name'] = name;
 	} else if (obj[ind]['type'] == 'subflow') {
