@@ -170,7 +170,7 @@ class backend_model():
                     layer_config = layers[conn_out]
 
                     layer_type, layer_params = layers[conn_out]['type'], layers[conn_out].get('params',{})
-                    layer_name_attr = layers[conn_out]['name']
+                    layer_name_attr = conn_out
 
                     # Merge layers (didn't check)
                     if layer_type.lower() == 'merge':
