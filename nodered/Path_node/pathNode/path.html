@@ -6,6 +6,7 @@
             name: {value:"pretrained"},
             type: {value:"Pretrained"},
 	    source: {value: "d"},
+	    datatag: {value: "inside"},
             pretrainedoutput: {value: "x"},
 	    weightfile: {value: "g"},
 	    trainable: {value: ""},
@@ -27,6 +28,10 @@
     <div class="form-row">
         <label for="node-input-pretrainedoutput"><i class="icon-tag"></i> PretrainedOutput</label>
         <input type="text" class="fix" id="node-input-pretrainedoutput" onchange="blurFunction(this)" placeholder="Pretrainedoutput">
+    </div>
+    <div class="form-row">
+        <label for="node-input-datatag"><i class="icon-tag"></i> DataTag</label>
+        <input type="text" class="fix" id="node-input-datatag" onchange="blurFunction(this)" placeholder="Datatag">
     </div>
     <div class="form-row">
         <label for="node-input-weightfile"><i class="icon-tag"></i> Weightfile</label>
