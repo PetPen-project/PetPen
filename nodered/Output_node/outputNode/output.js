@@ -152,6 +152,19 @@ module.exports = function(RED) {
           res.layers[name] = {type: 'Reshape', params: {shape: shapes}}; 
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
+        } else if (obj[ind]['type'] == 'AvgPooling2D') {
+          name = obj[ind]['name'] + "_" + ind + "_" + timest;
+          pool_size_arr = obj[ind]['poolsize'].split(',');
+          for (var i = 0; i < pool_size_arr.length; i++) {
+            pool_size_arr[i] = parseInt(pool_size_arr[i]);
+          }
+          strides_arr = obj[ind]['strides'].split(',');
+          for (var i = 0; i < strides_arr.length; i++) {
+            strides_arr[i] = parseInt(strides_arr[i]);
+          }
+          res.layers[name] = {type: 'AveragePooling2D', params: {strides: strides_arr, pool_size: pool_size_arr, padding: obj[ind]['padding']}};
+          rec[obj[ind]['id']] = name;
+          obj[ind]['name'] = name;
         } else if (obj[ind]['type'] == 'MaxPooling2D') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
           pool_size_arr = obj[ind]['poolsize'].split(',');
@@ -165,7 +178,6 @@ module.exports = function(RED) {
           res.layers[name] = {type: 'MaxPooling2D', params: {strides: strides_arr, pool_size: pool_size_arr, padding: obj[ind]['padding']}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
-
         } else if (obj[ind]['type'] == 'MaxPooling1D') {
           name = obj[ind]['name'] + "_" + ind + "_" + timest;
           pool_size = parseInt(obj[ind]['poolsize']);
@@ -212,12 +224,17 @@ module.exports = function(RED) {
 	    obj[ind]['name'] = name; 
 	} else if (obj[ind]['type'] == 'BatchNormalization') {
 	    name = obj[ind]['name'] + "_" + ind + "_" + timest;
-	    res.layers[name] = {type: 'BatchNormalization', params: {axis: obj[ind]['axis']}};
+      if (obj[ind]['axis'] != "") {
+        axis = parseInt(obj[ind]['axis']);
+      } else {
+        axis = -1;
+      }
+
+	    res.layers[name] = {type: 'BatchNormalization', params: {axis: axis}};
 	    rec[obj[ind]['id']] = name;
 	    obj[ind]['name']= name;
 	}
          
-
 	}
 	flow_in = false
 	console.log("before parse result")
