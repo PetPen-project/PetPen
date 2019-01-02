@@ -11,18 +11,50 @@
       $("#delete-id").val(text);
     };
     function openProject(title){
-      $.ajax({
-        url: "{% url "model:manage_editor" %}",
-        method: "GET",
-        data:{
-          action: "open",
-          target: title
-        },
-        success: function(data){
-          document.location.reload(true);
-          window.open("{% url "model:manage_editor" %}");
-        }
-      });
+      if($('table#project-table tr>td:nth-child(3):contains("editing")').length){
+        $('#openAction').modal('show')
+        .on('click','button[name=confirmBtn]',function(e){
+          if (localStorage.getItem("petpenEditorWindow")){
+            var win = window.open("",localStorage.getItem("petpenEditorWindow"));
+            win.close();
+          }
+          $.ajax({
+            url: "{% url "model:manage_editor" %}",
+            method: "GET",
+            data:{
+              action: "open",
+              target: title
+            },
+            success: function(data){
+              if (!localStorage.getItem("petpenEditorWindow")){
+                localStorage.setItem("petpenEditorWindow","petpenEditorWindow");
+              }
+              document.location.reload(true);
+              var win = window.open("{% url "model:manage_editor" %}",localStorage.getItem("petpenEditorWindow"));
+              var win = window.open("",localStorage.getItem("petpenEditorWindow"));
+              win.location.href = "{% url "model:manage_editor" %}";
+            }
+          });
+        });
+      } else {
+        $.ajax({
+          url: "{% url "model:manage_editor" %}",
+          method: "GET",
+          data:{
+            action: "open",
+            target: title
+          },
+          success: function(data){
+            if (!localStorage.getItem("petpenEditorWindow")){
+              localStorage.setItem("petpenEditorWindow","petpenEditorWindow");
+            }
+            document.location.reload(true);
+            var win = window.open("{% url "model:manage_editor" %}",localStorage.getItem("petpenEditorWindow"));
+            var win = window.open("",localStorage.getItem("petpenEditorWindow"));
+            win.location.href = "{% url "model:manage_editor" %}";
+          }
+        });
+      }
     };
     function closeProject(title){
       $.ajax({
@@ -34,6 +66,8 @@
         },
         success: function(data){
           document.location.reload(true);
+          var win = window.open("",localStorage.getItem("petpenEditorWindow"));
+          win.close();
         }
       });
     };
@@ -99,7 +133,7 @@
         </span>
       </h4>
       <div class="card-body">
-        <table class="table">
+        <table class="table" id="project-table">
           <thead>
             <tr>
               <th scope="col">id</th>
@@ -123,8 +157,8 @@
                   <!--<a id="editorOpen" target="_blank" href="{% url "model:manage_editor" %}" class="btn btn-sm btn-outline-primary" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-external-link"></i> open editor</a>-->
                   <button name="editorOpen" class="buttons-sm" onclick="openProject(&#39;{{project.title}}&#39;)"><i class="fa fa-external-link-alt"></i> open editor</button>
                 {% else %}
-                <a name="editorOpen" class="buttons-sm" href={% url "model:manage_editor" %} target="_blank"><i class="fa fa-edit"></i> editing</a>
-                  <!--<button class="buttons-sm" onclick="closeProject(&#39;{{project.title}}&#39;)"><i class="fa fa-window-close"></i> close editor</button>-->
+                  <!--<a name="editorOpen" class="buttons-sm" href={% url "model:manage_editor" %} target="_blank"><i class="fa fa-edit"></i> editing</a>-->
+                  <button class="buttons-sm" onclick="closeProject(&#39;{{project.title}}&#39;)"><i class="fa fa-times"></i> close editor</button>
                 {% endif %}
                 <a href="{% url "model:project_detail" project.id %}" class="buttons-sm" name="projectPage"><i class="fa fa-bar-chart"></i> execute model</a>
                 </div>
@@ -178,6 +212,20 @@
                 </div>
                 <button type="submit" class="buttons-sm">create</button>
               </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="openAction" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h3>Confirm Action</h3>
+            </div>
+            <div class="modal-body">
+              <p>A project is in process of editing!<br>Opening another project will automatically close current project and undeployed modifications will be abandoned.</p>
+              <button class="buttons-sm" name="confirmBtn">open project</button>
+              <button class="buttons-sm" name="close" data-dismiss="modal">cancel</button>
             </div>
           </div>
         </div>

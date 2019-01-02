@@ -107,12 +107,12 @@ def index(request):
     if request.method == 'POST':
         if 'delete-project' in request.POST:
             form = NN_modelForm()
-            deleted_model = NN_model.objects.get(pk=request.POST['delete-project'])
+            deleted_model = NN_model.objects.get(user=request.user,pk=request.POST['delete-project'])
             deleted_model.delete()
         else:
             form = NN_modelForm(request.POST)
             if form.is_valid():
-                duplicate = NN_model.objects.filter(user=request.user.id,title=request.POST['title']).count()
+                duplicate = NN_model.objects.filter(user=request.user,title=request.POST['title']).count()
                 if duplicate != 0:
                     messages.error(request, 'title "{}" already exists!'.format(request.POST['title']))
                     error_message = 'title "{}" already exists!'.format(request.POST['title'])
@@ -136,7 +136,7 @@ def project_detail(request, project_id):
     view and run training job of this project
     '''
     try:
-        project = NN_model.objects.filter(user=request.user).get(id=project_id)
+        project = NN_model.objects.filter(user=request.user).get(pk=project_id)
     except:
         return HttpResponseRedirect(reverse("model:index"))
     # try:
@@ -239,31 +239,31 @@ class HistoryView(ListView):
                         'jquery_on_ready': False,
                     }
                 })
-                return context
-            chartdata = {}
-            chartdata['x'] = range(1,log_data.shape[0]+1)
-            for index in range(log_data.shape[1]):
-                chartdata['name{}'.format(index)] = 'training' if log_data.columns[index]=='loss' else 'testing'
-                chartdata['y{}'.format(index)] = log_data.iloc[:,index]
-            charttype = "lineChart"
-            chartcontainer = 'linechart_container'
-            best_epoch = log_data['val_loss'].argmin()
-            best_val = log_data['val_loss'][best_epoch]
-            context.update({
-                'history':self.object,
-                'epochs':log_data.shape[0],
-                'best_epoch_loss':best_epoch,
-                'best_loss_value':best_val,
-                'charttype': charttype,
-                'chartdata': chartdata,
-                'chartcontainer': chartcontainer,
-                'extra': {
-                    'x_is_date': False,
-                    'x_axis_format': '',
-                    'tag_script_js': True,
-                    'jquery_on_ready': False,
-                }
-            })
+            else:
+                chartdata = {}
+                chartdata['x'] = range(1,log_data.shape[0]+1)
+                for index in range(log_data.shape[1]):
+                    chartdata['name{}'.format(index)] = 'training' if log_data.columns[index]=='loss' else 'testing'
+                    chartdata['y{}'.format(index)] = log_data.iloc[:,index]
+                charttype = "lineChart"
+                chartcontainer = 'linechart_container'
+                best_epoch = log_data['val_loss'].argmin()
+                best_val = log_data['val_loss'][best_epoch]
+                context.update({
+                    'history':self.object,
+                    'epochs':log_data.shape[0],
+                    'best_epoch_loss':best_epoch,
+                    'best_loss_value':best_val,
+                    'charttype': charttype,
+                    'chartdata': chartdata,
+                    'chartcontainer': chartcontainer,
+                    'extra': {
+                        'x_is_date': False,
+                        'x_axis_format': '',
+                        'tag_script_js': True,
+                        'jquery_on_ready': False,
+                    }
+                })
         return context 
 
     def get(self, request, *args, **kwargs):
@@ -402,19 +402,6 @@ def predict(request, *args, **kwargs):
             'type': 'text',
             'content': 'Predict result generated. Click the button to download.'
             }
-    # dataset_name = fnmatch.filter(os.listdir(predict_dir),'input.npy')[0]
-    # ext = op.splitext(dataset_name)[1]
-    # if ext in ['.jpeg','.jpg','.img','.png']:
-        # dataset['type'] = 'image'
-        # dataset['content'] = op.join(op.dirname(project.structure_file),'result',dataset_name)
-    # elif ext in ['.csv','.pickle','.pkl']:
-        # dataset['type'] = 'numeric'
-        # if ext == '.csv':
-            # dataset_value = pd.read_csv(op.join(predict_dir,dataset_name),header=None)
-        # elif ext == '.pickle'or ext == '.pkl':
-            # dataset_value = pd.read_pickle(op.join(predict_dir,dataset_name))
-        # dataset_value
-        # dataset['content'] = {}
     context.update({
         'project_name': project.title,
         'history_name': history.name,
@@ -438,27 +425,18 @@ def api(request):
     else:
         logfile_name = op.join(MEDIA_ROOT,op.dirname(project.structure_file),history.save_path,'logs/realtime_logging.txt')
         if op.exists(logfile_name):
-            # log = {'epoch':[],'acc':[],'loss':[]}
             log = []
             with open(logfile_name,'r') as f:
                 for i,line in enumerate(f):
                     log.append(line)
-                    # epoch,acc,loss = line.split(',')
-                    # log['epoch'].append(epoch)
-                    # log['acc'].append(acc)
-                    # log['loss'].append(loss)
         else:
             log = None
     info['log'] = log
     info['status'] = project.get_status_display()
-    # if info['status'] in ['error','finish training']:
     if project.status in ['error','finish']:
         if request.POST.get('type') == 'init':
             logger.info('back to idle')
-        # # if info['status'] not in ['start training model', 'start testing', 'loading model']:
             info['status'] = 'system idle'
-            # update_status(project.state_file,info['status'])
-        # elif info['status'] == 'error':
             project.status = 'idle'
             project.save()
         elif project.status == 'error':
@@ -570,7 +548,10 @@ def manage_nodered(request):
 def preprocess_structure(file_path,projects,datasets):
     '''
     parse model structure file and preprocess project and dataset file path to result.json
-    return a dictionary including status
+    return a dictionary including:
+    1. status       always included in result.keys (success/file missing/missing dataset)
+    2. has_labels   included if success
+    3. layers       included when missing dataset
     '''
     result = {}
     if not op.exists(file_path):
@@ -648,6 +629,10 @@ def backend_api(request):
             history = History.objects.filter(project=project).get(pk=request.POST['history'])
             history_dir = op.join(MEDIA_ROOT,op.dirname(history.project.structure_file),history.save_path)
             dataset_type = request.POST['dataset']
+            predict_dir = op.join(MEDIA_ROOT,op.dirname(project.structure_file),'result')
+            if op.exists(predict_dir):
+                shutil.rmtree(predict_dir)
+                os.mkdir(predict_dir)
             if dataset_type == 'test':
 # only support single text input node now, so only read one dataset path
                 with open(op.join(history_dir,'preprocessed/result.json'),'r') as f:
@@ -655,26 +640,14 @@ def backend_api(request):
                     import pprint
                     pprint.pprint(structure['dataset'])
                     dataset = [v['valid_x'] for v in structure['dataset'].values() if 'valid_x' in v.keys()][0]
-                predict_dir = op.join(MEDIA_ROOT,op.dirname(project.structure_file),'result')
-                if op.exists(predict_dir):
-                    shutil.rmtree(predict_dir)
-                    os.mkdir(predict_dir)
 
                 # p = push(project.id,['python',script_path,'-m',op.join(MEDIA_ROOT,op.dirname(project.structure_file)),'-testx',op.join(predict_dir,'input.npy'),'-w',op.join(history_dir,'weights.h5'),'predict'])
                 # p = push(project.id,['python',script_path,'-m',history_dir,'-t',save_path,'-testx',dataset,'-w',op.join(history_dir,'weights.h5'),'predict'])
-                # prediction = Prediction(history=history,created=executed,expired=executed+timezone.timedelta(days=7))
-                # prediction.save()
-                # if not op.exists(prediction.path()): os.mkdir(prediction.path())
-                # shutil.copy2(dataset,prediction.path())
             elif dataset_type == 'custom':
                 with open(op.join(history_dir,'preprocessed/result.json'),'r') as f:
                     structure = json.load(f)
                     input_shape = [v['params']['shape'] for v in structure['layers'].values() if v['type']=='Input'][0]
                 dataset = request.FILES['file']
-                predict_dir = op.join(MEDIA_ROOT,op.dirname(project.structure_file),'result')
-                if op.exists(predict_dir):
-                    shutil.rmtree(predict_dir)
-                    os.mkdir(predict_dir)
                 ext = op.splitext(dataset.name)[1].lower()
                 try:
                     if ext in ['.jpg','.jpeg','.img','.png']:
