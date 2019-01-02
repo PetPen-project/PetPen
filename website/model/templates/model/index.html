@@ -76,9 +76,12 @@
       var text1 = $("#projectTitle").val();
     };
     $('document').ready(function(){
+      window.onfocus = function(){
+        document.location.reload(true);
       setInterval(function(){
         document.location.reload(true);
       },60000);
+      }
       <!--$('editorOpen').on('click.open', function(e) { e.preventDefault(); window.open('{% url "model:manage_editor" %}') });-->
       if($('.project-container').width()<1050){
         $('a[name=editorOpen]').html(
