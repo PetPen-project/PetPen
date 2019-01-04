@@ -1,0 +1,41 @@
+{% extends 'nav.html' %}
+{% load static %}
+{% load sass_tags %}
+
+{% block head %}
+<link rel="stylesheet" href="{% sass_src "scss/user_create.scss" %}">
+{% endblock %}
+
+{% block title %}
+  create your petpen account
+{% endblock %}
+
+{% block content %}
+  <div class="main">
+    {% if  user.is_anonymous %}
+      <div class="signup-box">
+        <form action="" method="post">
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="input-field">
+            {{field.label_tag}}
+            {{field}}
+            {{field.help_text}}
+            {{field.errors}}
+            </div>
+          {% endfor %}
+          <input class="buttons" type="submit" value="create account">
+        </form>
+      </div>
+    {% elif user.is_active %}
+     <div class="message-div">
+       <p>Your account is already activated.</p>
+       <a href="{% url "main" %}">back to main page</a>
+     </div>
+    {% else %}
+      <div class="message-div">
+        <p>Please confirm your email address to complete the registration.</p>
+      </div>
+    {% endif %}
+  </div>
+{% endblock %}

@@ -1,0 +1,119 @@
+{% extends 'nav.html' %}
+{% load static %}
+{% load sass_tags %}
+
+{% block title %}model index{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% sass_src "scss/style.scss" %}">
+  <link rel="stylesheet" href="{% sass_src "scss/project_view.scss" %}">
+  <script src="https://d3js.org/d3.v3.min.js"></script>
+  <script src="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.rawgit.com/novus/nvd3/v1.8.1/build/nv.d3.css">
+  <script src="{% static "js/training.js" %}"></script>
+  <script>
+    window.CSRF_TOKEN = "{{csrf_token}}";
+    var project_id = {{project_id}};
+  </script>
+  <script>
+  $.ajaxSetup({
+      data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+  });
+  </script>
+{% endblock %}
+
+{% block content %}
+  <div class="pagehead">
+    <ul class="breadcrumb">
+      <li><a href="{% url "model:index" %}">Project list</a>
+      <li class="active"><a href="">{{project_title}}</a>
+    </ul>
+    <ul class="nav nav-tabs" id="project-tabs">
+      <li class="nav-item">
+        <a class="nav-link active" id="training-tab" href="">Training</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" id="history-tab" href="{% url "model:project_history" project_id %}">History</a>
+      </li>
+    </ul>
+  </div>
+  <div>
+    <div class="tab-pane fade show active" id="training" role="tabpanel" aria-labelledby="training-tab">
+      <div class="pagecontainer page-center">
+        <div class="exp-name">
+          Experiment name: <input type="text" placeholder="Default" id="expName">
+        </div>
+        <div class="exp-btns">
+          <button id="trainModel" class="buttons-sm"><i class="fa fa-play"></i> train model</button>
+          <button id="stopTrainModel" class="buttons-sm" disabled><i class="fa fa-stop"></i> stop</button>
+        </div>
+      </div>
+      <div class="status-line">
+        <h2>Status</h2>
+        <input id="txfStatus" type="input" class="form-control" readonly="true">
+      </div>
+      <!--loading-->
+      <div id="loadingDiv">
+        <h3>Loading model...</h3>
+        <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+        <span class="sr-only">Loading...</span>
+      </div>
+      <!--error message-->
+      <div id="errorDiv">
+        <h4>error log:</h4>
+        <div class="w-100"></div>
+        <textarea id="txfError" readonly="true" value="">"error message shows here"</textarea>
+      </div>
+      <!--training-->
+      <div id="trainingDiv">
+        <div class="col-md-12">
+          <h3 class="text-center">Training</h3>
+        </div>
+        <div class="col-md-12 form-horizontal">
+          <!--epoch-->
+          <div class="form-group row justify-content-center">
+            <label class="col-md-2 control-label">Epoch</label>
+            <div class="col-md-9">
+              <div class="form-control">
+                <div class="progress">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated bg-success barEpoch" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" name="training">0%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--progress-->
+          <div class="form-group row justify-content-center">
+            <label class="col-md-2 control-label">Progress</label>
+            <div class="col-md-9">
+              <div class="form-control">
+                <div class="progress">
+                  <div class="progress-bar progress-bar-striped progress-bar-animated barProgress" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;" name="training">0%</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--loss-->
+          <div class="form-group row justify-content-center">
+            <label class="col-md-2 control-label">Loss</label>
+            <div class="col-md-9">
+              <input type="input" class="form-control txfLoss" readonly="true" name="training">
+            </div>
+          </div>
+          <!--<div class="form-group row justify-content-center">-->
+            <!--<label class="col-md-2 control-label">Validation Loss</label>-->
+            <!--<div class="col-md-9">-->
+              <!--<input type="input" class="form-control txfLoss" readonly="true" name="validate">-->
+            <!--</div>-->
+          <!--</div>-->
+        </div>
+      </div>
+      <div id="plotDiv" class="row justify-content-center">
+        <div><h3>performance curve</h3></div>
+        <div style="width:600px;height:300px; background:#FFF;">
+        <svg style="border:1px solid #111;"></svg>
+        </div>
+      </div>
+      <!--end training-->
+    </div>
+  </div>
+{% endblock %}

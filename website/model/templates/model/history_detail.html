@@ -1,0 +1,99 @@
+{% load nvd3_tags %}
+<script>
+function reloadHistory(data){
+  $('#history-detail').html($(data).find('#history-detail').children());
+};
+$(function(){
+  $("a[id^='loadHistory']").on('click',function(){
+    var link = $(this);
+    var history_id = link.data('history');
+    $.ajax({
+      type: 'post',
+      url: '/model/history_detail/',
+      data: {
+        'history': history_id,
+        'csrfmiddlewaretoken': window.CSRF_TOKEN
+      },
+      success: reloadHistory,
+      error: function(xhr,status,error){
+        alert(error);
+      }
+    });
+  });
+  $("form[name=historyActionForm]").submit(function(e){
+    if ($(document.activeElement).val()=='delete'){
+      e.preventDefault();
+      $.post($(this).attr('action'), $(this).serialize()+'&action=delete', function(data){
+        $('#history-container').html($(data)[2].innerHTML);
+        <!--location.reload();-->
+        <!--$(document).html($(data));-->
+      }).fail(function(data){alert(data);
+      });
+    }
+  });
+  $('#deleteAction').click(function(){
+    $('a[id^="loadHistory"]').prepend('<input type="checkbox" name="checkDelete" value="delete" class="mr-2 my-auto">');
+    $(document).mouseup(function(e){
+      var container = $('#sidebar');
+      if (!container.is(e.target) && container.has(e.target).length === 0)
+      {
+        $('input[name=checkDelete]').remove();
+      }
+    });
+  });
+});
+</script>
+
+<div class="container-fluid" id="history-container" style="height:100%;">
+  <div class="row">
+    <div id="sidebar" data-children=".item">
+      <!--<div class="dropdown">-->
+        <!--<button type="button" class="py-2" id="historyAction" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">ACTION <i class="fa fa-angle-down"></i></button>-->
+        <!--<button type="button" id="confirmAction" class="py-2 d-none">confirm</button>-->
+        <!--<div style="width:100%;border-bottom: 2px solid rgba(100,100,100,1);"></div>-->
+        <!--<div class="dropdown-menu" aria-labelledby="historyAction">-->
+          <!--<button id="deleteAction" class="dropdown-item">delete</button>-->
+        <!--</div>-->
+      <!--</div>-->
+      {% for history in histories %}
+        <div class="item">
+          <a href="#{{history.save_path}}" id="loadHistory{{history.name}}" class="d-flex" data-toggle="collapse" data-parent="#sidebar" data-history="{{history.id}}" aria-expanded="false" aria-controls="{{history.save_path}}">{{history.name}}</a>
+          <div class="collapse" id="{{history.save_path}}" aria-labelledby="loadHistory{{history.name}}}">
+            <form action={% url "model:history_detail" %} method="post" name="historyActionForm">
+              {% csrf_token %}
+              <input type="hidden" name="history" value={{history.id}}>
+              <div class="btn-group">
+                <button class="d-flex btn btn-outline-light" type="submit" name="action" value="download" {% if history.status != "success" %}disabled{% endif %}><i class="fa fa-download"></i></button>
+                <button class="d-flex btn btn-outline-light" type="submit" name="action" value="evaluate" {% if history.status != "success" %}disabled{% endif %}><i class="fa fa-play"></i></button>
+                <button class="d-flex btn btn-outline-light" type="submit" name="action" value="delete"><i class="fa fa-trash"></i></button>
+              </div>
+            </form>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+
+    <div id="history-detail">
+      {% if history %}
+      {% include_chart_jscss %}
+      {% load_chart charttype chartdata chartcontainer extra %}
+      <p>evaluation time:  {{history.executed}}</p>
+      <div id="history-plot" class="text-center">
+        <h1>loss</h1>
+        {% include_container chartcontainer 400 '100%' %}
+        <div class="mb-3"></div>
+      </div>
+      <div class="alert alert-dark" role="alert">evaluation type: {{history.execution_type}}</div>
+      <div class="alert alert-dark" role="alert">sample size: 100000</div>
+      <div class="alert alert-dark" role="alert">epochs: {{epochs}}</div>
+      <div class="alert alert-dark" role="alert">best validation loss: {{best_val}} at epoch {{best_epoch}}</div>
+      {% elif status %}
+      <h2>training not complete.</h2>
+      <h4>evaluation time: {{executed}}, {{status}}</h4>
+      {% else %}
+      <h3>Select an execute history from sidebar to view its detail.</h3>
+      {% endif %}
+    </div>
+  </div>
+</div>
+

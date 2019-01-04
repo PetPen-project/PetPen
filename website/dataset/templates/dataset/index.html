@@ -1,0 +1,239 @@
+{% extends 'nav.html' %}
+{% load static %}
+{% load sass_tags %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% sass_src "scss/dataset.scss" %}">
+  <script src="{% static "js/dataset.js" %}"></script>
+{% endblock %}
+
+{% block title %}dataset management{% endblock %}
+
+{% block content %}
+  <div class="headerbar">
+    <h2 id="dataset-header">Datasets</h2>
+    <button type="button" class="buttons add-btn" id="open-modal"><i class="fa fa-plus" style="margin:0 10px 0 0;"></i>ADD</button>
+  </div>
+  <div class="flex-row">
+    <div class="dataset-container">
+      {% if error_message %}
+        <div class="error-message">
+          {{error_message}}
+          <button class="close" data-dismiss="error-message"><span aria-hidden="true">&times;</span></button>
+        </div>
+      {% endif %}
+      <div id="dataset-table">
+        <!-- List of uploaded data -->
+        {% if dataset_list %}
+          <form method="post" action="{% url "dataset:index" %}">
+          {% csrf_token %}
+          <ul>
+            {% for dataset in dataset_list %}
+            <li>
+              <a href="{% url "dataset:dataset_detail" dataset_id=dataset.id %}" name="data-link" class="li-item-name" style="width:200px;">{{ dataset.title | truncatechars:18 }}</a>
+              <!--<a href="" name="data-link" class="li-item-name" style="width:200px;">{{ dataset.title }}</a>-->
+              <span class="filetype-badge">{{dataset.get_filetype_display}}</span>
+              <div id="btn-group">
+                <button class="action-btn" data-toggle="tooltip" title="click to show dataset properties on the sidebar" value="{{dataset.id}}" type="submit" name="info-dataset"><i class="fa fa-info"></i></button>
+                <button class="action-btn" data-toggle="tooltip" title="click to download this dataset as single zip file" value="{{dataset.id}}" type="submit" name="download-dataset"><i class="fa fa-download"></i></button>
+                <button class="action-btn" data-toggle="modal" data-target="#confirmDelete" onclick="setDeleteId({{dataset.id}})" title="click to delete this dataset" value="{{dataset.id}}" type="button" name="delete-dataset"><i class="fa fa-times"></i></button>
+              </div>
+            </li>
+            {% endfor %}
+          </ul>
+          </form>
+        {% else %}
+          <div id="no-dataset">No dataset yet.</div>
+        {% endif %}
+      </div>
+    </div>
+    <div class="modal fade" id="confirmDelete" tabindex="-1" role="dialog" aria-labelledby="confirmDeleteTitle" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-body">
+            <form method="post" action="{% url "dataset:index" %}">
+              {% csrf_token %}
+            <h5>Confirm dataset deletion:</h5>
+            <button type="button" class="buttons-sm buttons-grey" data-dismiss="modal">Cancel</button>
+            <input type="hidden" id="delete-id" name="delete-dataset" value="">
+            <button type="submit" class="buttons-sm">Yes</button>
+            </form>
+          </div>
+        </div>
+      </div>
+  </div>
+  <div id="info-sidebar">
+    <div class="sidebar-content">
+      <div class="close"><i class="fa fa-times"></i></div>
+      {% if information %}
+        <div class="item-title">{{information.title}}</div>
+        <span class="item-name">type</span>
+        <div class="item-content">{{information.get_filetype_display}}</div>
+        <span class="item-name">training<br>input size</span>
+        <div class="item-content">{{information.train_input_size|filesizeformat}}</div>
+        <span class="item-name">training<br>output size</span>
+        <div class="item-content">{{information.train_output_size|filesizeformat}}</div>
+        <span class="item-name">testing<br>input size</span>
+        <div class="item-content">{{information.test_input_size|filesizeformat}}</div>
+        <span class="item-name">testing<br>output size</span>
+        <div class="item-content">{{information.test_output_size|filesizeformat}}</div>
+        <span class="item-name">training samples</span>
+        <div class="item-content">{{information.train_samples}}</div>
+        <span class="item-name">testing samples</span>
+        <div class="item-content">{{information.test_samples}}</div>
+        <span class="item-name">input shape</span>
+        <div class="item-content">{{information.input_shape}}</div>
+        <span class="item-name">output shape</span>
+        <div class="item-content">{{information.output_shape}}</div>
+        <span class="item-name">created</span>
+        <div class="item-content">{{information.added|date:"M d, Y"}}</div>
+      {% else %}
+        <div class="item-title">information</div>
+        Select a dataset to view its details.
+      {% endif %}
+    </div>
+  </div>
+  <!-- Upload form.-->
+  <div class="upload-dataset-form" id="dataset-modal">
+    <div class="form-content">
+      <form action="{% url "dataset:index" %}" method="post" enctype="multipart/form-data" id="dataUploadForm">
+        {% csrf_token %}
+        <p>Dataset title: {{ form.title }}</p>
+
+        <p>{{ form.non_field_errors }}</p>
+        <!--<div class="type-block">-->
+          <!--dataset type:-->
+          <!--<select id="" name="input-type">-->
+            <!--<option value="numeric">numeric</option>-->
+            <!--<option value="image">image classification</option>-->
+          <!--</select>-->
+        <!--</div>-->
+        <div id="training_upload" class="row">
+          <div id="training-input-n" class="border border-dark upload-block">
+            {{ form.training_input_file }}
+            <p>{{ form.training_input_file.label_tag }} {{ form.training_input_file.help_text }}
+            <br>
+            <i class="fa fa-file-upload fa-3x"></i>
+            <br>
+            {{ form.training_input_file.errors }}
+            </p>
+          </div>
+          <div id="training-input-i" class="border border-dark upload-block" style="display:none;">
+            <input type="file" name="training_input_file" id="id_training_input_img">
+            <p>
+              <label for="id_training_input_img"> training input images:</label>
+              (in zip file format)
+            <br>
+            <i class="fa fa-file-archive fa-3x"></i>
+            <br>
+            {{ form.training_input_file.errors }}
+            </p>
+          </div>
+          <div id="training-output-n" class="border border-dark upload-block">
+            {{ form.training_output_file }}
+            <p>{{ form.training_output_file.label_tag }} {{ form.training_output_file.help_text }}
+            <br>
+            <i class="fa fa-file-upload fa-3x"></i>
+            <br>
+            {{ form.training_output_file.errors }}
+            </p>
+          </div>
+          <div id="training-output-i" class="border border-dark upload-block" style="display:none;">
+            <input type="file" name="training_output_file" id="id_training_output_img">
+            <p>
+              <label for="id_training_output_img"> training output images:</label>
+              (in zip file format)
+            <br>
+            <i class="fa fa-file-archive fa-3x"></i>
+            <br>
+            {{ form.training_output_file.errors }}
+            </p>
+          </div>
+        </div>
+        <div id="testing_upload" class="row">
+          <div id="testing-input-n" class="border border-dark upload-block">
+            {{ form.testing_input_file }}
+            <p>{{ form.testing_input_file.label_tag }} {{ form.testing_input_file.help_text }}
+            <br>
+            <i class="fa fa-file-upload fa-3x"></i>
+            <br>
+            {{ form.testing_input_file.errors }}
+            </p>
+          </div>
+          <div id="testing-input-i" class="border border-dark upload-block" style="display:none;">
+            <input type="file" name="testing_input_file" id="id_testing_input_img">
+            <p>
+              <label for="id_testing_input_img"> testing input images:</label>
+              (in zip file format)
+            <br>
+            <i class="fa fa-file-archive fa-3x"></i>
+            <br>
+            {{ form.testing_input_file.errors }}
+            </p>
+          </div>
+          <div id="testing-output-n" class="border border-dark upload-block">
+            {{ form.testing_output_file }}
+            <p>{{ form.testing_output_file.label_tag }} {{ form.testing_output_file.help_text }}
+            <br>
+            <i class="fa fa-file-upload fa-3x"></i>
+            <br>
+            {{ form.testing_output_file.errors }}
+            </p>
+          </div>
+          <div id="testing-output-i" class="border border-dark upload-block" style="display:none;">
+            <input type="file" name="testing_output_file" id="id_testing_output_img">
+            <p>
+              <label for="id_testing_output_img"> testing output images:</label>
+              (in zip file format)
+            <br>
+            <i class="fa fa-file-archive fa-3x"></i>
+            <br>
+            {{ form.testing_output_file.errors }}
+            </p>
+          </div>
+        </div>
+        <div class="label-block">
+          <label for="has_labels_0">
+            <input type="radio" name="has_labels" value="NO" id="has_labels_0" checked>
+            has no labels
+          </label>
+          <label for="has_labels_1">
+            <input type="radio" name="has_labels" value="YES" id="has_labels_1">
+            has labels
+          </label>
+        </div>
+        <hr>
+        <!--<div class="col mb-2">-->
+          <!--<span>{{ form.feature_labels.label }} (optional):</span>-->
+          <!--<div>{{ form.feature_labels.error }}{{ form.feature_labels }}</div>-->
+        <!--</div>-->
+        <!--<div class="col mb-2">-->
+          <!--<span>{{ form.target_labels.label }} (optional):</span>-->
+          <!--<div>{{ form.target_labels.error }}{{ form.target_labels }}</div>-->
+        <!--</div>-->
+        <input type="submit" value="Upload" class="modal-btn buttons-sm"/>
+        <button type="button" class="modal-btn buttons-sm" id="close-modal">Cancel</button>
+      </form>
+      <div class="alert alert-warning mt-2" role="alert">
+        <h4 class="alert-heading">Data format limitation</h4>
+        <p>The uploaded dataset contains 4 files, and all files should be in csv, npy or pickle format.(can't mix these formats together!)</p>
+        <p>labels for input and output data are optional.</p>
+      </div>
+    </div>
+  </div>
+  <div id="upload-progress">
+    <div class="form-content">
+      <!--<h2><i class="fa fa-hourglass"></i> Upoading dataset...</h2>-->
+      <h2>Upoading dataset...</h2>
+      <div class="progress-bar progress-bar-striped progress-bar-animated barProgress">
+        <span id="percent">0%</span>
+      </div>
+    </div>
+  </div>
+  <div id="dataset-processing">
+    <div class="form-content">
+      <h3>Please wait while we process your dataset...</h3>
+      <i class="fa fa-spinner fa-spin fa-fw"></i>
+    </div>
+  </div>
+{% endblock %}

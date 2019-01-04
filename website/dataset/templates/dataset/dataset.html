@@ -1,0 +1,143 @@
+{% extends 'nav.html' %}
+{% load static %}
+{% load sass_tags %}
+{% block head %}
+  <link rel="stylesheet" href="{% sass_src "scss/ds-detail.scss" %}">
+<script>
+$.ajaxSetup({
+    data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+});
+$(function(){
+  $('#hide-title').text($('#dataset-title').val());
+  $('#dataset-title').width($('#hide-title').width());
+}).on('input', function () {
+  $('#hide-title').text($('#dataset-title').val());
+  $('#dataset-title').width($('#hide-title').width());
+  $('#rename-dataset').click(function(){
+    $.ajax({
+      type: "POST",
+      url: "{% url "dataset:dataset_update" dataset.id %}",
+      data: {
+        dataset_id: {{dataset.id}},
+        new_title: $('#dataset-title').val(),
+      },
+    });
+  });
+});
+</script>
+  <script src="{% static "js/ds-detail.js" %}"></script>
+{% endblock %}
+{% block content %}
+  <div class="container">
+    <h3>{{dataset.title}}</h3>
+    <div class="ds-b1">
+      <div class="ds-bc">
+        <h5>input feature counts</h5>
+        <p>{{input_shape}}</p>
+      </div>
+      <div class="ds-bc">
+        <h5>output target counts</h5>
+        <p>{{output_shape}}</p>
+      </div>
+    </div>
+    <div class="ds-b">
+      <div class="ds-bc">
+        <h5>training samples</h5>
+        <p>{{train_sample_size}}</p>
+      </div>
+      <div class="ds-bc">
+        <h5>test samples</h5>
+        <p>{{test_sample_size}}</p>
+      </div>
+    </div>
+    <table class="ds-bc">
+      <thead>
+        <tr>
+          <th>train input file size</th>
+          <th>train output file size</th>
+          <th>test input file size</th>
+          <th>test output file size</th>
+        </tr>
+        <tr>
+          <td>{{train_input_size|filesizeformat}}</td>
+          <td>{{train_output_size|filesizeformat}}</td>
+          <td>{{test_input_size|filesizeformat}}</td>
+          <td>{{test_output_size|filesizeformat}}</td>
+        </tr>
+      </thead>
+    </table>
+  </div>
+</div>
+  </div>
+<div class="container-fluid mt-3">
+  <!--<div class="row justify-content-center">-->
+    <!--<div class="col-lg-6">-->
+      <!--<div class="card">-->
+        <!--<h4 class="card-header">-->
+          <!--<span id="hide-title" style="display:none;"></span>-->
+          <!--<input id="dataset-title" type="text" style="border:0 none; cursor:text;background:none;" value="{{dataset.title}}">-->
+          <!--<button class="btn btn-sm btn-info" id="rename-dataset"><i class="fa fa-pencil"></i> rename</button>-->
+          <!--<button class="close btn btn-info"><i class="fa fa-trash"></i></button>-->
+        <!--</h4>-->
+        <!--<div class="card-body">-->
+          <!--<table class="table">-->
+            <!--<thead>-->
+              <!--<tr>-->
+                <!--<th></th>-->
+                <!--<th>sample size</th>-->
+                <!--<th>input file size</th>-->
+                <!--<th></th>-->
+                <!--<th>output file size</th>-->
+                <!--<th></th>-->
+              <!--</tr>-->
+              <!--<tr>-->
+                <!--<th>training</th>-->
+                <!--<td>{{train_sample_size}}</td>-->
+                <!--<td>{{train_input_size|filesizeformat}}</td>-->
+                <!--<td><button>update</button></td>-->
+                <!--<td>{{train_output_size|filesizeformat}}</td>-->
+                <!--<td><button>update</button></td>-->
+              <!--</tr>-->
+              <!--<tr>-->
+                <!--<th>test</th>-->
+                <!--<td>{{test_sample_size}}</td>-->
+                <!--<td>{{test_input_size|filesizeformat}}</td>-->
+                <!--<td><button>update</button></td>-->
+                <!--<td>{{test_output_size|filesizeformat}}</td>-->
+                <!--<td><button>update</button></td>-->
+              <!--</tr>-->
+            <!--</thead>-->
+          <!--</table>-->
+        <!--</div>-->
+      <!--</div>-->
+    <!--</div>-->
+  <!--</div>-->
+</div>
+<div class="dataset-view">
+  <h4 class="text-center">dataset preview</h4>
+  <label for="" class="dv-choice">
+    <input type="radio" name="type" value="tri">
+    <span>train input</span>
+  </label>
+  <label for="" class="dv-choice">
+    <input type="radio" name="type" value="tro">
+    <span>train output</span>
+  </label>
+  <label for="" class="dv-choice">
+    <input type="radio" name="type" value="tsi">
+    <span>test input</span>
+  </label>
+  <label for="" class="dv-choice">
+    <input type="radio" name="type" value="tso">
+    <span>test output</span>
+  </label>
+  <iframe id="overview" src="" frameborder="0" width="100%" height="600px"></iframe>
+  <div class="p-info">
+    choose a file to view its content.
+  </div>
+  <div class="loading">
+    <i class="fa fa-spinner fa-pulse fa-3x"></i>
+    <h3>loading dataset...</h3>
+  </div>
+</div>
+{% endblock %}

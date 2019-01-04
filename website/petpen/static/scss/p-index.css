@@ -1,0 +1,11 @@
+.project-container {
+  min-width: 960px;
+  padding: 1rem; }
+
+div.buttons-group {
+  max-width: 300px; }
+  div.buttons-group button, div.buttons-group a {
+    flex: 1;
+    text-align: center; }
+
+/*# sourceMappingURL=../../../../../static/scss/p-index.css.map */

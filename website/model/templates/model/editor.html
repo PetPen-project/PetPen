@@ -1,0 +1,45 @@
+{% extends 'base_generic.html' %}
+{% load static %}
+
+{% block head %}
+  <script>
+    function closeProject(){
+      $.ajax({
+        async: false,
+        url: "{% url "model:manage_editor" %}",
+        method: "GET",
+        data:{
+          action: "close"
+        }
+      });
+      window.close();
+    };
+    $('document').ready(function(){
+      setTimeout("$('#nodered').css('display','block');$('#nodered-frame').attr('src','http://www.petpen.org/editor/{{port}}/');", 3300);
+      
+      window.onbeforeunload = function(){
+        $.ajax({
+          async: false,
+          url: "{% url "model:manage_editor" %}",
+          method: "GET",
+          data:{
+            action: "close"
+          }
+        });
+      };
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+<div id="loading" class="col-3  mx-auto text-center" style="top:30%;">
+  <h1 class="mb-5">Loading editor...</h1>
+  <i class="fa fa-spinner fa-spin fa-5x fa-fw" aria-hidden="true"></i>
+</div>
+<div id="nodered" style="display:none;">
+  <div style="position:fixed; top:6px; right:220px; z-index:99;">
+    <button id="close-project" style="cursor:pointer; display: inline-block; border: solid #8C101C; background-color: #8C101C; color: #FFFFFF; line-height: 22px; font-size: 14px;" onclick="closeProject()">close project</button>
+  </div>
+  <iframe id="nodered-frame" frameborder="0" style="border:none; width:100%; height:calc(100%); position: fixed; top: 0px; z-index:0;"></iframe>
+</div>
+{% endblock %}

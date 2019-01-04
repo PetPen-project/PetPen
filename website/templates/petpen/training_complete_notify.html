@@ -1,0 +1,5 @@
+<h3>Your training job of deep learining project {{ project.title }} is complete.</h3>
+<p>You can view the result online at:</p>
+<a href="http://{{ domain }}{% url 'model:project_history' project_id=project.id %}" target="_blank">http://{{ domain }}{% url 'model:project_history' project_id=project.id %}</a>
+
+<hr>

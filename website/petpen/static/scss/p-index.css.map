@@ -1,0 +1,10 @@
+{
+	"version": 3,
+	"file": "../../source/website/petpen/static/scss/p-index.css",
+	"sources": [
+		"../../source/website/petpen/static/scss/p-index.scss",
+		"../../source/website/petpen/static/scss/colors.scss"
+	],
+	"names": [],
+	"mappings": "AACA,AAAA,kBAAkB,CAAC;EACf,SAAS,EAAE,KAAK;EAChB,OAAO,EAAE,IAAI,GAChB;;AACD,AAAA,GAAG,AAAA,cAAc,CAAC;EACd,SAAS,EAAE,KAAK,GAKnB;EAND,AAEI,GAFD,AAAA,cAAc,CAEb,MAAM,EAFV,GAAG,AAAA,cAAc,CAEL,CAAC,CAAA;IACL,IAAI,EAAE,CAAC;IACP,UAAU,EAAE,MAAM,GACrB"
+}

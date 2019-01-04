@@ -1,0 +1,74 @@
+{% extends 'nav.html' %}
+{% load static %}
+{% load sass_tags %}
+{% block title %}example projects{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% sass_src "scss/demo_example.scss" %}">
+  <script src={% static "js/example.js" %}></script>
+  <script>
+    $(function(){
+      {% for project in projects %}
+        if ($('#col1').height()<=$('#col2').height()){
+          $('#col1').append(
+            "<div class='example-item'> <h5 class='title'>{{project.title}}</h5> <form action='' method='post'> {% csrf_token %} <input type='hidden' name='id' value={{project.id}}> <button class='buttons-sm' type='submit'><i class='fa fa-copy'></i> copy</button> </form> </div>"
+          );
+          $('#col1 div.example-item:last-child').append('<p class="description">{{project.description|safe}}</p>');
+        }
+        else {
+          $('#col2').append(
+      "<div class='example-item'> <h5 class='title'>{{project.title}}</h5> <form action='' method='post'> {% csrf_token %} <input type='hidden' name='id' value={{project.id}}> <button class='buttons-sm' type='submit'><i class='fa fa-copy'></i> copy</button> </form> </div>"
+          );
+          $('#col2 div.example-item:last-child').append('<p class="description">{{project.description|safe}}</p>');
+        }
+      {% endfor %}
+    });
+  </script>
+{% endblock %}
+
+{% block content %}
+  <div class="nav-div">
+    <div class="example-nav">
+      <span class="nav-item active">
+        <a href="">projects</a>
+      </span>
+      <span class="nav-item">
+        <a href="{% url "examples_dataset" %}">Datasets</a>
+      </span>
+    </div>
+  </div>
+  <div class="message-div">
+    {% if error_message %}
+      <div class="error-message">
+        {{error_message}}
+        <button class="close" data-dismiss="error-message"><span aria-hidden="true">&times;</span></button>
+      </div>
+    {% elif info %}
+      <div class="info-message">
+        {{info}}
+        <button class="close" data-dismiss="info-message"><span aria-hidden="true">&times;</span></button>
+      </div>
+    {% endif %}
+  </div>
+  <div class="preview-modal">
+    <img src="" alt="">
+  </div>
+  <div class="description-modal">
+    <p></p>
+  </div>
+  <div class="example-table">
+    <div class="example-col" id="col1"></div>
+    <div class="example-col" id="col2"></div>
+    <!--{% for project in projects %}-->
+      <!--<div class="example-item">-->
+        <!--<h5 class="title">{{ project.title }}</h5>-->
+        <!--<form action="" method="post">-->
+          <!--{% csrf_token %}-->
+          <!--<input type="hidden" name="id" value={{project.id}}>-->
+          <!--<button class="buttons-sm" type="submit"><i class="fa fa-copy"></i> copy</button>-->
+        <!--</form>-->
+        <!--<p class="description">{{ project.description|safe }}</p>-->
+      <!--</div>-->
+    <!--{% endfor %}-->
+  </div>
+{% endblock %}

@@ -1,0 +1,14 @@
+bokeh==0.12.14
+Django
+django-background-tasks==1.1.13
+django-bower==5.2.0
+django-compressor==2.2
+django-nvd3==0.9.7
+django-sass-processor==0.5.8
+djangorestframework==3.7.7
+docker==3.1.1
+libsass
+numpy
+pandas
+python-nvd3==0.14.2
+redis

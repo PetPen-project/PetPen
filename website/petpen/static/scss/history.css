@@ -1,0 +1,88 @@
+#action_msg {
+  display: none;
+  position: fixed;
+  z-index: 150;
+  padding-top: 100px;
+  left: 0;
+  top: 0;
+  width: 100%; }
+  #action_msg #msg_content {
+    width: 80%;
+    padding: 15px;
+    margin: auto;
+    background-color: #FEFEFE;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    animation-name: animatetop;
+    animation-duration: 0.4s; }
+
+@keyframes animatetop {
+  from {
+    top: -300px;
+    opacity: 0; }
+  to {
+    top: 0;
+    opacity: 1; } }
+
+#sidebar {
+  position: absolute;
+  width: 200px;
+  height: calc(100% - 150px);
+  background: #151719;
+  overflow: auto;
+  padding: 0 0; }
+  #sidebar ul li {
+    color: rgba(230, 230, 230, 0.9);
+    list-style: none;
+    border-bottom: 1px solid rgba(100, 100, 100, 0.3); }
+  #sidebar .item {
+    border-bottom: 1px solid rgba(100, 100, 100, 0.3); }
+    #sidebar .item:hover {
+      background: #111; }
+  #sidebar .item a {
+    padding: 15px 10px;
+    color: #EEEEEE;
+    text-decoration: none; }
+    #sidebar .item a:hover {
+      color: #FFF; }
+
+.history-plot {
+  width: 100%;
+  text-align: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center; }
+
+.history-btns {
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap; }
+  .history-btns .history-btn {
+    flex-basis: 0;
+    flex-grow: 1;
+    color: #f8f9fa;
+    background-color: transparent;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all .15s ease-in-out; }
+    .history-btns .history-btn:hover {
+      background-color: #344; }
+    .history-btns .history-btn:disabled {
+      cursor: default;
+      background-color: transparent;
+      color: transparent; }
+
+.history-detail {
+  padding: 30px 30px;
+  margin-left: 200px;
+  width: calc(100% - 200px);
+  min-width: 600px;
+  max-height: calc(100vh - 150px);
+  overflow: auto; }
+
+.evaluation-form {
+  float: right;
+  display: inline-block; }
+  .evaluation-form p {
+    font-size: 20px; }
+
+/*# sourceMappingURL=../../../../../../../../static/scss/history.css.map */

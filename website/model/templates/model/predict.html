@@ -1,0 +1,103 @@
+{% extends 'nav.html' %}
+{% load static %}
+{% load sass_tags %}
+
+{% block title %}predict results{% endblock %}
+
+{% block head %}
+  <link rel="stylesheet" href="{% sass_src "scss/predict.scss" %}">
+  <script src="{% static "js/history.js" %}"></script>
+  <script>
+    window.CSRF_TOKEN = "{{csrf_token}}";
+    $(function(){
+      if($('.load-div').length) {
+        setInterval(function(){
+          $.ajax({
+            type: 'GET',
+            url: window.location.href,
+            data: {},
+            success: function(data){
+              if ($(data).filter('div.result-container').length){
+                location.reload();
+              }
+            }
+          });
+        },1500);
+      }
+    });
+  </script>
+  {% include_chart_jscss %}
+{% endblock %}
+
+{% block content %}
+  {% if running %}
+  <div class="load-div fa-5x">
+    <h2 class="my-5">processing predict result...</h2>
+    <i class="fa fa-spinner fa-spin"></i>
+  </div>
+  {% elif error_type %}
+  <div>
+    <h3>{{error_type}}</h3>
+    <hr>
+    <p>{{error_message}}</p>
+  </div>
+  {% else %}
+  <h1 class="title">{{project_name}} {{ problem_type }} result</h1>
+  <div class="result-container">
+    <div class="input-div">
+    {% if dataset.type == 'image' %}
+    <img width="{{dataset.content.width}}" height="{{dataset.content.height}}" src="/media/{{dataset.content.source}}" alt="">
+    {% else %}
+    input data containing {{ sample_size }} sample{{ sample_size|pluralize }}
+    {% endif %}
+    </div>
+    <div class="arrow-block"><i class="fa fa-angle-right"></i></div>
+    <div class="result-div">
+      {% if result.type == 'chart' %}
+        {% load_chart result.content.charttype result.content.chartdata result.content.chartcontainer result.content.kw_extra %}
+        {% include_container result.content.chartcontainer 250 400 %}
+      {% elif result.type == 'number' %}
+      <h1>Predicted output: {{result.content}}</h1>
+      {% else %}
+      <p>{{result.content}}</p>
+      {% endif %}
+      <form method="post" action="">
+        {% csrf_token %}
+        <button class="buttons" type="submit"><i class="fa fa-download"></i> download result</button>
+      </form>
+    </div>
+    <!--<table>-->
+      <!--<tr>-->
+        <!--<th scope="col">input</th>-->
+        <!--<th scope="col">output</th>-->
+      <!--</tr>-->
+      <!--{% for chartcontent_output in chartcontents_output %}-->
+        <!--{% load_chart charttype_output chartcontent_output.chartdata chartcontent_output.chartcontainer %}-->
+      <!--<tr>-->
+        <!--<td><img src="{% url "model:images" pid=1 %}" alt=""></td>-->
+        <!--<td>-->
+          <!--{% include_container chartcontent_output.chartcontainer 400 600 %}-->
+        <!--</td>-->
+      <!--</tr>-->
+      <!--{% endfor %}-->
+    <!--</table>-->
+  </div>
+    <div class="info-div"></div>
+    <div class="error-div"></div>
+    <div class="action-div">
+      <a href="{% url "model:project_history" project_id %}">back to history page</a> or predict again:
+      <form style="display:inline-block;" class="evaluation-form" enctype="multipart/form-data" action="{% url "model:backend_api"%}" method="post">
+        {% csrf_token %}
+        <input type="hidden" name="command" value="predict"/>
+        <input type="hidden" name="project" value="{{project_id}}"/>
+        <input type="hidden" name="history" value="{{history_id}}"/>
+        <input type="hidden" name="dataset" value="custom"/>
+        <label class="buttons-sm" id="pred-label" for="prediction-file">
+          <input id="prediction-file" style="display:none;" name="file" type="file"/>
+          upload
+        </label>
+        <button class="buttons-sm" type="submit">start <i class="fa fa-play"></i></button>
+      </form>
+    </div>
+  {% endif %}
+{% endblock %}
