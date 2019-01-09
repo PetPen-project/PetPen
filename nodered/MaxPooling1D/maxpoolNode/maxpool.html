@@ -4,9 +4,9 @@
         color: '#ffaaaa',
         defaults: {
             name: {value:"maxpooling1d"},
-            units: {value: ""},
+            padding: {value: "valid"},
             type: {value:"MaxPooling1D"},
-            activation: {value: ""},
+            poolsize: {value: ""},
         },
         inputs:1,
         outputs:1,
@@ -42,7 +42,7 @@
         <input type="text" id="node-input-strides" placeholder="Strides">
     </div>
 </script>
- 
+
 <script type="text/x-red" data-help-name="MaxPooling1D">
     <p>A node that applies max pooling operation for temporal data.<br/>
     </p>

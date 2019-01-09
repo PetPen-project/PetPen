@@ -34,7 +34,7 @@ module.exports = function(RED) {
       for (var ind in obj) {
         if (obj[ind]['type'] == 'Convolution') {
           name = obj[ind]['name'] + "_" + ind + "_" +  timest;
-          res.layers[name] = {type: 'Conv1D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: parseInt(obj[i]['kernel']), strides: parseInt(obj[ind]['strides']), activation: obj[ind]['methods']}};
+          res.layers[name] = {type: 'Conv1D', params: {filters: parseInt(obj[ind]['filters']), kernel_size: parseInt(obj[ind]['kernel']), strides: parseInt(obj[ind]['strides']), padding:obj[ind]['padding'], activation: obj[ind]['activation']}};
           rec[obj[ind]['id']] = name;
           obj[ind]['name'] = name;
 	} else if (obj[ind]['type'] == 'subflow') {

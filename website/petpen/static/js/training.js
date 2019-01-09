@@ -22,6 +22,10 @@ var chart = '';
 
 $(function(){
   $('#trainModel').click(function(){
+    if ($('#txfStatus').val()=='editing model structure'){
+      alert('Please finish editing before training your model!');
+    }
+    else {
     initPlot();
     $.ajax({
       async:false,
@@ -35,6 +39,7 @@ $(function(){
     });
     $('#trainModel').attr('disabled',true);
     currentMode = "loading";
+    }
   });
   $('#stopTrainModel').click(function(){
     $.ajax({
@@ -61,7 +66,6 @@ $(function(){
   });
 });
 function getStatus(data){
-  console.log(data);
   switch(data['status']){
     case wordForIdle: currentMode = 'idle'; break;
     case wordForTraining: currentMode = 'training'; break;

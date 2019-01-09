@@ -415,10 +415,6 @@ def predict(request, *args, **kwargs):
 @login_required
 def api(request):
     project = get_object_or_404(NN_model,user=request.user,pk=request.POST['project_id'])
-    try:
-        info = update_status(project.state_file)
-    except:
-        return HttpResponse('failed parsing status')
     history = project.history_set.last()
     if not history:
         log = None
