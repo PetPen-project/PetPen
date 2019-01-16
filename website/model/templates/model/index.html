@@ -17,7 +17,10 @@
           if (localStorage.getItem("petpenEditorWindow")){
             var win = window.open("",localStorage.getItem("petpenEditorWindow"));
             win.close();
+          } else {
+            localStorage.setItem("petpenEditorWindow","petpenEditorWindow");
           }
+          var win = window.open("",localStorage.getItem("petpenEditorWindow"));
           $.ajax({
             url: "{% url "model:manage_editor" %}",
             method: "GET",
@@ -30,13 +33,16 @@
                 localStorage.setItem("petpenEditorWindow","petpenEditorWindow");
               }
               document.location.reload(true);
-              var win = window.open("{% url "model:manage_editor" %}",localStorage.getItem("petpenEditorWindow"));
-              var win = window.open("",localStorage.getItem("petpenEditorWindow"));
               win.location.href = "{% url "model:manage_editor" %}";
+              win.focus();
             }
           });
         });
       } else {
+        if (!localStorage.getItem("petpenEditorWindow")){
+          localStorage.setItem("petpenEditorWindow","petpenEditorWindow");
+        }
+        var win = window.open("",localStorage.getItem("petpenEditorWindow"));
         $.ajax({
           url: "{% url "model:manage_editor" %}",
           method: "GET",
@@ -45,13 +51,9 @@
             target: title
           },
           success: function(data){
-            if (!localStorage.getItem("petpenEditorWindow")){
-              localStorage.setItem("petpenEditorWindow","petpenEditorWindow");
-            }
             document.location.reload(true);
-            var win = window.open("{% url "model:manage_editor" %}",localStorage.getItem("petpenEditorWindow"));
-            var win = window.open("",localStorage.getItem("petpenEditorWindow"));
             win.location.href = "{% url "model:manage_editor" %}";
+            win.focus();
           }
         });
       }

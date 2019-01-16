@@ -415,6 +415,10 @@ def predict(request, *args, **kwargs):
 @login_required
 def api(request):
     project = get_object_or_404(NN_model,user=request.user,pk=request.POST['project_id'])
+    try:
+        info = update_status(project.state_file)
+    except:
+        return HttpResponse('failed parsing status')
     history = project.history_set.last()
     if not history:
         log = None
@@ -497,11 +501,12 @@ def img_api(request,*args,**kwargs):
 
 @login_required
 def manage_nodered(request):
-    port = request.user.id+1880
     action = request.GET.get('action','')
     client = docker.from_env()
     user_container = list(filter(lambda container:container.attrs['Config']['Image']=='noderedforpetpen' and container.name==str(request.user), client.containers.list()))
-    if user_container: user_container = user_container[0]
+    if user_container:
+        user_container = user_container[0]
+        port = user_container.attrs['NetworkSettings']['Ports']['1880/tcp'][0]['HostPort']
     if action == '':
         if user_container:
             return render(request,'model/editor.html',{'port':port})
@@ -531,14 +536,12 @@ def manage_nodered(request):
         project_path = os.path.join(MEDIA_ROOT,os.path.dirname(project.structure_file))
         if not os.path.exists(project_path):
             os.makedirs(project_path)
-        if not user_container:
-            client.containers.run('noderedforpetpen',stdin_open=True,tty=True,user=os.getuid(),name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':port},remove=True,hostname='petpen',detach=True)
-        elif user_container.attrs['HostConfig']['Binds'][0].split(':')[0]!=project_path:
+        if user_container and user_container.attrs['HostConfig']['Binds'][0].split(':')[0]!=project_path:
             user_container.stop(timeout=0)
             editing_project = NN_model.objects.filter(user=request.user,status='editing').exclude(pk=project.id)[0]
             editing_project.status = 'idle'
             editing_project.save()
-            client.containers.run('noderedforpetpen',stdin_open=True,tty=True,user=os.getuid(),name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':port},remove=True,hostname='petpen',detach=True)
+        client.containers.run('noderedforpetpen',stdin_open=True,tty=True,user=os.getuid(),name=str(request.user),volumes={project_path:{'bind':'/app','mode':'rw'}},ports={'1880/tcp':('0.0.0.0',)},remove=True,hostname='petpen',detach=True)
         return HttpResponse('running')
 
 def preprocess_structure(file_path,projects,datasets):
