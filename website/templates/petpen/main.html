@@ -29,7 +29,14 @@
           <a class="buttons-sm overview-btn" href="{% url "model:index" %}">details</a>
           <ul>
             <li>created: {{project_count}}</li>
-            <li>current running: none</li>
+            <li>current running: {% if running_projects %}
+              {% for project in running_projects %}
+              <a href="{% url "model:project_detail" project.id %}">{{ project.title }}</a> 
+              {% endfor %}
+              {% else %}
+                none
+              {% endif %}
+            </li>
           </ul>
         </div>
       </div>

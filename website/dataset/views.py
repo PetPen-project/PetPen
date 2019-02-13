@@ -138,7 +138,7 @@ class DatasetListView(ListView):
                         if not filetype:
                             filetype = ext
                         elif filetype != ext:
-                            context.update({'error_message':'Found both csv and pickle files. Reformat to the same file type and try again.'})
+                            context.update({'error_message':'Found files with mutiple format type. Reformat to the same file type and try again.'})
                     FILE_CHOICES = {
                         '.csv':'CSV',
                         '.pickle':'PKL',
@@ -301,7 +301,7 @@ def dataset_view(request, dataset_id):
         else:
             dataset_content = pd.read_csv(dataset_path,header=None)
     elif dataset_ext == '.npy':
-        dataset_content = npy.load(dataset_path)
+        dataset_content = np.load(dataset_path)
     print(dataset_content.shape)
     print(type(dataset_content))
     if len(dataset_content.shape)!=2:
@@ -315,7 +315,7 @@ def dataset_view(request, dataset_id):
         columns = [{'field': f, 'title': f} for f in dataset_content.columns]
         context = {
                 'columns': columns,
-                'data':dataset_content.to_json(orient='records')
+                'data':dataset_content.iloc[:500].to_json(orient='records')
                 }
         return render(request,'dataset/dataset_table.html',context)
 

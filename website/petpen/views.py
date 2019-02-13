@@ -22,7 +22,9 @@ def main(request):
             used_space += dataset.train_output_size
             used_space += dataset.test_input_size
             used_space += dataset.test_output_size
-        context.update({'project_count':user.nn_model_set.count(),'dataset_count':user.dataset_set.count(),'used_space':used_space})
+        running_projects = user.nn_model_set.filter(status='running')
+        print(running_projects)
+        context.update({'project_count':user.nn_model_set.count(),'dataset_count':user.dataset_set.count(),'used_space':used_space,'running_projects':running_projects})
     return render(request, 'petpen/main.html', context)
 
 @login_required
