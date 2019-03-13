@@ -315,7 +315,7 @@ def dataset_view(request, dataset_id):
         columns = [{'field': f, 'title': f} for f in dataset_content.columns]
         context = {
                 'columns': columns,
-                'data':dataset_content.to_json(orient='records')
+                'data':dataset_content.iloc[:300].to_json(orient='records')
                 }
         return render(request,'dataset/dataset_table.html',context)
 
